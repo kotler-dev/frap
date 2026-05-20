@@ -1,0 +1,334 @@
+{
+  "config": {
+    "configFile": "/Users/kotler/development/current/fletta/e2e/playwright.config.ts",
+    "rootDir": "/Users/kotler/development/current/fletta/e2e",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 3
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/kotler/development/current/fletta/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 3
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/kotler/development/current/fletta/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 10000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "results.json"
+        }
+      ],
+      [
+        "/Users/kotler/development/current/fletta/adapters/playwright/dist/reporter.js",
+        {
+          "minConfidence": 0.85,
+          "reportDir": "./fletta-reports",
+          "enableHealing": true,
+          "enableReporting": true
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.60.0",
+    "workers": 7,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "cp001-happy-path.spec.ts",
+      "file": "cp001-happy-path.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "CP001: Happy Path",
+          "file": "cp001-happy-path.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "stable test should not trigger healing",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 280,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeUndefined\u001b[2m()\u001b[22m\n\nReceived: \u001b[31m{\"confidence\": 1, \"diff\": \"Healed with confidence 1.00\", \"healed\": true, \"original_signature\": {\"children_hash\": 0, \"depth\": 3, \"path\": [{\"depth\": 0, \"role\": undefined, \"tag\": \"div\"}, {\"depth\": 1, \"role\": undefined, \"tag\": \"form\"}, {\"depth\": 2, \"role\": undefined, \"tag\": \"button\"}], \"prefix\": \"div:->form:->button:-\", \"stable_attrs\": {\"data-testid\": \"old111-pay\"}, \"text_content\": \"\u001b[39m\n\u001b[31m                Оплатить\u001b[39m\n\u001b[31m            \"}, \"selector\": \"[data-testid=\\\"pay-btn\\\"]\", \"top_candidates\": [{\"confidence\": 1, \"selector\": \"[data-testid=\\\"pay-btn\\\"]\", \"signature\": {\"children_hash\": 0, \"depth\": 3, \"path\": [{\"depth\": 0, \"role\": undefined, \"tag\": \"div\"}, {\"depth\": 1, \"role\": undefined, \"tag\": \"form\"}, {\"depth\": 2, \"role\": undefined, \"tag\": \"button\"}], \"position_in_parent\": undefined, \"prefix\": \"div:->form:->button:-\", \"stable_attrs\": {\"type\": \"submit\"}, \"text_content\": \"\u001b[39m\n\u001b[31m                Оплатить\u001b[39m\n\u001b[31m            \"}}, {\"confidence\": 0.6576923076923078, \"selector\": \"[data-testid=\\\"email-input\\\"]\", \"signature\": {\"children_hash\": 0, \"depth\": 4, \"path\": [{\"depth\": 0, \"role\": undefined, \"tag\": \"div\"}, {\"depth\": 1, \"role\": undefined, \"tag\": \"form\"}, {\"depth\": 2, \"role\": undefined, \"tag\": \"div\"}, {\"depth\": 3, \"role\": undefined, \"tag\": \"input\"}], \"position_in_parent\": undefined, \"prefix\": \"div:->form:->div:->input:-\", \"stable_attrs\": {\"name\": \"email\", \"placeholder\": \"your@email.com\", \"type\": \"email\"}, \"text_content\": undefined}}, {\"confidence\": 0.6576923076923078, \"selector\": \"[data-testid=\\\"card-input\\\"]\", \"signature\": {\"children_hash\": 0, \"depth\": 4, \"path\": [{\"depth\": 0, \"role\": undefined, \"tag\": \"div\"}, {\"depth\": 1, \"role\": undefined, \"tag\": \"form\"}, {\"depth\": 2, \"role\": undefined, \"tag\": \"div\"}, {\"depth\": 3, \"role\": undefined, \"tag\": \"input\"}], \"position_in_parent\": undefined, \"prefix\": \"div:->form:->div:->input:-\", \"stable_attrs\": {\"name\": \"card\", \"placeholder\": \"0000 0000 0000 0000\", \"type\": \"text\"}, \"text_content\": undefined}}]}\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeUndefined\u001b[2m()\u001b[22m\n\nReceived: \u001b[31m{\"confidence\": 1, \"diff\": \"Healed with confidence 1.00\", \"healed\": true, \"original_signature\": {\"children_hash\": 0, \"depth\": 3, \"path\": [{\"depth\": 0, \"role\": undefined, \"tag\": \"div\"}, {\"depth\": 1, \"role\": undefined, \"tag\": \"form\"}, {\"depth\": 2, \"role\": undefined, \"tag\": \"button\"}], \"prefix\": \"div:->form:->button:-\", \"stable_attrs\": {\"data-testid\": \"old111-pay\"}, \"text_content\": \"\u001b[39m\n\u001b[31m                Оплатить\u001b[39m\n\u001b[31m            \"}, \"selector\": \"[data-testid=\\\"pay-btn\\\"]\", \"top_candidates\": [{\"confidence\": 1, \"selector\": \"[data-testid=\\\"pay-btn\\\"]\", \"signature\": {\"children_hash\": 0, \"depth\": 3, \"path\": [{\"depth\": 0, \"role\": undefined, \"tag\": \"div\"}, {\"depth\": 1, \"role\": undefined, \"tag\": \"form\"}, {\"depth\": 2, \"role\": undefined, \"tag\": \"button\"}], \"position_in_parent\": undefined, \"prefix\": \"div:->form:->button:-\", \"stable_attrs\": {\"type\": \"submit\"}, \"text_content\": \"\u001b[39m\n\u001b[31m                Оплатить\u001b[39m\n\u001b[31m            \"}}, {\"confidence\": 0.6576923076923078, \"selector\": \"[data-testid=\\\"email-input\\\"]\", \"signature\": {\"children_hash\": 0, \"depth\": 4, \"path\": [{\"depth\": 0, \"role\": undefined, \"tag\": \"div\"}, {\"depth\": 1, \"role\": undefined, \"tag\": \"form\"}, {\"depth\": 2, \"role\": undefined, \"tag\": \"div\"}, {\"depth\": 3, \"role\": undefined, \"tag\": \"input\"}], \"position_in_parent\": undefined, \"prefix\": \"div:->form:->div:->input:-\", \"stable_attrs\": {\"name\": \"email\", \"placeholder\": \"your@email.com\", \"type\": \"email\"}, \"text_content\": undefined}}, {\"confidence\": 0.6576923076923078, \"selector\": \"[data-testid=\\\"card-input\\\"]\", \"signature\": {\"children_hash\": 0, \"depth\": 4, \"path\": [{\"depth\": 0, \"role\": undefined, \"tag\": \"div\"}, {\"depth\": 1, \"role\": undefined, \"tag\": \"form\"}, {\"depth\": 2, \"role\": undefined, \"tag\": \"div\"}, {\"depth\": 3, \"role\": undefined, \"tag\": \"input\"}], \"position_in_parent\": undefined, \"prefix\": \"div:->form:->div:->input:-\", \"stable_attrs\": {\"name\": \"card\", \"placeholder\": \"0000 0000 0000 0000\", \"type\": \"text\"}, \"text_content\": undefined}}]}\u001b[39m\n    at /Users/kotler/development/current/fletta/e2e/cp001-happy-path.spec.ts:22:24",
+                        "location": {
+                          "file": "/Users/kotler/development/current/fletta/e2e/cp001-happy-path.spec.ts",
+                          "column": 24,
+                          "line": 22
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 20 |\u001b[39m     \n \u001b[90m 21 |\u001b[39m     \u001b[36mconst\u001b[39m healResult \u001b[33m=\u001b[39m getLastHealResult(payButton)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 22 |\u001b[39m     expect(healResult)\u001b[33m.\u001b[39mtoBeUndefined()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 23 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 24 |\u001b[39m\n \u001b[90m 25 |\u001b[39m   test\u001b[33m.\u001b[39mskip(\u001b[32m'direct locator should work without healing'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/kotler/development/current/fletta/e2e/cp001-happy-path.spec.ts",
+                            "column": 24,
+                            "line": 22
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeUndefined\u001b[2m()\u001b[22m\n\nReceived: \u001b[31m{\"confidence\": 1, \"diff\": \"Healed with confidence 1.00\", \"healed\": true, \"original_signature\": {\"children_hash\": 0, \"depth\": 3, \"path\": [{\"depth\": 0, \"role\": undefined, \"tag\": \"div\"}, {\"depth\": 1, \"role\": undefined, \"tag\": \"form\"}, {\"depth\": 2, \"role\": undefined, \"tag\": \"button\"}], \"prefix\": \"div:->form:->button:-\", \"stable_attrs\": {\"data-testid\": \"old111-pay\"}, \"text_content\": \"\u001b[39m\n\u001b[31m                Оплатить\u001b[39m\n\u001b[31m            \"}, \"selector\": \"[data-testid=\\\"pay-btn\\\"]\", \"top_candidates\": [{\"confidence\": 1, \"selector\": \"[data-testid=\\\"pay-btn\\\"]\", \"signature\": {\"children_hash\": 0, \"depth\": 3, \"path\": [{\"depth\": 0, \"role\": undefined, \"tag\": \"div\"}, {\"depth\": 1, \"role\": undefined, \"tag\": \"form\"}, {\"depth\": 2, \"role\": undefined, \"tag\": \"button\"}], \"position_in_parent\": undefined, \"prefix\": \"div:->form:->button:-\", \"stable_attrs\": {\"type\": \"submit\"}, \"text_content\": \"\u001b[39m\n\u001b[31m                Оплатить\u001b[39m\n\u001b[31m            \"}}, {\"confidence\": 0.6576923076923078, \"selector\": \"[data-testid=\\\"email-input\\\"]\", \"signature\": {\"children_hash\": 0, \"depth\": 4, \"path\": [{\"depth\": 0, \"role\": undefined, \"tag\": \"div\"}, {\"depth\": 1, \"role\": undefined, \"tag\": \"form\"}, {\"depth\": 2, \"role\": undefined, \"tag\": \"div\"}, {\"depth\": 3, \"role\": undefined, \"tag\": \"input\"}], \"position_in_parent\": undefined, \"prefix\": \"div:->form:->div:->input:-\", \"stable_attrs\": {\"name\": \"email\", \"placeholder\": \"your@email.com\", \"type\": \"email\"}, \"text_content\": undefined}}, {\"confidence\": 0.6576923076923078, \"selector\": \"[data-testid=\\\"card-input\\\"]\", \"signature\": {\"children_hash\": 0, \"depth\": 4, \"path\": [{\"depth\": 0, \"role\": undefined, \"tag\": \"div\"}, {\"depth\": 1, \"role\": undefined, \"tag\": \"form\"}, {\"depth\": 2, \"role\": undefined, \"tag\": \"div\"}, {\"depth\": 3, \"role\": undefined, \"tag\": \"input\"}], \"position_in_parent\": undefined, \"prefix\": \"div:->form:->div:->input:-\", \"stable_attrs\": {\"name\": \"card\", \"placeholder\": \"0000 0000 0000 0000\", \"type\": \"text\"}, \"text_content\": undefined}}]}\u001b[39m\n\n\u001b[0m \u001b[90m 20 |\u001b[39m     \n \u001b[90m 21 |\u001b[39m     \u001b[36mconst\u001b[39m healResult \u001b[33m=\u001b[39m getLastHealResult(payButton)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 22 |\u001b[39m     expect(healResult)\u001b[33m.\u001b[39mtoBeUndefined()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 23 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 24 |\u001b[39m\n \u001b[90m 25 |\u001b[39m   test\u001b[33m.\u001b[39mskip(\u001b[32m'direct locator should work without healing'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\u001b[0m\n\u001b[2m    at /Users/kotler/development/current/fletta/e2e/cp001-happy-path.spec.ts:22:24\u001b[22m"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "[fletta] Element not found (quick check): [data-testid=\"old111-pay\"]\n"
+                        },
+                        {
+                          "text": "[fletta] Attempting healing...\n"
+                        },
+                        {
+                          "text": "[fletta] Building DOM snapshot (optimized)...\n"
+                        },
+                        {
+                          "text": "[fletta] DOM snapshot built: 3 elements\n"
+                        },
+                        {
+                          "text": "[fletta] No pre-recorded signature, constructing from selector...\n"
+                        },
+                        {
+                          "text": "[fletta:engine] Looking for candidates in 3 elements...\n"
+                        },
+                        {
+                          "text": "[fletta:engine] Confidence calculation: pathSim=0.62, tokenSim=0.50, structuralSim=1.00, bonus=0.00 => 0.66\n"
+                        },
+                        {
+                          "text": "[fletta:engine]   Original text: \"\n                Оплатить\n            \", Candidate text: \"undefined\"\n"
+                        },
+                        {
+                          "text": "[fletta:engine] Confidence calculation: pathSim=0.62, tokenSim=0.50, structuralSim=1.00, bonus=0.00 => 0.66\n"
+                        },
+                        {
+                          "text": "[fletta:engine]   Original text: \"\n                Оплатить\n            \", Candidate text: \"undefined\"\n"
+                        },
+                        {
+                          "text": "[fletta:engine] Confidence calculation: pathSim=1.00, tokenSim=1.00, structuralSim=1.00, bonus=0.10 => 1.00\n"
+                        },
+                        {
+                          "text": "[fletta:engine]   Original text: \"\n                Оплатить\n            \", Candidate text: \"\n                Оплатить\n            \"\n"
+                        },
+                        {
+                          "text": "[fletta:engine] Found 3 candidates with confidence >= 0.5\n"
+                        },
+                        {
+                          "text": "[fletta:engine] Best candidate: \"[data-testid=\"pay-btn\"]\" confidence=1.00, threshold=0.85\n"
+                        },
+                        {
+                          "text": "[fletta:engine] Second best: \"[data-testid=\"email-input\"]\" confidence=0.66, diff=0.34\n"
+                        },
+                        {
+                          "text": "[fletta:debug] Report saved to fletta-reports/fletta-debug.json\n"
+                        },
+                        {
+                          "text": "[fletta] Healing result: healed=true, confidence=1.00, selector=\"[data-testid=\"pay-btn\"]\"\n"
+                        },
+                        {
+                          "text": "[fletta] Top candidates: 3\n"
+                        },
+                        {
+                          "text": "[fletta]   Candidate 0: \"[data-testid=\"pay-btn\"]\" confidence=1.00\n"
+                        },
+                        {
+                          "text": "[fletta]   Candidate 1: \"[data-testid=\"email-input\"]\" confidence=0.66\n"
+                        },
+                        {
+                          "text": "[fletta]   Candidate 2: \"[data-testid=\"card-input\"]\" confidence=0.66\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-20T22:42:09.656Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/kotler/development/current/fletta/e2e/test-results/cp001-happy-path-CP001-Hap-2ecd5--should-not-trigger-healing-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/kotler/development/current/fletta/e2e/test-results/cp001-happy-path-CP001-Hap-2ecd5--should-not-trigger-healing-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/kotler/development/current/fletta/e2e/cp001-happy-path.spec.ts",
+                        "column": 24,
+                        "line": 22
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a4507ed82608d4eaa6a5-852a569e73848b719648",
+              "file": "cp001-happy-path.spec.ts",
+              "line": 5,
+              "column": 7
+            },
+            {
+              "title": "direct locator should work without healing",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "location": {
+                        "file": "/Users/kotler/development/current/fletta/e2e/cp001-happy-path.spec.ts",
+                        "line": 25,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-20T22:42:09.453Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "location": {
+                            "file": "/Users/kotler/development/current/fletta/e2e/cp001-happy-path.spec.ts",
+                            "line": 25,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a4507ed82608d4eaa6a5-c7c8ebb1cce5e6685f6f",
+              "file": "cp001-happy-path.spec.ts",
+              "line": 25,
+              "column": 8
+            },
+            {
+              "title": "form submission with stable selectors",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 10000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "location": {
+                        "file": "/Users/kotler/development/current/fletta/e2e/cp001-happy-path.spec.ts",
+                        "line": 34,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-20T22:42:09.457Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "location": {
+                            "file": "/Users/kotler/development/current/fletta/e2e/cp001-happy-path.spec.ts",
+                            "line": 34,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a4507ed82608d4eaa6a5-811c0851894816dc0455",
+              "file": "cp001-happy-path.spec.ts",
+              "line": 34,
+              "column": 8
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-05-20T22:42:09.415Z",
+    "duration": 3485.987,
+    "expected": 0,
+    "skipped": 2,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

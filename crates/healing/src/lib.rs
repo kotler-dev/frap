@@ -1,0 +1,302 @@
+use serde::{Deserialize, Serialize};
+use signature::{Candidate, HealResult, Signature, calculate_confidence, DEFAULT_MIN_CONFIDENCE};
+use clustering::DOMElementClusterer;
+use std::collections::HashMap;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DOMSnapshot {
+    pub html: String,
+    pub elements: Vec<DOMElementInfo>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DOMElementInfo {
+    pub selector: String,
+    pub tag: String,
+    pub attributes: HashMap<String, String>,
+    pub text_content: Option<String>,
+    pub path: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HealingEngine {
+    pub min_confidence: f64,
+    pub clusterer: DOMElementClusterer,
+}
+
+impl HealingEngine {
+    pub fn new() -> Self {
+        Self {
+            min_confidence: DEFAULT_MIN_CONFIDENCE,
+            clusterer: DOMElementClusterer::new(),
+        }
+    }
+
+    pub fn with_min_confidence(mut self, confidence: f64) -> Self {
+        self.min_confidence = confidence;
+        self
+    }
+
+    pub fn heal(
+        &mut self,
+        primary_selector: &str,
+        original_signature: &Signature,
+        dom_snapshot: &DOMSnapshot,
+    ) -> HealResult {
+        if let Some(element) = self.find_by_selector(primary_selector, dom_snapshot) {
+            return HealResult::success(element.selector.clone());
+        }
+
+        self.build_clusters(dom_snapshot);
+
+        let candidates = self.find_candidates(original_signature, dom_snapshot);
+        
+        if candidates.is_empty() {
+            return HealResult::failed(vec![], original_signature.clone());
+        }
+
+        let best = candidates
+            .iter()
+            .max_by(|a, b| a.confidence.partial_cmp(&b.confidence).unwrap())
+            .cloned()
+            .unwrap();
+
+        if best.confidence >= self.min_confidence {
+            HealResult::healed(
+                best.selector.clone(),
+                best.confidence,
+                candidates,
+                original_signature.clone(),
+            )
+        } else {
+            HealResult::failed(candidates, original_signature.clone())
+        }
+    }
+
+    fn find_by_selector<'a>(&self, selector: &str, snapshot: &'a DOMSnapshot) -> Option<&'a DOMElementInfo> {
+        snapshot.elements.iter().find(|e| e.selector == selector)
+    }
+
+    fn build_clusters(&mut self, snapshot: &DOMSnapshot) {
+        for element in &snapshot.elements {
+            let signature = self.extract_signature_from_element(element);
+            self.clusterer.add_element(element.selector.clone(), signature);
+        }
+    }
+
+    fn find_candidates(&self, original: &Signature, snapshot: &DOMSnapshot) -> Vec<Candidate> {
+        let cluster_elements = self.clusterer.find_elements_in_cluster(original);
+        
+        let mut candidates = Vec::new();
+
+        for clustered in cluster_elements {
+            let element_info = snapshot.elements.iter().find(|e| e.selector == clustered.selector);
+            if let Some(element_info) = element_info {
+                let candidate_sig = self.extract_signature_from_element(element_info);
+                let confidence = calculate_confidence(original, &candidate_sig);
+                
+                if confidence >= 0.5 {
+                    candidates.push(Candidate {
+                        selector: clustered.selector.clone(),
+                        signature: candidate_sig,
+                        confidence,
+                    });
+                }
+            }
+        }
+
+        candidates.sort_by(|a, b| b.confidence.partial_cmp(&a.confidence).unwrap());
+        candidates
+    }
+
+    fn extract_signature_from_element(&self, element: &DOMElementInfo) -> Signature {
+        use signature::{DOMToken, extract_stable_attrs};
+        
+        let mut tokens = Vec::new();
+        for (i, path_token) in element.path.iter().enumerate() {
+            let parts: Vec<&str> = path_token.split(':').collect();
+            let tag = parts.first().copied().unwrap_or("unknown").to_string();
+            let role = parts.get(1).filter(|&&r| r != "-").map(|&s| s.to_string());
+            
+            tokens.push(DOMToken {
+                tag,
+                role,
+                semantic_type: None,
+                structural_class: None,
+                depth: i as u8,
+            });
+        }
+
+        let prefix = tokens
+            .iter()
+            .take(5)
+            .map(|t| format!("{}:{}", t.tag, t.role.as_deref().unwrap_or("-")))
+            .collect::<Vec<_>>()
+            .join(">");
+
+        let stable_attrs = extract_stable_attrs(
+            &element.attributes
+                .iter()
+                .map(|(k, v)| (k.clone(), v.clone()))
+                .collect::<Vec<_>>()
+        );
+
+        Signature {
+            path: tokens,
+            prefix,
+            stable_attrs,
+            text_content: element.text_content.clone(),
+            position_in_parent: None,
+            children_hash: 0,
+            depth: element.path.len() as u8,
+        }
+    }
+}
+
+impl Default for HealingEngine {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HealingOrchestrator {
+    pub engine: HealingEngine,
+    pub original_signatures: HashMap<String, Signature>,
+}
+
+impl HealingOrchestrator {
+    pub fn new() -> Self {
+        Self {
+            engine: HealingEngine::new(),
+            original_signatures: HashMap::new(),
+        }
+    }
+
+    pub fn record_signature(&mut self, selector: String, signature: Signature) {
+        self.original_signatures.insert(selector, signature);
+    }
+
+    pub fn heal_with_fallback(
+        &mut self,
+        primary_selector: &str,
+        dom_snapshot: &DOMSnapshot,
+    ) -> HealResult {
+        let original = self.original_signatures.get(primary_selector);
+        
+        if let Some(original_sig) = original {
+            self.engine.heal(primary_selector, original_sig, dom_snapshot)
+        } else {
+            HealResult::failed(
+                vec![],
+                Signature {
+                    path: vec![],
+                    prefix: String::new(),
+                    stable_attrs: HashMap::new(),
+                    text_content: None,
+                    position_in_parent: None,
+                    children_hash: 0,
+                    depth: 0,
+                },
+            )
+        }
+    }
+}
+
+impl Default for HealingOrchestrator {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use signature::{DOMToken, Signature};
+
+    fn create_test_signature() -> Signature {
+        Signature {
+            path: vec![
+                DOMToken {
+                    tag: "button".to_string(),
+                    role: Some("submit".to_string()),
+                    semantic_type: None,
+                    structural_class: None,
+                    depth: 0,
+                }
+            ],
+            prefix: "button:submit".to_string(),
+            stable_attrs: [("data-testid".to_string(), "pay-btn".to_string())].into(),
+            text_content: Some("Pay".to_string()),
+            position_in_parent: None,
+            children_hash: 0,
+            depth: 1,
+        }
+    }
+
+    fn create_test_snapshot() -> DOMSnapshot {
+        DOMSnapshot {
+            html: "<button data-testid='checkout-pay'>Pay</button>".to_string(),
+            elements: vec![
+                DOMElementInfo {
+                    selector: "[data-testid='checkout-pay']".to_string(),
+                    tag: "button".to_string(),
+                    attributes: [("data-testid".to_string(), "checkout-pay".to_string())].into(),
+                    text_content: Some("Pay".to_string()),
+                    path: vec!["button:submit".to_string()],
+                }
+            ],
+        }
+    }
+
+    #[test]
+    fn test_healing_engine_new() {
+        let engine = HealingEngine::new();
+        assert_eq!(engine.min_confidence, DEFAULT_MIN_CONFIDENCE);
+    }
+
+    #[test]
+    fn test_heal_success_when_element_found() {
+        let mut engine = HealingEngine::new();
+        let snapshot = DOMSnapshot {
+            html: "<button>Pay</button>".to_string(),
+            elements: vec![
+                DOMElementInfo {
+                    selector: "#pay-btn".to_string(),
+                    tag: "button".to_string(),
+                    attributes: HashMap::new(),
+                    text_content: Some("Pay".to_string()),
+                    path: vec!["button:-".to_string()],
+                }
+            ],
+        };
+        
+        let original = create_test_signature();
+        let result = engine.heal("#pay-btn", &original, &snapshot);
+        
+        assert!(!result.healed);
+        assert_eq!(result.confidence, 1.0);
+        assert_eq!(result.selector, "#pay-btn");
+    }
+
+    #[test]
+    fn test_healing_orchestrator() {
+        let mut orchestrator = HealingOrchestrator::new();
+        let sig = create_test_signature();
+        
+        orchestrator.record_signature("[data-testid='pay-btn']".to_string(), sig);
+        
+        assert_eq!(orchestrator.original_signatures.len(), 1);
+    }
+
+    #[test]
+    fn test_heal_with_fallback_no_original() {
+        let mut orchestrator = HealingOrchestrator::new();
+        let snapshot = create_test_snapshot();
+        
+        let result = orchestrator.heal_with_fallback("[data-testid='unknown']", &snapshot);
+        
+        assert!(!result.healed);
+        assert_eq!(result.confidence, 0.0);
+    }
+}

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>fletta Test App</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .test-case {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .test-case h3 {
+            margin-top: 0;
+            color: #2196F3;
+        }
+        .test-case p {
+            color: #666;
+        }
+        .test-case a {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .test-case a:hover {
+            background: #45a049;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status.ready {
+            background: #d4edda;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>fletta Test Application</h1>
+        <p class="subtitle">Test pages for PoC cases CP001–CP003</p>
+        
+        <div class="test-case">
+            <h3>CP001: Happy Path <span class="status ready">READY</span></h3>
+            <p>Стабильный селектор без изменений. Проверяет, что адаптер не ломает существующие тесты.</p>
+            <p><strong>Ожидаемый результат:</strong> Тест проходит, healing не вызывается.</p>
+            <a href="cp001-stable.html">Open CP001</a>
+        </div>
+        
+        <div class="test-case">
+            <h3>CP002: Refactor Heal <span class="status ready">READY</span></h3>
+            <p>Селектор изменился (data-testid), но структура и текст сохранились. Проверяет self-healing.</p>
+            <p><strong>Ожидаемый результат:</strong> Тест проходит (healed), confidence ≥ 0.85.</p>
+            <a href="cp002-refactored.html">Open CP002</a>
+        </div>
+        
+        <div class="test-case">
+            <h3>CP003: Safe Fail <span class="status ready">READY</span></h3>
+            <p>Два похожих элемента, невозможно определить правильный с высокой уверенностью.</p>
+            <p><strong>Ожидаемый результат:</strong> Тест падает, отчёт содержит top-3 кандидатов.</p>
+            <a href="cp003-ambiguous.html">Open CP003</a>
+        </div>
+        
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; color: #999; font-size: 14px;">
+            <p>Server running on port 3000</p>
+            <p>fletta MVP v1.0.0</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "@fletta/e2e-tests",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:cp001": "playwright test cp001-happy-path.spec.ts",
+    "test:cp002": "playwright test cp002-refactor-heal.spec.ts",
+    "test:cp003": "playwright test cp003-safe-fail.spec.ts"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "@fletta/playwright": "file:../adapters/playwright",
+    "@fletta/sdk": "file:../sdk/typescript"
+  }
+}

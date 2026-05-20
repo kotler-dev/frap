@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CP003: Safe Fail - Ambiguous Elements</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .checkout-wrapper {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .warning {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .form-section {
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .form-section h3 {
+            margin-top: 0;
+            color: #666;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .pay-btn {
+            background: #FF5722;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .pay-btn:hover {
+            background: #E64A19;
+        }
+        #message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        #message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="checkout-wrapper">
+        <h1>Оформление заказа (CP003)</h1>
+        
+        <div class="warning">
+            <strong>Сценарий CP003:</strong> Две кнопки "Оплатить" с разными контекстами. 
+            Система не должна выбирать случайно — ожидается FAIL с отчётом top-3 кандидатов.
+        </div>
+        
+        <!-- Первая форма: основная оплата -->
+        <div class="form-section">
+            <h3>Основная оплата</h3>
+            <label for="email-main">Email</label>
+            <input type="email" id="email-main" data-testid="email-main">
+            
+            <button class="pay-btn" data-testid="pay-btn-main" id="pay-main">
+                Оплатить
+            </button>
+        </div>
+        
+        <!-- Вторая форма: дополнительная услуга -->
+        <div class="form-section">
+            <h3>Дополнительная услуга (страховка)</h3>
+            <label for="email-addon">Email для страховки</label>
+            <input type="email" id="email-addon" data-testid="email-addon">
+            
+            <!-- Обе кнопки имеют одинаковый текст, похожую структуру -->
+            <button class="pay-btn" data-testid="pay-btn-addon" id="pay-addon">
+                Оплатить
+            </button>
+        </div>
+        
+        <div id="message"></div>
+    </div>
+
+    <script>
+        document.getElementById('pay-main').addEventListener('click', function(e) {
+            e.preventDefault();
+            const msg = document.getElementById('message');
+            msg.className = 'show';
+            msg.style.background = '#d4edda';
+            msg.style.color = '#155724';
+            msg.textContent = 'Основная оплата обработана';
+        });
+
+        document.getElementById('pay-addon').addEventListener('click', function(e) {
+            e.preventDefault();
+            const msg = document.getElementById('message');
+            msg.className = 'show';
+            msg.style.background = '#cce5ff';
+            msg.style.color = '#004085';
+            msg.textContent = 'Дополнительная услуга активирована';
+        });
+    </script>
+</body>
+</html>
