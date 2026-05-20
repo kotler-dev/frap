@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="fletta" tests="1" failures="1" timestamp="2026-05-20T22:42:12.904Z">
+    <testcase name=" &gt; chromium &gt; cp001-happy-path.spec.ts &gt; CP001: Happy Path &gt; stable test should not trigger healing" time="0">
+
+    </testcase>
+  </testsuite>
+</testsuites>

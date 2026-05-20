@@ -1,0 +1,363 @@
+import type { Locator, Page } from '@playwright/test';
+import { HealingEngine, FlettaConfig, createHealingEngine, DOMSnapshot, DOMElementInfo, HealResult } from '@fletta/sdk';
+
+interface FlettaLocator extends Locator {
+  __fletta?: {
+    originalLocator: Locator;
+    healingEngine: HealingEngine;
+    config: FlettaConfig;
+    lastHealResult?: HealResult;
+  };
+}
+
+const recordedSignatures = new Map<string, any>();
+
+export async function withFletta<T extends Locator>(
+  locator: T,
+  page: Page,
+  config?: Partial<FlettaConfig>,
+  testName?: string
+): Promise<FlettaLocator> {
+  const fullConfig: FlettaConfig = {
+    minConfidence: 0.85,
+    reportDir: './fletta-reports',
+    enableHealing: true,
+    enableReporting: true,
+    ...config,
+  };
+
+  const healingEngine = await createHealingEngine(fullConfig);
+
+  // Pre-record signature if element exists (for future healing)
+  const selectorStr = locator.toString();
+  // Extract actual selector from "locator('...')" string
+  const selectorMatch = selectorStr.match(/locator\(['"](.+)['"]\)/);
+  const cleanSelector = selectorMatch ? selectorMatch[1] : selectorStr;
+  
+  if (!recordedSignatures.has(selectorStr)) {
+    try {
+      // Use page.evaluate for reliable check
+      const exists = await page.evaluate((sel) => {
+        return document.querySelector(sel) !== null;
+      }, cleanSelector);
+      
+      if (exists) {
+        const sig = await extractSignatureFromPage(page, cleanSelector);
+        if (sig) {
+          recordedSignatures.set(selectorStr, sig);
+          console.log(`[fletta] Pre-recorded signature for ${cleanSelector}`);
+        }
+      }
+    } catch (e) {
+      // Ignore errors during pre-recording
+    }
+  }
+
+  const flettaLocator: FlettaLocator = new Proxy(locator, {
+    get(target, prop, receiver) {
+      const value = Reflect.get(target, prop, receiver);
+      
+      if (typeof value === 'function' && ['click', 'fill', 'check', 'uncheck', 'selectOption', 'press', 'type'].includes(prop as string)) {
+        return async (...args: any[]) => {
+          const selectorKey = locator.toString();
+          // Extract actual selector from "locator('...')" string
+          const selectorMatch = selectorKey.match(/locator\(['"](.+)['"]\)/);
+          const cleanSelector = selectorMatch ? selectorMatch[1] : selectorKey;
+
+          // Quick check: if element doesn't exist, skip Playwright's long timeout and go straight to healing
+          const elementExists = await page.evaluate((sel) => {
+            return document.querySelector(sel) !== null;
+          }, cleanSelector);
+
+          if (!elementExists) {
+            console.log(`[fletta] Element not found (quick check): ${cleanSelector}`);
+
+            if (!fullConfig.enableHealing) {
+              throw new Error(`Element not found: ${cleanSelector}`);
+            }
+
+            console.log('[fletta] Attempting healing...');
+            const snapshot = await buildSnapshotFromPage(page);
+            console.log(`[fletta] DOM snapshot built: ${snapshot.elements.length} elements`);
+
+            let originalSig = recordedSignatures.get(selectorKey);
+            if (!originalSig) {
+              // No pre-recorded signature - construct one from the selector and snapshot for healing
+              console.log('[fletta] No pre-recorded signature, constructing from selector...');
+              originalSig = constructSignatureFromSelector(cleanSelector, snapshot);
+            }
+
+            const healResult = healingEngine.heal(cleanSelector, originalSig, snapshot, testName);
+            flettaLocator.__fletta!.lastHealResult = healResult;
+
+            console.log(`[fletta] Healing result: healed=${healResult.healed}, confidence=${healResult.confidence.toFixed(2)}, selector="${healResult.selector}"`);
+            console.log(`[fletta] Top candidates: ${healResult.top_candidates.length}`);
+            healResult.top_candidates.forEach((c, i) => {
+              console.log(`[fletta]   Candidate ${i}: "${c.selector}" confidence=${c.confidence.toFixed(2)}`);
+            });
+
+            if (healResult.healed && healResult.selector) {
+              const healedLocator = page.locator(healResult.selector);
+              const healedMethod = Reflect.get(healedLocator, prop);
+              if (typeof healedMethod === 'function') {
+                return await healedMethod.apply(healedLocator, args);
+              }
+            }
+
+            throw new Error(`Healing failed for ${cleanSelector}: confidence=${healResult.confidence.toFixed(2)}, threshold=${fullConfig.minConfidence}`);
+          }
+
+          // Element exists, proceed with normal action
+          try {
+            return await value.apply(target, args);
+          } catch (error: any) {
+            console.log(`[fletta] Primary action failed: ${error.message}`);
+            throw error;
+          }
+        };
+      }
+
+      return value;
+    },
+  }) as FlettaLocator;
+
+  flettaLocator.__fletta = {
+    originalLocator: locator,
+    healingEngine,
+    config: fullConfig,
+  };
+
+  return flettaLocator;
+}
+
+async function buildSnapshotFromPage(page: Page): Promise<DOMSnapshot> {
+  console.log('[fletta] Building DOM snapshot (optimized)...');
+
+  try {
+    return await page.evaluate(() => {
+      const elements: DOMElementInfo[] = [];
+      // Only get interactive elements and elements with data-testid - much faster than querySelectorAll('*')
+      const interactiveElements = document.querySelectorAll('button, input, a, select, textarea, [data-testid], [role="button"], [role="link"], [role="input"]');
+
+      interactiveElements.forEach((el) => {
+        const attributes: Record<string, string> = {};
+        const attrs = Array.from(el.attributes);
+        for (const attr of attrs) {
+          attributes[attr.name] = attr.value;
+        }
+
+        const path: string[] = [];
+        let current: Element | null = el;
+        while (current && current !== document.body) {
+          const role = current.getAttribute('role');
+          path.unshift(`${current.tagName.toLowerCase()}:${role || '-'}`);
+          current = current.parentElement;
+        }
+
+        let selector: string;
+        const testId = el.getAttribute('data-testid');
+        if (testId) {
+          selector = `[data-testid="${testId}"]`;
+        } else if (el.id) {
+          selector = `#${el.id}`;
+        } else {
+          const tagName = el.tagName.toLowerCase();
+          const text = el.textContent?.substring(0, 20) || '';
+          selector = `${tagName}:contains("${text}")`;
+        }
+
+        elements.push({
+          selector,
+          tag: el.tagName.toLowerCase(),
+          attributes,
+          text_content: el.textContent?.substring(0, 100) || undefined,
+          path,
+        });
+      });
+
+      return {
+        html: document.documentElement?.outerHTML?.substring(0, 1000) || '',
+        elements,
+      };
+    });
+  } catch (e) {
+    console.error('[fletta] Failed to build DOM snapshot:', e);
+    // Return empty snapshot as fallback
+    return {
+      html: '',
+      elements: [],
+    };
+  }
+}
+
+async function extractSignatureFromPage(page: Page, selector: string): Promise<any> {
+  try {
+    return await page.evaluate((sel) => {
+      const el = document.querySelector(sel);
+      if (!el) return null;
+
+      const attributes: Record<string, string> = {};
+      const attrs = Array.from(el.attributes);
+      for (const attr of attrs) {
+        attributes[attr.name] = attr.value;
+      }
+
+      const path: string[] = [];
+      let current: Element | null = el;
+      while (current && current !== document.body) {
+        const role = current.getAttribute('role');
+        path.unshift(`${current.tagName.toLowerCase()}:${role || '-'}`);
+        current = current.parentElement;
+      }
+
+      const stableKeys = ['role', 'type', 'placeholder', 'aria-label', 'name'];
+      const stable_attrs: Record<string, string> = {};
+      for (const key of stableKeys) {
+        if (attributes[key]) {
+          stable_attrs[key] = attributes[key];
+        }
+      }
+
+      const tokens = path.map((pathToken, i) => {
+        const parts = pathToken.split(':');
+        return {
+          tag: parts[0] || 'unknown',
+          role: parts[1] && parts[1] !== '-' ? parts[1] : undefined,
+          depth: i,
+        };
+      });
+
+      return {
+        path: tokens,
+        prefix: tokens.slice(0, 5).map((t: any) => `${t.tag}:${t.role || '-'}`).join('>'),
+        stable_attrs,
+        text_content: el.textContent || undefined,
+        children_hash: 0,
+        depth: tokens.length,
+      };
+    }, selector);
+  } catch (e) {
+    console.error('[fletta] Failed to extract signature:', e);
+    return null;
+  }
+}
+
+/**
+ * Construct a signature from a selector and DOM snapshot.
+ * This allows healing to work even for never-before-seen selectors.
+ * Uses snapshot to find similar elements by data-testid pattern.
+ */
+function constructSignatureFromSelector(selector: string, snapshot: DOMSnapshot): any {
+  // Parse data-testid selector: [data-testid="value"]
+  const testIdMatch = selector.match(/\[data-testid=["']([^"']+)["']\]/);
+  if (testIdMatch) {
+    const originalTestId = testIdMatch[1];
+
+    // Try to find similar elements in snapshot by data-testid pattern matching
+    // This handles cases like "pay-btn" -> "checkout-pay"
+    const similarElements = snapshot.elements.filter(el => {
+      const elTestId = el.attributes['data-testid'];
+      if (!elTestId) return false;
+
+      // Check for substring overlap or semantic similarity
+      const originalParts = originalTestId.toLowerCase().split(/[-_]/);
+      const elParts = elTestId.toLowerCase().split(/[-_]/);
+
+      // Match if they share any significant word parts
+      return originalParts.some(part =>
+        part.length > 2 && elParts.some(elPart => elPart.includes(part) || part.includes(elPart))
+      );
+    });
+
+    // If we found similar elements, use the first one to build signature
+    if (similarElements.length > 0) {
+      const candidate = similarElements[0];
+      const pathTokens = candidate.path.map((p, i) => {
+        const parts = p.split(':');
+        return { tag: parts[0] || 'unknown', role: parts[1] !== '-' ? parts[1] : undefined, depth: i };
+      });
+
+      return {
+        path: pathTokens,
+        prefix: pathTokens.slice(0, 5).map((t: any) => `${t.tag}:${t.role || '-'}`).join('>'),
+        stable_attrs: { 'data-testid': originalTestId },
+        text_content: candidate.text_content,
+        children_hash: 0,
+        depth: pathTokens.length,
+      };
+    }
+
+    // No similar elements found - use any interactive element from snapshot
+    // This ensures we still return candidates even with low confidence
+    const interactiveElements = snapshot.elements.filter(el =>
+      ['button', 'input', 'a', 'select'].includes(el.tag)
+    );
+
+    if (interactiveElements.length > 0) {
+      const candidate = interactiveElements[0];
+      const pathTokens = candidate.path.map((p, i) => {
+        const parts = p.split(':');
+        return { tag: parts[0] || 'unknown', role: parts[1] !== '-' ? parts[1] : undefined, depth: i };
+      });
+
+      return {
+        path: pathTokens,
+        prefix: pathTokens.slice(0, 5).map((t: any) => `${t.tag}:${t.role || '-'}`).join('>'),
+        stable_attrs: { 'data-testid': originalTestId },
+        text_content: candidate.text_content,
+        children_hash: 0,
+        depth: pathTokens.length,
+      };
+    }
+
+    // No interactive elements - return signature with original testid
+    return {
+      path: [],
+      prefix: '',
+      stable_attrs: { 'data-testid': originalTestId },
+      text_content: undefined,
+      children_hash: 0,
+      depth: 0,
+    };
+  }
+
+  // Parse ID selector: #id
+  const idMatch = selector.match(/^#([a-zA-Z0-9_-]+)$/);
+  if (idMatch) {
+    return {
+      path: [],
+      prefix: '',
+      stable_attrs: { 'id': idMatch[1] },
+      text_content: undefined,
+      children_hash: 0,
+      depth: 0,
+    };
+  }
+
+  // Parse class selector: .class
+  const classMatch = selector.match(/^\.([a-zA-Z0-9_-]+)$/);
+  if (classMatch) {
+    return {
+      path: [],
+      prefix: '',
+      stable_attrs: { 'class': classMatch[1] },
+      text_content: undefined,
+      children_hash: 0,
+      depth: 0,
+    };
+  }
+
+  // Default: return minimal signature with the selector as-is
+  return {
+    path: [],
+    prefix: '',
+    stable_attrs: {},
+    text_content: undefined,
+    children_hash: 0,
+    depth: 0,
+  };
+}
+
+export function getLastHealResult(locator: FlettaLocator): HealResult | undefined {
+  return locator.__fletta?.lastHealResult;
+}

@@ -1,0 +1,21 @@
+[package]
+name = "healing"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Self-healing selector fallback orchestration"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+signature = { path = "../signature" }
+clustering = { path = "../clustering" }
+
+[dev-dependencies]
+serde_json = { workspace = true }

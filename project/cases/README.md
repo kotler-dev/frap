@@ -29,11 +29,19 @@ project/cases/
 
 | ID | Название | Фичи | Статус |
 |----|----------|------|--------|
-| CP001 | Happy path | F008 | concept |
-| CP002 | Refactor heal | F001, F008 | concept |
-| CP003 | Safe fail | F001 | concept |
+| CP001 | Happy path | F001, F008 | script-ready |
+| CP002 | Refactor heal | F001, F008 | script-ready |
+| CP003 | Safe fail | F001, F008 | script-ready |
 | CP004 | Role locator | F008 | concept |
 | CP005 | CI export | F008 | concept |
+
+### Files
+- `test-app/cp001-stable.html` — Stable test page
+- `test-app/cp002-refactored.html` — Refactored with changed testid
+- `test-app/cp003-ambiguous.html` — Ambiguous elements
+- `e2e/cp001-happy-path.spec.ts` — CP001 test spec
+- `e2e/cp002-refactor-heal.spec.ts` — CP002 test spec
+- `e2e/cp003-safe-fail.spec.ts` — CP003 test spec
 
 ## Demo Cases (полные сценарии)
 

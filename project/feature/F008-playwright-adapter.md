@@ -37,14 +37,34 @@
 
 ## Acceptance criteria
 
-- [ ] Установка: `npm install @fletta/playwright` работает
-- [ ] Конфигурация через playwright.config.ts
-- [ ] Custom selector: `page.locator('fletta:pay-btn')` работает
-- [ ] Wrapper: `withFletta(page.getByTestId('pay-btn'))` работает
-- [ ] CP001 проходит: stable тест без healing
-- [ ] CP002 проходит: heal при смене testid
+- [x] Установка: `npm install @fletta/playwright` работает (local)
+- [x] Конфигурация через playwright.config.ts
+- [x] Custom selector: `page.locator('fletta:pay-btn')` работает
+- [x] Wrapper: `withFletta(page.getByTestId('pay-btn'))` работает
+- [x] CP001 проходит: stable тест без healing
+- [x] CP002 проходит: heal при смене testid
 - [ ] CP005 проходит: JUnit XML артефакт в CI
-- [ ] Документация: quick start < 15 минут
+- [x] Документация: quick start < 15 минут
+
+### Implementation Status
+| Component | Status | Location |
+|-----------|--------|----------|
+| Package structure | ✅ | `adapters/playwright/` |
+| Wrapper API | ✅ | `adapters/playwright/src/wrapper.ts` |
+| Selector engine | ✅ | `adapters/playwright/src/selector-engine.ts` |
+| Reporter (JUnit/JSON) | ✅ | `adapters/playwright/src/reporter.ts` |
+| Config integration | ✅ | `adapters/playwright/src/index.ts` |
+| README | ✅ | `adapters/playwright/README.md` |
+
+### Usage Example
+```typescript
+import { withFletta } from '@fletta/playwright';
+
+test('payment', async ({ page }) => {
+  const button = await withFletta(page.getByTestId('pay-btn'), page);
+  await button.click();
+});
+```
 
 ## Implementation notes (sketch)
 

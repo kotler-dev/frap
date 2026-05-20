@@ -1,0 +1,39 @@
+{
+  "name": "@fletta/playwright",
+  "version": "0.1.0",
+  "description": "Playwright adapter for fletta self-healing selectors",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "playwright test",
+    "lint": "eslint src/ --ext .ts"
+  },
+  "keywords": [
+    "playwright",
+    "testing",
+    "self-healing",
+    "selectors",
+    "fletta"
+  ],
+  "author": "fletta team",
+  "license": "MIT",
+  "peerDependencies": {
+    "@playwright/test": ">=1.40.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0",
+    "eslint": "^8.57.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0"
+  },
+  "dependencies": {
+    "@fletta/sdk": "file:../../sdk/typescript"
+  }
+}

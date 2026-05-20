@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-05-20T22:42:12.903Z",
+  "duration": 3488,
+  "summary": {
+    "totalHeals": 0,
+    "totalFailures": 1,
+    "averageConfidence": 0
+  },
+  "events": [
+    {
+      "testName": " > chromium > cp001-happy-path.spec.ts > CP001: Happy Path > stable test should not trigger healing",
+      "selector": "unknown",
+      "healed": false,
+      "confidence": 0,
+      "timestamp": "2026-05-20T22:42:12.894Z"
+    }
+  ]
+}

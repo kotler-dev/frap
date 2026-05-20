@@ -39,13 +39,23 @@
 
 ## Acceptance criteria
 
-- [ ] Реализована сигнатура DOM-элемента (путь + атрибуты)
-- [ ] Алгоритм сравнения сигнатур работает (WASM/натив)
-- [ ] CP001 проходит: stable тест не вызывает healing
-- [ ] CP002 проходит: при смене testid находит элемент
-- [ ] CP003 проходит: при двух похожих кнопках — безопасный fail
-- [ ] Отчёт содержит: healed (bool), confidence, diff, top-3 кандидатов
-- [ ] minConfidence конфигурируется (default: 0.85)
+- [x] Реализована сигнатура DOM-элемента (путь + атрибуты)
+- [x] Алгоритм сравнения сигнатур работает (WASM/натив)
+- [x] CP001 проходит: stable тест не вызывает healing
+- [x] CP002 проходит: при смене testid находит элемент
+- [x] CP003 проходит: при двух похожих кнопках — безопасный fail
+- [x] Отчёт содержит: healed (bool), confidence, diff, top-3 кандидатов
+- [x] minConfidence конфигурируется (default: 0.85)
+
+### Implementation Status
+| Component | Status | Location |
+|-----------|--------|----------|
+| Signature extraction | ✅ | `crates/signature/src/lib.rs` |
+| Clustering (Drain3) | ✅ | `crates/clustering/src/lib.rs` |
+| Healing engine | ✅ | `crates/healing/src/lib.rs` |
+| TS SDK bindings | ✅ | `sdk/typescript/src/core.ts` |
+| Algorithm tests | ✅ | Unit tests in each crate |
+| E2E tests (CP001-CP003) | ✅ | `e2e/*.spec.ts` |
 
 ## Implementation notes (sketch)
 

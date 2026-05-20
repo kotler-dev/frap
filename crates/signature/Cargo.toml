@@ -1,0 +1,26 @@
+[package]
+name = "signature"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "DOM element signature extraction and comparison"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+scraper = { workspace = true }
+
+[dependencies.web-sys]
+version = "0.3"
+features = ["Element", "Node", "NodeList", "HtmlElement", "Document"]
+optional = true
+
+[features]
+default = []
+browser = ["web-sys"]

@@ -44,8 +44,9 @@
 
 | Фича | Статус | Severity | Release | Примечание |
 |------|--------|----------|---------|------------|
-| [F001: Self-Healing Selectors](./feature/F001-self-healing.md) | ❌ | Critical | v1.0.0 | Ядро продукта — сигнатуры и кластеризация |
-| [F008: Playwright Adapter](./feature/F008-playwright-adapter.md) | ❌ | Critical | v1.0.0 | Интеграция через custom selectors |
+| [F001: Self-Healing Selectors](./feature/F001-self-healing.md) | ⚠️ | Critical | v1.0.0 | Core реализован, тесты в CI |
+| [F008: Playwright Adapter](./feature/F008-playwright-adapter.md) | ⚠️ | Critical | v1.0.0 | Интеграция через wrapper API |
+| [F012: Debug Trace Mode](./feature/F012-debug-trace-mode.md) | ⚠️ | Medium | v1.0.0 | Реализован debug режим с HTML отчётом |
 
 ---
 
@@ -91,6 +92,7 @@
 ### v1.0.0 MVP
 - [ ] F001: Self-Healing Selectors — core алгоритм
 - [ ] F008: Playwright Adapter — интеграция
+- [x] F012: Debug Trace Mode — developer experience
 
 ### v1.1.0 Context
 - [ ] F002: Unified Context — timeline
@@ -105,13 +107,42 @@
 
 | Release | Всего | ✅ | ⚠️ | ❌ | Прогресс |
 |---------|-------|----|----|----|----------|
-| v1.0.0 | 2 | 0 | 0 | 2 | 0% |
+| v1.0.0 | 3 | 0 | 3 | 0 | 75% |
 | v1.1.0 | 2 | 0 | 0 | 2 | 0% |
 | v1.2.0 | 3 | 0 | 0 | 3 | 0% |
 | v2.0.0 | 3 | 0 | 0 | 3 | 0% |
 | v3.0.0 | 1 | 0 | 0 | 1 | 0% |
-| **Всего** | **11** | **0** | **0** | **11** | **0%** |
+| **Всего** | **12** | **0** | **3** | **9** | **25%** |
 
 ---
 
-*Обновлено: 2026-05-20*
+*Обновлено: 2026-05-21*
+
+---
+
+## Внедрение MVP
+
+### Структура проекта
+```
+fletta/
+├── crates/              # Rust core (signature, clustering, healing)
+├── sdk/typescript/      # TypeScript SDK
+├── adapters/playwright/ # Playwright adapter
+├── test-app/           # PoC test pages (CP001-CP003)
+├── e2e/                # Playwright E2E tests
+└── .github/workflows/  # CI pipeline
+```
+
+### Реализовано
+- [x] Rust workspace с тремя crates
+- [x] Алгоритмы: сигнатуры, кластеризация (Drain3), healing fallback
+- [x] TypeScript SDK с HealingEngine
+- [x] Playwright adapter (wrapper API)
+- [x] E2E тесты CP001, CP002, CP003
+- [x] CI pipeline (GitHub Actions)
+- [x] Тестовое приложение
+
+### Ожидает финальной верификации
+- [ ] Прохождение всех PoC кейсов в CI
+- [ ] Генерация JUnit отчётов
+- [ ] Performance: overhead < 10%
