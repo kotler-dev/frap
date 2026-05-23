@@ -12,9 +12,7 @@ pub use error::CoreError;
 
 // Algorithm crates (also available as `fletta_core::signature`, etc.)
 pub use clustering;
-pub use healing::{
-    DOMElementInfo, DOMSnapshot, HealingEngine, HealingOrchestrator,
-};
+pub use healing::{DOMElementInfo, DOMSnapshot, HealingEngine, HealingOrchestrator};
 pub use signature::{
     calculate_attribute_bonus, calculate_confidence, calculate_path_similarity,
     calculate_structural_similarity, calculate_token_similarity, extract_stable_attrs,
@@ -193,8 +191,11 @@ mod tests {
                 elements: vec![DOMElementInfo {
                     selector: "[data-testid='talk-card-open-healing']".to_string(),
                     tag: "a".to_string(),
-                    attributes: [("data-testid".to_string(), "talk-card-open-healing".to_string())]
-                        .into(),
+                    attributes: [(
+                        "data-testid".to_string(),
+                        "talk-card-open-healing".to_string(),
+                    )]
+                    .into(),
                     text_content: Some("Смотреть доклад".to_string()),
                     path: vec![
                         "body:-".to_string(),
