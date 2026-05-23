@@ -3,7 +3,7 @@ import { FlettaConfig } from '@fletta/sdk';
 import { FlettaPlaywrightConfig, mergePlaywrightConfig } from './config';
 import { createFlettaSelectorEngine, initFlettaEngine, recordSignature } from './selector-engine';
 import { withFletta, getLastHealResult } from './wrapper';
-import { FlettaReporter, HealingEvent, generateJsonReport } from './reporter';
+import { FlettaReporter, generateJsonReport } from './reporter';
 
 export { 
   withFletta, 
@@ -14,7 +14,14 @@ export {
   FlettaReporter,
   generateJsonReport,
 };
-export type { FlettaPlaywrightConfig, HealingEvent };
+export type { FlettaPlaywrightConfig, WithFlettaOptions } from './config';
+export type { FlettaHealingEvent, HealingEvent, FlettaReportSummary } from './reporter';
+export {
+  setCurrentPlaywrightTestId,
+  getCurrentPlaywrightTestId,
+  recordHealingEvent,
+  consumeHealingEvents,
+} from './healing-events';
 
 export function flettaPlaywright(
   userConfig?: Partial<FlettaPlaywrightConfig>

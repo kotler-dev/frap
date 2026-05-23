@@ -9,11 +9,12 @@ docs/
 ├── README.md           # Этот файл — введение
 ├── index.md            # Связующий индекс (меню, маппинги)
 ├── positioning.md      # Позиционирование, one-liner, vs Playwright MCP
+├── pains.md            # Боли, scope, copy для сайта и конференций
 ├── audience.md         # ЦА: банк, InSourceHub, сегменты S1–S3
 ├── benchmark.md        # PoC/MVP gates, CP001–CP005, метрики
 ├── integrations.md     # Интеграция, не замена (Playwright, JUnit)
 ├── monetization.md     # OSS + enterprise tiers
-├── features.md         # Фичи (F001-F00N) — что строим
+├── features.md         # Фичи (F001-F00N) — что строим (см. project/FEATURES.md)
 ├── cases.md            # Кейсы (C001, CP001...) — как демонстрируем
 ├── roadmap.md          # Приоритеты и план разработки
 └── talk-topics.md      # Темы для выступлений
@@ -24,6 +25,7 @@ docs/
 | Задача | Документ |
 |--------|----------|
 | Питч, конкуренты, one-liner | [positioning.md](./positioning.md) |
+| Боли, сайт, презентация, конференция | [pains.md](./pains.md) |
 | Кого целим (банк, команды) | [audience.md](./audience.md) |
 | PoC за неделю | [benchmark.md](./benchmark.md) |
 | Playwright / JUnit | [integrations.md](./integrations.md) |

@@ -4,7 +4,7 @@
 
 - **Epic**: Integration → Playwright
 - **Roll-up target**: ## MVP v1.0.0
-- **Status**: draft
+- **Status**: done
 - **Target release**: v1.0.0
 - **Created**: 2026-05-20
 - **Related cases**: C001, C004, CP001–CP005
@@ -43,7 +43,7 @@
 - [x] Wrapper: `withFletta(page.getByTestId('pay-btn'))` работает
 - [x] CP001 проходит: stable тест без healing
 - [x] CP002 проходит: heal при смене testid
-- [ ] CP005 проходит: JUnit XML артефакт в CI
+- [x] CP005 проходит: JUnit XML артефакт в CI (`e2e/conference/verify-reports.mjs`, artifact `fletta-conference-reports`)
 - [x] Документация: quick start < 15 минут
 
 ### Implementation Status
@@ -110,6 +110,12 @@ test('payment', async ({ page }) => {
 ### Взаимодействие с Rust core
 - TypeScript SDK вызывает WASM-модуль для сравнения сигнатур
 - Асинхронный API: `heal(primarySelector, domSnapshot) -> HealingResult`
+
+### Зависимость от Core
+Адаптер строится поверх [F013: TypeScript SDK](./F013-typescript-sdk.md) и F000 Core Platform API (WASM).
+Playwright adapter — тонкая обёртка: DOM snapshot → SDK/Core.heal() → result.
+
+См. [F000: Core Platform API](./F000-core-platform-api.md), [F013](./F013-typescript-sdk.md)
 
 ### Риски и зависимости
 - Зависит от F001 (Self-Healing core)

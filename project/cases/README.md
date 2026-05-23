@@ -2,46 +2,40 @@
 
 Сценарии для демонстрации, тестирования и разработки.
 
+## Conference demo (основной E2E)
+
+| Ресурс | Описание |
+|--------|----------|
+| [conference/CASES.md](./conference/CASES.md) | Матрица `CONF-*` |
+| [e2e/conference/README.md](../../e2e/conference/README.md) | Как запускать тесты и открывать отчёты |
+| [test-app/conference/](../../test-app/conference/) | Статические страницы FixtureConf |
+
+```bash
+./scripts/test.sh conference
+```
+
 ## Структура
 
 ```
 project/cases/
-├── README.md           # Этот файл
-├── poc/               # PoC кейсы (CP001–CP005)
-│   ├── CP001-happy-path.md
-│   ├── CP002-refactor-heal.md
-│   ├── CP003-safe-fail.md
-│   ├── CP004-role-locator.md
-│   └── CP005-ci-export.md
+├── README.md
+├── conference/
+│   └── CASES.md
+├── poc/               # Исторические CP001–CP005 (документация gates)
 └── demo/              # Полные демо (C001–C009)
-    ├── C001-payment-button.md
-    ├── C002-api-timeout.md
-    ├── C003-flaky-diagnosis.md
-    ├── C004-page-object-gen.md
-    ├── C005-llm-generation.md
-    ├── C006-mobile-self-healing.md
-    ├── C007-ai-agent-audit.md
-    ├── C008-multi-agent-a2a.md
-    └── C009-recording-cdp.md
 ```
 
-## PoC Cases (быстрая проверка)
+## PoC Cases (legacy CP IDs)
 
-| ID | Название | Фичи | Статус |
-|----|----------|------|--------|
-| CP001 | Happy path | F001, F008 | script-ready |
-| CP002 | Refactor heal | F001, F008 | script-ready |
-| CP003 | Safe fail | F001, F008 | script-ready |
-| CP004 | Role locator | F008 | concept |
-| CP005 | CI export | F008 | concept |
+| ID | CONF-* | Статус |
+|----|--------|--------|
+| CP001 | CONF-PW-REG-PASS | migrated → Conference |
+| CP002 | CONF-SH-SCHED-PASS | migrated → Conference |
+| CP003 | CONF-SH-CFP-FAIL | migrated → Conference |
+| CP004 | CONF-PW-SPK-PASS | partial |
+| CP005 | CONF-RPT-RUN-PASS | partial |
 
-### Files
-- `test-app/cp001-stable.html` — Stable test page
-- `test-app/cp002-refactored.html` — Refactored with changed testid
-- `test-app/cp003-ambiguous.html` — Ambiguous elements
-- `e2e/cp001-happy-path.spec.ts` — CP001 test spec
-- `e2e/cp002-refactor-heal.spec.ts` — CP002 test spec
-- `e2e/cp003-safe-fail.spec.ts` — CP003 test spec
+Файлы `test-app/cp00x-*.html` и `e2e/cp00x-*.spec.ts` удалены; используйте Conference demo.
 
 ## Demo Cases (полные сценарии)
 
@@ -57,28 +51,14 @@ project/cases/
 | C008 | Multi-Agent A2A | F011 | concept |
 | C009 | CDP Recording & Playback | F001, F004, F008 | concept |
 
-## Формат кейса
-
-Каждый кейс содержит:
-- **Meta**: ID, название, фичи, статус
-- **Goal**: цель сценария
-- **Setup**: что нужно подготовить
-- **Steps**: пошаговый сценарий
-- **Demo script**: команды для воспроизведения
-- **Success criteria**: как понять что работает
-- **Related**: ссылки на фичи и документацию
-
 ## Статусы
 
 - `concept` — идея, не начато
-- `script-ready` — скрипт готов, но не проверен
-- `demo-recorded` — демо записано, но не отвалидировано
-- `validated` — проверено, работает
+- `script-ready` — скрипт готов
+- `validated` — проверено
 
-## Как добавить новый кейс
+## Как добавить кейс Conference
 
-1. Скопировать `_template.md` из соседнего кейса
-2. Заполнить все разделы
-3. Добавить в таблицу выше
-4. Обновить `docs/cases.md` и `docs/index.md`
-5. Указать связанные фичи в карточках фич
+1. Добавить страницу в `test-app/conference/` при необходимости
+2. Добавить spec в `e2e/conference/` с ID `CONF-FEAT-AREA-OUTCOME`
+3. Обновить [conference/CASES.md](./conference/CASES.md) и [e2e/conference/README.md](../../e2e/conference/README.md)

@@ -4,7 +4,7 @@
 
 - **Epic**: Core → Developer Experience
 - **Roll-up target**: ## MVP v1.0.0
-- **Status**: implemented
+- **Status**: done
 - **Target release**: v1.0.0
 - **Created**: 2026-05-21
 - **Related cases**: CP001, CP002, CP003
@@ -49,6 +49,8 @@
 - [x] При `debug: true` создаётся `DebugReport` с минимальной информацией (шаги + кластеры)
 - [ ] При `debug: 'verbose'` добавляются полные сигнатуры всех кандидатов (future enhancement)
 - [x] HTML-отчёт `fletta-debug.html` генерируется рядом с `fletta-report.json`
+- [x] При 2+ debug-тестах: **Classic (A)** — `fletta-debug.html` (индекс с группами, prev/next на деталях); **Explorer (B)** — `fletta-debug-explorer.html` (sidebar + поиск + iframe с `?embed=1`)
+- [x] Тёмная тема на индексе A, explorer B и детальных страницах (localStorage `fletta-theme`)
 - [x] В отчёте видны все этапы: DOM parsed (N элементов), Clusters built (M кластеров), Candidates ranked (топ-3)
 - [x] Для CP002 в отчёте видно почему элемент был найден (confidence, diff с оригиналом)
 - [x] Для CP003 в отчёте видно почему healing отказался (ambiguity, low confidence)
@@ -61,8 +63,12 @@
 sdk/typescript/src/config.ts          # + debug поле в FlettaConfig
 sdk/typescript/src/core.ts            # + DebugStep запись в heal()
 sdk/typescript/src/debug.ts             # Новый файл: DebugReport, DebugTracer
-adapters/playwright/src/reporter.ts   # + генерация fletta-debug.html
-adapters/playwright/src/debug-viewer.ts # Новый файл: HTML generator
+adapters/playwright/src/reporter.ts       # onEnd: generateAllDebugHtml
+adapters/playwright/src/debug-viewer.ts   # Classic view (A)
+adapters/playwright/src/debug-explorer.ts # Explorer view (B)
+adapters/playwright/src/debug-manifest.ts # manifest.json + группировка
+adapters/playwright/src/debug-chrome.ts   # шапка, nav, theme toggle
+adapters/playwright/src/debug-status.ts   # success/warning/failure
 ```
 
 ### Структуры данных

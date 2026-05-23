@@ -2,20 +2,30 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type { Reporter, TestCase, TestResult } from '@playwright/test/reporter';
 import { FlettaPlaywrightConfig } from './config';
-import { generateDebugHtml } from './debug-viewer';
+import { generateAllDebugHtml } from './debug-viewer';
+import {
+  clearHealingEventsFile,
+  FlettaHealingEvent,
+  loadAllHealingEvents,
+} from './healing-events';
+import { clearDebugReports } from '@fletta/sdk';
 
-export interface HealingEvent {
-  testName: string;
-  selector: string;
-  healed: boolean;
-  confidence: number;
-  newSelector?: string;
-  timestamp: string;
+export type { FlettaHealingEvent };
+/** @deprecated Use FlettaHealingEvent */
+export type HealingEvent = FlettaHealingEvent;
+
+export interface FlettaReportSummary {
+  totalAttempts: number;
+  totalHeals: number;
+  expectedHeals: number;
+  unexpectedHeals: number;
+  rejectedHeals: number;
+  averageConfidence: number;
 }
 
 export class FlettaReporter implements Reporter {
   private config: FlettaPlaywrightConfig;
-  private healingEvents: HealingEvent[] = [];
+  private healingEvents: FlettaHealingEvent[] = [];
   private startTime: number = Date.now();
 
   constructor(config: FlettaPlaywrightConfig) {
@@ -24,19 +34,22 @@ export class FlettaReporter implements Reporter {
 
   onTestEnd(test: TestCase, result: TestResult): void {
     const testName = test.titlePath().join(' > ');
-    
+
+    // Legacy: Playwright annotations (optional, if tests attach them manually)
     const annotations = test.annotations.filter(a => a.type.startsWith('fletta.'));
-    
     for (const annotation of annotations) {
       if (annotation.type === 'fletta.heal') {
         try {
           const healData = JSON.parse(annotation.description || '{}');
           this.healingEvents.push({
-            testName,
-            selector: healData.originalSelector || 'unknown',
+            playwrightTestId: testName,
+            originalSelector: healData.originalSelector || 'unknown',
+            newSelector: healData.newSelector,
             healed: true,
             confidence: healData.confidence || 0,
-            newSelector: healData.newSelector,
+            trigger: healData.trigger || 'selector_missing',
+            policy: healData.policy || 'allow',
+            outcome: healData.outcome || 'healed',
             timestamp: new Date().toISOString(),
           });
         } catch (e) {
@@ -47,12 +60,22 @@ export class FlettaReporter implements Reporter {
 
     if (result.error && this.config.enableHealing) {
       this.healingEvents.push({
-        testName,
-        selector: 'unknown',
+        playwrightTestId: testName,
+        originalSelector: 'unknown',
         healed: false,
         confidence: 0,
+        trigger: 'selector_missing',
+        policy: 'allow',
+        outcome: 'rejected',
         timestamp: new Date().toISOString(),
       });
+    }
+  }
+
+  onBegin(): void {
+    if (this.config.enableReporting && this.config.reportDir) {
+      clearHealingEventsFile(this.config.reportDir);
+      clearDebugReports(this.config.reportDir);
     }
   }
 
@@ -66,55 +89,78 @@ export class FlettaReporter implements Reporter {
       fs.mkdirSync(reportDir, { recursive: true });
     }
 
+    const diskEvents = loadAllHealingEvents(reportDir);
+    if (diskEvents.length > 0) {
+      this.healingEvents = diskEvents;
+    }
+
     this.writeJsonReport(reportDir);
     this.writeJUnitReport(reportDir);
 
-    // Generate HTML debug report if debug data exists
-    const debugReportPath = path.join(reportDir, 'fletta-debug.json');
-    if (fs.existsSync(debugReportPath)) {
-      try {
-        const debugReport = JSON.parse(fs.readFileSync(debugReportPath, 'utf-8'));
-        generateDebugHtml(debugReport, reportDir);
-      } catch (e) {
-        console.error('[fletta] Failed to generate debug HTML:', e);
-      }
+    try {
+      generateAllDebugHtml(reportDir);
+    } catch (e) {
+      console.error('[fletta] Failed to generate debug HTML:', e);
     }
   }
 
+  private buildSummary(): FlettaReportSummary {
+    const healedEvents = this.healingEvents.filter(e => e.outcome === 'healed');
+    const unexpected = this.healingEvents.filter(e => e.outcome === 'unexpected_heal');
+    const rejected = this.healingEvents.filter(e => e.outcome === 'rejected');
+    const expectedHeals = healedEvents.filter(e => e.policy === 'expect_heal');
+
+    return {
+      totalAttempts: this.healingEvents.length,
+      totalHeals: healedEvents.length,
+      expectedHeals: expectedHeals.length,
+      unexpectedHeals: unexpected.length,
+      rejectedHeals: rejected.length,
+      averageConfidence: this.calculateAverageConfidence(healedEvents),
+    };
+  }
+
   private writeJsonReport(reportDir: string): void {
+    const summary = this.buildSummary();
     const report = {
       timestamp: new Date().toISOString(),
       duration: Date.now() - this.startTime,
-      summary: {
-        totalHeals: this.healingEvents.filter(e => e.healed).length,
-        totalFailures: this.healingEvents.filter(e => !e.healed).length,
-        averageConfidence: this.calculateAverageConfidence(),
-      },
+      summary,
       events: this.healingEvents,
     };
 
     const reportPath = path.join(reportDir, 'fletta-report.json');
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
     console.log(`[fletta] JSON report written to: ${reportPath}`);
+    if (summary.unexpectedHeals > 0) {
+      console.warn(`[fletta] Report: ${summary.unexpectedHeals} unexpected heal(s) (policy=deny)`);
+    }
   }
 
   private writeJUnitReport(reportDir: string): void {
     const testCases = this.healingEvents.map(event => {
-      const healingXml = event.healed
-        ? `<healing healed="true" confidence="${event.confidence.toFixed(2)}" original="${this.escapeXml(event.selector)}" new="${this.escapeXml(event.newSelector || '')}"/>`
-        : '';
+      const attrs = [
+        `healed="${event.healed}"`,
+        `confidence="${event.confidence.toFixed(2)}"`,
+        `trigger="${this.escapeXml(event.trigger)}"`,
+        `policy="${this.escapeXml(event.policy)}"`,
+        `outcome="${this.escapeXml(event.outcome)}"`,
+        `original="${this.escapeXml(event.originalSelector)}"`,
+        `new="${this.escapeXml(event.newSelector || '')}"`,
+      ].join(' ');
+      const healingXml = `      <healing ${attrs}/>`;
 
-      return `    <testcase name="${this.escapeXml(event.testName)}" time="0">
+      return `    <testcase name="${this.escapeXml(event.playwrightTestId)}" time="0">
 ${healingXml}
     </testcase>`;
     }).join('\n');
 
-    const totalTests = this.healingEvents.length;
-    const failures = this.healingEvents.filter(e => !e.healed).length;
+    const summary = this.buildSummary();
+    const failures = summary.rejectedHeals + summary.unexpectedHeals;
 
     const junitXml = `<?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="fletta" tests="${totalTests}" failures="${failures}" timestamp="${new Date().toISOString()}">
+  <testsuite name="fletta" tests="${this.healingEvents.length}" failures="${failures}" timestamp="${new Date().toISOString()}">
 ${testCases}
   </testsuite>
 </testsuites>`;
@@ -124,8 +170,7 @@ ${testCases}
     console.log(`[fletta] JUnit report written to: ${junitPath}`);
   }
 
-  private calculateAverageConfidence(): number {
-    const healed = this.healingEvents.filter(e => e.healed);
+  private calculateAverageConfidence(healed: FlettaHealingEvent[]): number {
     if (healed.length === 0) return 0;
     return healed.reduce((sum, e) => sum + e.confidence, 0) / healed.length;
   }
@@ -140,18 +185,21 @@ ${testCases}
   }
 }
 
-export function generateJsonReport(events: HealingEvent[], reportDir: string): void {
+export function generateJsonReport(events: FlettaHealingEvent[], reportDir: string): void {
   if (!fs.existsSync(reportDir)) {
     fs.mkdirSync(reportDir, { recursive: true });
   }
 
+  const healed = events.filter(e => e.outcome === 'healed');
   const report = {
     timestamp: new Date().toISOString(),
     summary: {
-      totalHeals: events.filter(e => e.healed).length,
       totalAttempts: events.length,
-      averageConfidence: events.filter(e => e.healed).reduce((sum, e) => sum + e.confidence, 0) / 
-        Math.max(1, events.filter(e => e.healed).length),
+      totalHeals: healed.length,
+      unexpectedHeals: events.filter(e => e.outcome === 'unexpected_heal').length,
+      rejectedHeals: events.filter(e => e.outcome === 'rejected').length,
+      averageConfidence:
+        healed.reduce((sum, e) => sum + e.confidence, 0) / Math.max(1, healed.length),
     },
     events,
   };
@@ -160,5 +208,4 @@ export function generateJsonReport(events: HealingEvent[], reportDir: string): v
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
 }
 
-// Default export for Playwright reporter API
 export default FlettaReporter;

@@ -9,9 +9,11 @@
 | Файл | Назначение | Для кого |
 |------|----------|----------|
 | [positioning.md](./positioning.md) | One-liner, конкуренты, vs Playwright MCP, формулировки | PM, DevRel, InSourceHub |
+| [pains.md](./pains.md) | Боли, границы scope, copy для сайта/презентаций/конференций | PM, DevRel, маркетинг |
 | [audience.md](./audience.md) | ЦА: банк, Selenium/Java, Playwright, AI-native QA | PM, adoption |
 | [benchmark.md](./benchmark.md) | PoC gates, CP001–CP005, метрики качества | Разработчики, QA |
 | [integrations.md](./integrations.md) | Playwright plugin, JUnit, CI — не замена раннера | Разработчики |
+| [integrations-selenium-java.md](./integrations-selenium-java.md) | JUnit 5 + WebDriver + PO; Selenide P1 (банк) | Java QA, архитекторы |
 | [monetization.md](./monetization.md) | OSS + enterprise tiers | PM, бизнес |
 | [features.md](./features.md) | Каталог возможностей (F001-F00N) | Разработчики, PM |
 | [cases.md](./cases.md) | Сценарии C001–C008, PoC CP001–CP005 | QA, демо |
@@ -168,8 +170,9 @@ C006 (Mobile)
 3. Используй демо-скрипты как regression suite
 
 **Для презентаций:**
-1. Выбирай Demo Sequence выше по времени
-2. Каждый кейс имеет готовый скрипт и проверку успеха
+1. [pains.md](./pains.md) — открывающие слайды, секция «Проблема» на сайте
+2. Выбирай Demo Sequence выше по времени
+3. Каждый кейс имеет готовый скрипт и проверку успеха
 
 ---
 

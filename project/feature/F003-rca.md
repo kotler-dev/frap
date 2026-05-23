@@ -4,7 +4,7 @@
 
 - **Epic**: Feature → Analysis
 - **Roll-up target**: ## v1.1.0 (Context Layer)
-- **Status**: draft
+- **Status**: in-progress
 - **Target release**: v1.1.0
 - **Created**: 2026-05-20
 - **Related cases**: C002, C003
@@ -92,6 +92,51 @@ enum RootCause {
 - Зависит от F002 (Unified Context)
 - Точность классификации: ложные срабатывания
 - Сложные случаи: race conditions, cascading failures
+
+## Subtasks
+
+### F003.0 — `RootCause` model + rules (Rust)
+
+- **Цель**: enum + rule engine без ML.
+- **Файлы**: `crates/rca/Cargo.toml`, `crates/rca/src/{classifier,rules,report}.rs`
+- **Готово когда**: `cargo test -p fletta-rca` на synthetic timelines.
+
+### F003.1 — Classifier pipeline
+
+- **Цель**: окно [failure-5s, failure], приоритет network → logs → UI.
+- **Файлы**: `crates/rca/src/classifier.rs`
+- **Готово когда**: C002 → `api_error`; unknown path покрыт тестами.
+
+### F003.2 — RCA report JSON
+
+- **Цель**: `primary_cause`, `confidence`, `timeline_excerpt`, `recommendation`.
+- **Файлы**: `crates/rca/src/report.rs`, запись в `fletta-report.json` / отдельный `fletta-rca.json`
+- **Готово когда**: ручной smoke на C002.
+
+### F003.3 — Playwright / JUnit integration
+
+- **Цель**: RCA в failure message JUnit.
+- **Файлы**: `adapters/playwright/src/reporter.ts`
+- **Готово когда**: CP005-совместимый XML с RCA snippet.
+
+### F003.4 — Flaky aggregate (C003)
+
+- **Цель**: сравнение N прогонов, паттерн latency.
+- **Файлы**: `crates/rca/` + CLI или reporter hook `analyze --aggregate` (минимальный MVP)
+- **Готово когда**: C003 классифицируется как `flaky` с паттерном.
+
+### F003.5 — MCP-shaped JSON (stub)
+
+- **Цель**: стабильный JSON для будущего `fletta/analyze` (F005); без RPC-сервера.
+- **Файлы**: `crates/rca/src/mcp.rs` или schema в docs
+- **Готово когда**: fixture JSON в тестах; полный MCP → v1.2.0.
+
+| ID | Зависит от | Release |
+|----|------------|---------|
+| F003.0–F003.1 | F002.4 (timeline window) | v1.1.0 |
+| F003.2–F003.3 | F003.1 | v1.1.0 |
+| F003.4 | F002.5 + несколько прогонов C003 | v1.1.0 |
+| F003.5 | F003.2 | v1.1.0 (stub); F005 v1.2.0 |
 
 ## Verification / Test plan
 

@@ -27,7 +27,8 @@
 - **release=v1.2.0** — AI Integration: MCP + Page Object Gen + Feedback Loop
 - **release=v2.0.0** — Scale: Multi-platform + Visual + Health Score
 - **release=v3.0.0** — Future: AI-Agent Testing
-- **release=backlog** — пока не запланировано
+- **release=v1.4.0** — Java SDK & UI adapters (bank S1)
+- **release=backlog** — пока не запланировано (в т.ч. Python SDK)
 
 ---
 
@@ -44,9 +45,11 @@
 
 | Фича | Статус | Severity | Release | Примечание |
 |------|--------|----------|---------|------------|
-| [F001: Self-Healing Selectors](./feature/F001-self-healing.md) | ⚠️ | Critical | v1.0.0 | Core реализован, тесты в CI |
-| [F008: Playwright Adapter](./feature/F008-playwright-adapter.md) | ⚠️ | Critical | v1.0.0 | Интеграция через wrapper API |
-| [F012: Debug Trace Mode](./feature/F012-debug-trace-mode.md) | ⚠️ | Medium | v1.0.0 | Реализован debug режим с HTML отчётом |
+| [F000: Core Platform API](./feature/F000-core-platform-api.md) | ✅ | Critical | v1.0.0 | P0 WASM + `fletta-core`; FFI/JSON-RPC → v1.4.0 |
+| [F001: Self-Healing Selectors](./feature/F001-self-healing.md) | ✅ | Critical | v1.0.0 | Rust Core + WASM runtime; Conference E2E |
+| [F013: TypeScript SDK](./feature/F013-typescript-sdk.md) | ✅ | Critical | v1.0.0 | `healJson` WASM; README API |
+| [F008: Playwright Adapter](./feature/F008-playwright-adapter.md) | ✅ | Critical | v1.0.0 | `withFletta`, JUnit в CI (CP005) |
+| [F012: Debug Trace Mode](./feature/F012-debug-trace-mode.md) | ✅ | Medium | v1.0.0 | Debug режим с HTML отчётом (Classic + Explorer) |
 
 ---
 
@@ -54,8 +57,8 @@
 
 | Фича | Статус | Severity | Release | Примечание |
 |------|--------|----------|---------|------------|
-| [F002: Unified Context](./feature/F002-unified-context.md) | ❌ | High | v1.1.0 | UI + logs + network в timeline |
-| [F003: Root Cause Analysis](./feature/F003-rca.md) | ❌ | High | v1.1.0 | Классификация причин падения |
+| [F002: Unified Context](./feature/F002-unified-context.md) | ❌ | High | v1.1.0 | in progress — см. Subtasks в карточке |
+| [F003: Root Cause Analysis](./feature/F003-rca.md) | ❌ | High | v1.1.0 | in progress — см. Subtasks в карточке |
 
 ---
 
@@ -79,6 +82,22 @@
 
 ---
 
+## v1.4.0 (Java / bank S1)
+
+| Фича | Статус | Severity | Release | Примечание |
+|------|--------|----------|---------|------------|
+| [F014: Java SDK & UI Adapters](./feature/F014-java-sdk-ui-adapters.md) | ❌ | High | v1.4.0 | JUnit 5 + WebDriver P0; Selenide P1 |
+
+---
+
+## SDK / Adapters (backlog)
+
+| Фича | Статус | Severity | Release | Примечание |
+|------|--------|----------|---------|------------|
+| [F015: Python SDK & Adapters](./feature/F015-python-sdk-adapters.md) | ❌ | Medium | backlog | pytest + JSON-RPC; FFI later |
+
+---
+
 ## v3.0.0 (AI-Agent Testing)
 
 | Фича | Статус | Severity | Release | Примечание |
@@ -90,13 +109,18 @@
 ## Критичные фичи для релизов
 
 ### v1.0.0 MVP
-- [ ] F001: Self-Healing Selectors — core алгоритм
-- [ ] F008: Playwright Adapter — интеграция
+- [x] F000: Core Platform API — P0 WASM + `fletta-core` (FFI/RPC → v1.4.0)
+- [x] F001: Self-Healing Selectors — Rust + WASM в SDK
+- [x] F013: TypeScript SDK — `sdk/typescript` + README
+- [x] F008: Playwright Adapter — Conference E2E + JUnit artifact
 - [x] F012: Debug Trace Mode — developer experience
 
-### v1.1.0 Context
-- [ ] F002: Unified Context — timeline
-- [ ] F003: RCA — классификация причин
+### v1.4.0 Java
+- [ ] F014: Java SDK & UI Adapters — JUnit 5 + WebDriver; Selenide P1
+
+### v1.1.0 Context (in progress)
+- [ ] F002: Unified Context — timeline (F002.0–F002.5)
+- [ ] F003: RCA — классификация причин (F003.0–F003.5)
 
 ### v1.2.0 AI
 - [ ] F005: MCP Integration — JSON-RPC сервер
@@ -105,18 +129,22 @@
 
 ## Статистика
 
+Взвешенный прогресс: **✅ = 100%**, **⚠️ = 50%**, **❌ = 0%** → `(✅ + 0.5×⚠️) / Всего`.
+
 | Release | Всего | ✅ | ⚠️ | ❌ | Прогресс |
 |---------|-------|----|----|----|----------|
-| v1.0.0 | 3 | 0 | 3 | 0 | 75% |
+| v1.0.0 | 5 | 5 | 0 | 0 | 100% |
 | v1.1.0 | 2 | 0 | 0 | 2 | 0% |
 | v1.2.0 | 3 | 0 | 0 | 3 | 0% |
+| v1.4.0 | 1 | 0 | 0 | 1 | 0% |
+| backlog | 1 | 0 | 0 | 1 | 0% |
 | v2.0.0 | 3 | 0 | 0 | 3 | 0% |
 | v3.0.0 | 1 | 0 | 0 | 1 | 0% |
-| **Всего** | **12** | **0** | **3** | **9** | **25%** |
+| **Всего** | **16** | **5** | **0** | **11** | **31%** |
 
 ---
 
-*Обновлено: 2026-05-21*
+*Обновлено: 2026-05-23*
 
 ---
 
@@ -125,24 +153,40 @@
 ### Структура проекта
 ```
 fletta/
-├── crates/              # Rust core (signature, clustering, healing)
+├── crates/              # Rust core (signature, clustering, healing, fletta-core)
 ├── sdk/typescript/      # TypeScript SDK
 ├── adapters/playwright/ # Playwright adapter
-├── test-app/           # PoC test pages (CP001-CP003)
-├── e2e/                # Playwright E2E tests
+├── test-app/           # FixtureConf pages (Conference demo)
+├── e2e/conference/     # PoC gates CP001–CP005 (CONF-*)
 └── .github/workflows/  # CI pipeline
 ```
 
 ### Реализовано
-- [x] Rust workspace с тремя crates
-- [x] Алгоритмы: сигнатуры, кластеризация (Drain3), healing fallback
-- [x] TypeScript SDK с HealingEngine
-- [x] Playwright adapter (wrapper API)
-- [x] E2E тесты CP001, CP002, CP003
-- [x] CI pipeline (GitHub Actions)
-- [x] Тестовое приложение
+- [x] Rust workspace: `signature`, `clustering`, `healing`, `fletta-core` (`crates/core`)
+- [x] F000 P0: WASM `healJson`, `FlettaCore`, CI wasm-pack
+- [x] TypeScript SDK: `HealingEngine` → WASM (`core.ts` + `core-fallback.ts` dev-only)
+- [x] Playwright adapter + JUnit/JSON reporter
+- [x] Conference E2E (CP001–CP005 gates) + `verify-reports.mjs`
+- [x] CI: Rust tests, WASM build, Conference E2E, JUnit artifact upload
 
-### Ожидает финальной верификации
-- [ ] Прохождение всех PoC кейсов в CI
-- [ ] Генерация JUnit отчётов
-- [ ] Performance: overhead < 10%
+### Ожидает (v1.0.1 / v1.4.0)
+
+| Приоритет | Подзадача | Release |
+|-----------|-----------|---------|
+| MVP-C | Benchmark overhead &lt; 10% | v1.0.1 |
+| P1 | FFI + cbindgen (F000) | v1.4.0 |
+| P2 | JSON-RPC CLI (F000, Python F015) | v1.4.0 / backlog |
+| P3 | Custom adapter guide + standalone examples | v1.4.0+ |
+
+### Подзадачи v1.0.0 (закрыто)
+
+| Приоритет | Подзадача | Статус |
+|-----------|-----------|--------|
+| P0.1 | `crates/core` Rust API | ✅ |
+| P0.2 | WASM bindings + wasm-pack | ✅ |
+| P0.3 | SDK → WASM, Conference E2E | ✅ |
+| P0.4 | CI: Rust + WASM + Conference | ✅ |
+| MVP-A | CP005 JUnit в CI (F008) | ✅ |
+| P1 | FFI + cbindgen (F000) | v1.4.0 |
+| P2 | JSON-RPC CLI (F000, Python F015) | v1.4.0 / backlog |
+| P3 | Custom adapter guide + standalone examples | v1.4.0+ |

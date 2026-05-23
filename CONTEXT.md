@@ -26,6 +26,9 @@ fletta/
 │   │   ├── F006-multi-platform.md
 │   │   ├── F007-visual-fingerprint.md
 │   │   ├── F008-playwright-adapter.md
+│   │   ├── F013-typescript-sdk.md
+│   │   ├── F014-java-sdk-ui-adapters.md
+│   │   ├── F015-python-sdk-adapters.md
 │   │   ├── F009-feedback-loop.md
 │   │   ├── F010-test-health.md
 │   │   └── F011-ai-agent-testing.md
@@ -52,9 +55,12 @@ fletta/
 | Сценарии и кейсы | `project/cases/` |
 | Архитектура ядра | `project/architecture/` |
 | Позиционирование, конкуренты | `docs/positioning.md` |
+| Боли, scope, copy для сайта/презентаций | `docs/pains.md` |
 | Целевая аудитория | `docs/audience.md` |
 | PoC gates и метрики | `docs/benchmark.md` |
 | Интеграции | `docs/integrations.md` |
+| Selenium/Java (банк) | `docs/integrations-selenium-java.md` |
+| SDK (Java, TS, Python) | `project/architecture/sdk-strategy.md` |
 | Монетизация | `docs/monetization.md` |
 
 ## Принципы

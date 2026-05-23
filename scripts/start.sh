@@ -52,9 +52,7 @@ for i in {1..10}; do
         echo ""
         echo -e "Test pages available at:"
         echo -e "  ${BLUE}http://localhost:$PORT${NC} - Index"
-        echo -e "  ${BLUE}http://localhost:$PORT/cp001-stable.html${NC} - CP001"
-        echo -e "  ${BLUE}http://localhost:$PORT/cp002-refactored.html${NC} - CP002"
-        echo -e "  ${BLUE}http://localhost:$PORT/cp003-ambiguous.html${NC} - CP003"
+        echo -e "  ${BLUE}http://localhost:$PORT/conference/${NC} - FixtureConf demo"
         echo ""
         echo -e "To stop the server: ${YELLOW}./scripts/stop.sh${NC}"
         exit 0

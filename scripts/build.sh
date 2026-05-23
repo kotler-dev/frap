@@ -17,8 +17,8 @@ NC='\033[0m' # No Color
 echo -e "${BLUE}=== fletta Build ===${NC}"
 echo ""
 
-# Build SDK
-echo -e "${YELLOW}Building SDK...${NC}"
+# Build WASM + SDK
+echo -e "${YELLOW}Building WASM + SDK...${NC}"
 cd "$PROJECT_ROOT/sdk/typescript"
 npm run build
 echo -e "${GREEN}✓ SDK built${NC}"

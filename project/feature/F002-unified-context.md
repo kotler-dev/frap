@@ -4,7 +4,7 @@
 
 - **Epic**: Core → Context Layer
 - **Roll-up target**: ## v1.1.0 (Context Layer)
-- **Status**: draft
+- **Status**: in-progress
 - **Target release**: v1.1.0
 - **Created**: 2026-05-20
 - **Related cases**: C002, C003
@@ -79,6 +79,51 @@ enum Event {
 - Производительность: полный capture может быть тяжёлым
 - Privacy: логи могут содержать чувствительные данные
 - Объём данных: нужна агрегация/сэмплирование
+
+## Subtasks
+
+### F002.0 — Cases & fixtures (C002, C003)
+
+- **Цель**: воспроизводимые сценарии API timeout и flaky cart.
+- **Файлы**: `test-app/`, `e2e/conference/` (или `e2e/c002-*`), `project/cases/`, `docs/cases.md`
+- **Готово когда**: C002/C003 статус `script-ready`, spec падает предсказуемо.
+
+### F002.1 — Event model + `crates/context`
+
+- **Цель**: `Event`, `Timeline`, serde JSON schema.
+- **Файлы**: `crates/context/Cargo.toml`, `crates/context/src/{timeline,lib}.rs`, `crates/Cargo.toml`
+- **Готово когда**: `cargo test -p fletta-context`, round-trip JSON.
+
+### F002.2 — Network capture (Playwright)
+
+- **Цель**: HTTP request/response + duration в timeline.
+- **Файлы**: `adapters/playwright/src/context/` (или `network-capture.ts`), hook в `wrapper.ts` / reporter
+- **Готово когда**: в отчёте есть network events с таймингами.
+
+### F002.3 — Console / logs capture
+
+- **Цель**: `page.on('console')` → Log events с level.
+- **Файлы**: те же + типы в SDK при необходимости
+- **Готово когда**: error/warn из консоли в timeline.
+
+### F002.4 — Correlation + window API
+
+- **Цель**: `trace_id`, выборка `[t-5s, t+5s]`.
+- **Файлы**: `crates/context/src/correlation.rs`, TS API `getTimelineWindow(failureAt)`
+- **Готово когда**: юнит-тесты корреляции; C002 показывает timeout перед UI fail.
+
+### F002.5 — Report serialization + config
+
+- **Цель**: `captureAll` / `fletta-context.json` рядом с `fletta-report.json`.
+- **Файлы**: `adapters/playwright/src/reporter.ts`, `FlettaConfig`
+- **Готово когда**: C002/C003 acceptance; overhead замерен (< 20% per AC).
+
+| ID | Зависит от | Release |
+|----|------------|---------|
+| F002.0 | — | v1.1.0 |
+| F002.1 | F002.0 (fixtures helpful) | v1.1.0 |
+| F002.2–F002.3 | F002.1 | v1.1.0 |
+| F002.4–F002.5 | F002.2, F002.3 | v1.1.0 |
 
 ## Verification / Test plan
 

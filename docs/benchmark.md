@@ -10,9 +10,21 @@
 
 ---
 
+## Conference demo (актуальный прогон)
+
+Автоматизированные gates CP001–CP003 (и расширения) выполняются в проекте **FixtureConf**:
+
+```bash
+./scripts/test.sh conference
+```
+
+Кейсы `CONF-*`, отчёт: `e2e/fletta-reports/conference/`. См. [e2e/conference/README.md](../e2e/conference/README.md) и [project/cases/conference/CASES.md](../project/cases/conference/CASES.md).
+
+---
+
 ## Корневые кейсы PoC (быстрая проверка)
 
-Эти кейсы должны проходить **до** InSourceHub и публичного анонса. ID: `CP00N` (PoC Case).
+Исторические ID `CP00N`. Реализация — в Conference demo (`CONF-*`).
 
 ### CP001: Happy path — primary селектор работает
 

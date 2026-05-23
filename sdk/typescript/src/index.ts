@@ -24,7 +24,21 @@ export {
   DebugStepName,
   ClusterView,
   HealingDebugInfo,
+  debugReportSlug,
+  debugReportsDir,
+  debugReportJsonPath,
+  writeDebugReport,
+  clearDebugReports,
+  buildElementFoundDebugReport,
 } from './debug';
+
+export {
+  HealTrigger,
+  HealPolicy,
+  HealOutcome,
+  HealingSemantics,
+  classifyHealOutcome,
+} from './healing-semantics';
 
 export const VERSION = '0.1.0';
 
