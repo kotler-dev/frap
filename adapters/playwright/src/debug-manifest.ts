@@ -24,6 +24,18 @@ export interface DebugManifest {
   entries: DebugManifestEntry[];
 }
 
+/** ISO timestamp with explicit UTC suffix for HTML subtitles (keeps trailing Z). */
+export function formatTimestampUtc(iso: string): string {
+  const trimmed = iso.trim();
+  if (!trimmed) {
+    return 'UTC';
+  }
+  if (trimmed.endsWith('Z')) {
+    return `${trimmed} UTC`;
+  }
+  return `${trimmed} UTC`;
+}
+
 export function parseTestNameParts(testName: string): { groupPath: string[]; leafName: string } {
   const sep = ' > ';
   if (!testName.includes(sep)) {

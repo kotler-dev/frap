@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import type { DebugManifest } from './debug-manifest';
+import { formatTimestampUtc, type DebugManifest } from './debug-manifest';
 import { escapeHtml, renderThemeToggle } from './debug-chrome';
 import {
   REPORT_ICONS_SVG,
@@ -76,7 +76,7 @@ function writeFullExplorerHtml(reportDir: string, manifest: DebugManifest): stri
 
   const manifestJson = JSON.stringify(manifest).replace(/</g, '\\u003c');
   const firstEmbed = manifest.entries[0]?.embedHref ?? '';
-  const generatedAt = manifest.generatedAt;
+  const generatedAt = formatTimestampUtc(manifest.generatedAt);
 
   const html = `<!DOCTYPE html>
 <html lang="en" data-theme="light" data-palette="warm-neutrals-semantic">
@@ -93,7 +93,7 @@ function writeFullExplorerHtml(reportDir: string, manifest: DebugManifest): stri
     <header class="explorer-topbar">
       <div>
         <h1>Fletta Explorer</h1>
-        <p class="subtitle">${manifest.reportCount} tests with debug enabled · ${escapeHtml(generatedAt)}</p>
+        <p class="subtitle">${manifest.reportCount} tests with debug enabled · run ${escapeHtml(generatedAt)}</p>
       </div>
       <div class="explorer-topbar__actions">
         <a class="nav-view-link" href="fletta-debug.html">Classic view (A)</a>
