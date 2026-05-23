@@ -1,149 +1,119 @@
 # fletta
 
-Self-healing test selectors for Playwright and beyond.
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-## Quick Start (using scripts)
+> Deterministic engine for UI structure extraction: stable identifiers, self-healing selectors, explainable reports. No ML in core, on-prem first, AI-ready via MCP.
+
+**fletta** parses element trees (DOM, ViewTree, accessibility), clusters components with deterministic algorithms, and generates stable locators for Page Objects and tests. When a selector breaks, it heals by signature matching with confidence scores and diff reports.
+
+## Quick start
 
 ```bash
-# Setup everything (install dependencies)
 ./scripts/setup.sh
-
-# Build all packages
 ./scripts/build.sh
+./scripts/start.sh          # test server on http://localhost:3000
 
-# Start test server and build packages
-./scripts/start.sh
+# In another terminal — Conference demo (CP001–CP005)
+./scripts/test.sh conference
 
-# Run tests (in another terminal)
-./scripts/test.sh
-
-# Stop server
 ./scripts/stop.sh
 ```
 
-## Quick Start (manual)
+Manual build and test paths: [docs/benchmark.md](docs/benchmark.md).
 
-### 1. Start the test server
+## Playwright integration
 
-```bash
-cd test-app
-node server.js
-```
-
-The server will start on http://localhost:3000
-
-### 2. Build packages
-
-```bash
-# Build SDK
-cd sdk/typescript && npm install && npm run build
-
-# Build Playwright adapter
-cd ../../adapters/playwright && npm install && npm run build
-```
-
-### 3. Run the tests
-
-```bash
-cd e2e
-npm install
-npx playwright install chromium
-npm run test
-```
-
-## Project Structure
-
-```
-fletta/
-├── crates/                      # Rust Core
-│   ├── signature/              # DOM signature extraction
-│   ├── clustering/             # Drain3 clustering algorithm
-│   └── healing/                # Self-healing fallback chain
-├── sdk/typescript/             # TypeScript SDK
-├── adapters/playwright/      # Playwright integration
-├── test-app/                 # PoC test pages
-├── e2e/                      # E2E tests
-├── scripts/                  # Build/Run scripts
-│   ├── setup.sh              # Install dependencies
-│   ├── build.sh              # Build all packages
-│   ├── clean-build.sh        # Clean and rebuild
-│   ├── start.sh              # Start test server
-│   ├── stop.sh               # Stop server
-│   ├── test.sh               # Run tests
-│   └── dev.sh                # Dev mode with watching
-└── project/                  # Documentation
-    ├── FEATURES.md           # Feature status
-    ├── feature/              # Feature cards
-    └── architecture/         # Architecture docs
-```
-
-## Core Concept
-
-When a test selector fails, fletta:
-
-1. Extracts the original element's signature (path, attributes, text)
-2. Clusters similar elements using Drain3 algorithm
-3. Calculates confidence score for each candidate
-4. Heals the selector if confidence ≥ minConfidence (default: 0.85)
-5. Reports the healing attempt with diff and top candidates
-
-## Usage
+**Custom selector engine** (recommended):
 
 ```typescript
-import { withFletta } from '@fletta/playwright';
+// playwright.config.ts
+import { defineConfig } from '@playwright/test';
+import { flettaPlaywright, registerFlettaSelector } from '@fletta/playwright';
 
-test('payment flow', async ({ page }) => {
-  // Wrap your locator with fletta
-  const payButton = await withFletta(
-    page.getByTestId('pay-btn'), 
-    page,
-    { minConfidence: 0.85 }
-  );
-  
-  // If data-testid changes, fletta will find by signature
-  await payButton.click();
+export default defineConfig({
+  ...flettaPlaywright({ minConfidence: 0.85, reportDir: './fletta-reports' }),
+  use: {
+    async setup({ selectors }) {
+      await registerFlettaSelector(selectors);
+    },
+  },
 });
 ```
 
-## PoC Cases
+```typescript
+// test.spec.ts
+await page.locator('fletta:[data-testid="pay-btn"]').click();
+```
 
-| Case | Description | Status |
-|------|-------------|--------|
-| CP001 | Happy path — stable selector | Ready |
-| CP002 | Refactor heal — changed testid | Ready |
-| CP003 | Safe fail — ambiguous elements | Ready |
+**Wrapper API** — wrap an existing locator with [`withFletta`](adapters/playwright/README.md).
 
-## Features
+## How it works
 
-- ✅ Self-healing selectors via signature matching
-- ✅ Playwright integration (wrapper API)
-- ✅ JUnit and JSON reporting
-- ✅ Configurable confidence threshold
-- ✅ TypeScript SDK
-- ✅ Rust core (ready for WASM)
+When a primary selector fails, fletta:
 
-## Available Scripts
+1. Extracts the element signature (path, attributes, text)
+2. Clusters similar elements (Drain3)
+3. Scores each candidate
+4. Heals if confidence ≥ `minConfidence` (default: 0.85)
+5. Reports the attempt with diff and top candidates
+
+## v1.0.0 highlights
+
+- Rust/WASM core (`fletta-core`, `healJson`)
+- TypeScript SDK (`@fletta/sdk`)
+- Playwright adapter — custom selector + `withFletta`, JUnit/JSON reports
+- Debug Trace Mode (F012) — Classic + Explorer HTML reports
+- Conference E2E gates CP001–CP005
+
+## Documentation
+
+| Topic | English | Русский |
+|-------|---------|---------|
+| Overview | [project/OVERVIEW.md](project/OVERVIEW.md) | [project/OVERVIEW.md](project/OVERVIEW.md) |
+| Features & roadmap | [project/FEATURES.md](project/FEATURES.md) | — |
+| PoC gates & benchmark | [docs/benchmark.md](docs/benchmark.md) | — |
+| Positioning | [docs/positioning.md](docs/positioning.md) | [docs/positioning.md](docs/positioning.md) |
+| Playwright adapter | [adapters/playwright/README.md](adapters/playwright/README.md) | [docs/integrations.md](docs/integrations.md) |
+| TypeScript SDK | [sdk/typescript/README.md](sdk/typescript/README.md) | — |
+| Architecture | [project/architecture/](project/architecture/) | — |
+| Knowledge base index | [docs/README.md](docs/README.md) | [docs/README.md](docs/README.md) |
+
+## Project structure
+
+```
+fletta/
+├── crates/                 # Rust core (signature, clustering, healing, fletta-core)
+├── sdk/typescript/         # TypeScript SDK + WASM bindings
+├── adapters/playwright/    # Playwright integration
+├── test-app/conference/    # FixtureConf demo pages
+├── e2e/conference/         # PoC gates CP001–CP005 (CONF-*)
+├── docs/                   # Positioning, benchmark, integrations
+├── project/                # Features, architecture, cases
+└── scripts/                # setup, build, test, dev
+```
+
+## Scripts
 
 | Script | Description |
 |--------|-------------|
-| `./scripts/setup.sh` | Install all dependencies |
-| `./scripts/build.sh` | Build SDK, adapter, and Rust core |
-| `./scripts/clean-build.sh` | Clean everything and rebuild |
+| `./scripts/setup.sh` | Install dependencies |
+| `./scripts/build.sh` | Build SDK, adapter, Rust core + WASM |
 | `./scripts/start.sh [port]` | Start test server (default: 3000) |
-| `./scripts/stop.sh [port]` | Stop server and free port |
-| `./scripts/test.sh [cp001\|cp002\|cp003\|all]` | Run specific or all tests |
+| `./scripts/test.sh [conference\|debug\|all]` | Run E2E tests |
+| `./scripts/stop.sh [port]` | Stop test server |
 | `./scripts/dev.sh` | Dev mode with auto-rebuild |
 
 ## Roadmap
 
-- **v1.0.0** (MVP): Core + Playwright adapter — released ([CHANGELOG.md](CHANGELOG.md))
-- **v1.0.1**: Benchmark overhead gate (MVP-C)
-- **v1.1.0** (in progress): Unified Context (F002) + RCA (F003)
-- **v1.2.0**: MCP Integration + Page Object Generator
-- **v2.0.0**: Multi-platform (Android/iOS)
+- **v1.0.0** — Core + Playwright adapter — released ([CHANGELOG.md](CHANGELOG.md))
+- **v1.0.1** — Benchmark overhead gate (MVP-C)
+- **v1.1.0** — Unified Context (F002) + RCA (F003)
+- **v1.2.0** — MCP + Page Object Generator
+- **v1.4.0** — Java SDK & UI adapters
+- **v2.0.0** — Multi-platform (Android/iOS)
 
 See [project/FEATURES.md](project/FEATURES.md) for details.
 
 ## License
 
-MIT
+Apache-2.0 — see [LICENSE](LICENSE) and [NOTICE](NOTICE).

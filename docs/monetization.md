@@ -83,7 +83,7 @@
 | **Step Generation** | Generate test steps from requirements | OpenAI, Anthropic |
 
 **Pricing:**
-- **Free:** Package is free (MIT license)
+- **Free:** Package is free (Apache-2.0 license)
 - **User pays:** API usage to their provider (OpenAI/Anthropic)
 - **Support:** Community support only
 
