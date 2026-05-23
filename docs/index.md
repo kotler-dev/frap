@@ -13,7 +13,7 @@
 | [audience.md](./audience.md) | ЦА: банк, Selenium/Java, Playwright, AI-native QA | PM, adoption |
 | [benchmark.md](./benchmark.md) | PoC gates, CP001–CP005, метрики качества | Разработчики, QA |
 | [integrations.md](./integrations.md) | Playwright plugin, JUnit, CI — не замена раннера | Разработчики |
-| [integrations-selenium-java.md](./integrations-selenium-java.md) | JUnit 5 + Selenium + PO, фазы пилота (банк) | Java QA, архитекторы |
+| [integrations-selenium-java.md](./integrations-selenium-java.md) | JUnit 5 + WebDriver + PO; Selenide P1 (банк) | Java QA, архитекторы |
 | [monetization.md](./monetization.md) | OSS + enterprise tiers | PM, бизнес |
 | [features.md](./features.md) | Каталог возможностей (F001-F00N) | Разработчики, PM |
 | [cases.md](./cases.md) | Сценарии C001–C008, PoC CP001–CP005 | QA, демо |

@@ -27,7 +27,8 @@
 - **release=v1.2.0** — AI Integration: MCP + Page Object Gen + Feedback Loop
 - **release=v2.0.0** — Scale: Multi-platform + Visual + Health Score
 - **release=v3.0.0** — Future: AI-Agent Testing
-- **release=backlog** — пока не запланировано
+- **release=v1.4.0** — Java SDK & UI adapters (bank S1)
+- **release=backlog** — пока не запланировано (в т.ч. Python SDK)
 
 ---
 
@@ -46,6 +47,7 @@
 |------|--------|----------|---------|------------|
 | [F000: Core Platform API](./feature/F000-core-platform-api.md) | ❌ | Critical | v1.0.0 | Standalone API: WASM, FFI, JSON-RPC |
 | [F001: Self-Healing Selectors](./feature/F001-self-healing.md) | ⚠️ | Critical | v1.0.0 | Core реализован, тесты в CI |
+| [F013: TypeScript SDK](./feature/F013-typescript-sdk.md) | ⚠️ | Critical | v1.0.0 | `sdk/typescript`, контракт API |
 | [F008: Playwright Adapter](./feature/F008-playwright-adapter.md) | ⚠️ | Critical | v1.0.0 | Интеграция через wrapper API |
 | [F012: Debug Trace Mode](./feature/F012-debug-trace-mode.md) | ⚠️ | Medium | v1.0.0 | Реализован debug режим с HTML отчётом |
 
@@ -80,6 +82,22 @@
 
 ---
 
+## v1.4.0 (Java / bank S1)
+
+| Фича | Статус | Severity | Release | Примечание |
+|------|--------|----------|---------|------------|
+| [F014: Java SDK & UI Adapters](./feature/F014-java-sdk-ui-adapters.md) | ❌ | High | v1.4.0 | JUnit 5 + WebDriver P0; Selenide P1 |
+
+---
+
+## SDK / Adapters (backlog)
+
+| Фича | Статус | Severity | Release | Примечание |
+|------|--------|----------|---------|------------|
+| [F015: Python SDK & Adapters](./feature/F015-python-sdk-adapters.md) | ❌ | Medium | backlog | pytest + JSON-RPC; FFI later |
+
+---
+
 ## v3.0.0 (AI-Agent Testing)
 
 | Фича | Статус | Severity | Release | Примечание |
@@ -93,8 +111,12 @@
 ### v1.0.0 MVP
 - [ ] F000: Core Platform API — standalone WASM/FFI
 - [ ] F001: Self-Healing Selectors — core алгоритм
+- [ ] F013: TypeScript SDK — reference API (`sdk/typescript`)
 - [ ] F008: Playwright Adapter — интеграция
 - [x] F012: Debug Trace Mode — developer experience
+
+### v1.4.0 Java
+- [ ] F014: Java SDK & UI Adapters — JUnit 5 + WebDriver; Selenide P1
 
 ### v1.1.0 Context
 - [ ] F002: Unified Context — timeline
@@ -109,16 +131,18 @@
 
 | Release | Всего | ✅ | ⚠️ | ❌ | Прогресс |
 |---------|-------|----|----|----|----------|
-| v1.0.0 | 4 | 0 | 3 | 1 | 75% |
+| v1.0.0 | 5 | 0 | 4 | 1 | 80% |
 | v1.1.0 | 2 | 0 | 0 | 2 | 0% |
 | v1.2.0 | 3 | 0 | 0 | 3 | 0% |
+| v1.4.0 | 1 | 0 | 0 | 1 | 0% |
+| backlog | 1 | 0 | 0 | 1 | 0% |
 | v2.0.0 | 3 | 0 | 0 | 3 | 0% |
 | v3.0.0 | 1 | 0 | 0 | 1 | 0% |
-| **Всего** | **13** | **0** | **3** | **10** | **23%** |
+| **Всего** | **16** | **0** | **4** | **12** | **25%** |
 
 ---
 
-*Обновлено: 2026-05-21*
+*Обновлено: 2026-05-23*
 
 ---
 

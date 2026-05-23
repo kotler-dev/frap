@@ -76,7 +76,7 @@ await withFletta(page.getByTestId('pay-btn')).click();
 
 **Минимальная интеграция** (JUnit 5 + Selenium + Page Object, фазы 0–2, CI): **[integrations-selenium-java.md](./integrations-selenium-java.md)**.
 
-**SDK Java / TypeScript / Python:** [sdk-strategy.md](../project/architecture/sdk-strategy.md).
+**SDK Java / TypeScript / Python:** [sdk-strategy.md](../project/architecture/sdk-strategy.md). Фичи: [F013](../project/feature/F013-typescript-sdk.md), [F014](../project/feature/F014-java-sdk-ui-adapters.md), [F015](../project/feature/F015-python-sdk-adapters.md).
 
 ### JUnit 5
 

@@ -14,7 +14,7 @@ docs/
 ├── benchmark.md        # PoC/MVP gates, CP001–CP005, метрики
 ├── integrations.md     # Интеграция, не замена (Playwright, JUnit)
 ├── monetization.md     # OSS + enterprise tiers
-├── features.md         # Фичи (F001-F00N) — что строим
+├── features.md         # Фичи (F001-F00N) — что строим (см. project/FEATURES.md)
 ├── cases.md            # Кейсы (C001, CP001...) — как демонстрируем
 ├── roadmap.md          # Приоритеты и план разработки
 └── talk-topics.md      # Темы для выступлений

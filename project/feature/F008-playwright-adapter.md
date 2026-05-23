@@ -112,10 +112,10 @@ test('payment', async ({ page }) => {
 - Асинхронный API: `heal(primarySelector, domSnapshot) -> HealingResult`
 
 ### Зависимость от Core
-Адаптер строится поверх F000 Core Platform API через WASM bindings.
-Playwright adapter — тонкая обёртка: DOM snapshot → Core.heal() → result.
+Адаптер строится поверх [F013: TypeScript SDK](./F013-typescript-sdk.md) и F000 Core Platform API (WASM).
+Playwright adapter — тонкая обёртка: DOM snapshot → SDK/Core.heal() → result.
 
-См. [F000: Core Platform API](./F000-core-platform-api.md)
+См. [F000: Core Platform API](./F000-core-platform-api.md), [F013](./F013-typescript-sdk.md)
 
 ### Риски и зависимости
 - Зависит от F001 (Self-Healing core)

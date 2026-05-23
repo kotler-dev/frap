@@ -26,6 +26,9 @@ fletta/
 │   │   ├── F006-multi-platform.md
 │   │   ├── F007-visual-fingerprint.md
 │   │   ├── F008-playwright-adapter.md
+│   │   ├── F013-typescript-sdk.md
+│   │   ├── F014-java-sdk-ui-adapters.md
+│   │   ├── F015-python-sdk-adapters.md
 │   │   ├── F009-feedback-loop.md
 │   │   ├── F010-test-health.md
 │   │   └── F011-ai-agent-testing.md

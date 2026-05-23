@@ -4,7 +4,7 @@
 
 **Статус:** specification (код Java SDK — roadmap P4 / v1.4). TypeScript/Playwright — reference implementation сегодня.
 
-**SDK на три языка:** общая стратегия — [sdk-strategy.md](../project/architecture/sdk-strategy.md).
+**SDK на три языка:** [sdk-strategy.md](../project/architecture/sdk-strategy.md). Карточка фичи Java: [F014](../project/feature/F014-java-sdk-ui-adapters.md) (WebDriver P0, **Selenide P1**).
 
 ---
 
@@ -43,6 +43,7 @@ Fletta встраивается **ниже** теста: на `findElement` / `@
 | **JUnit 5 Extension** | Стандартный банк: JUnit 5, PO через `driver` в base class |
 | **WebDriver wrapper** | Один `DriverFactory` на проект |
 | **Selenium 4 listener** | Уже есть listener-инфраструктура; версионная связка |
+| **Selenide** (P1, [F014](../project/feature/F014-java-sdk-ui-adapters.md)) | Команды на fluent API; hook на поиск `SelenideElement`, тот же WebDriver под капотом |
 
 ---
 
