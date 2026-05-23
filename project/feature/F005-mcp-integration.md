@@ -11,7 +11,9 @@
 
 ## Goal
 
-Интерфейс для вызова fletta из LLM-агентов через Model Context Protocol (JSON-RPC).
+Интерфейс для вызова fletta из LLM-агентов через Model Context Protocol (JSON-RPC). 
+
+**Fletta как grounding layer для AI-агентов:** Fletta не генерирует тесты и не управляет LLM — Fletta даёт AI-агенту **надёжные руки и глаза**: структурированный доступ к UI (element maps) и стабильное выполнение действий (resolution при изменениях).
 
 ## User workflow
 

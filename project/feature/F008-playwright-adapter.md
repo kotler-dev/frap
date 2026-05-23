@@ -111,6 +111,12 @@ test('payment', async ({ page }) => {
 - TypeScript SDK вызывает WASM-модуль для сравнения сигнатур
 - Асинхронный API: `heal(primarySelector, domSnapshot) -> HealingResult`
 
+### Зависимость от Core
+Адаптер строится поверх F000 Core Platform API через WASM bindings.
+Playwright adapter — тонкая обёртка: DOM snapshot → Core.heal() → result.
+
+См. [F000: Core Platform API](./F000-core-platform-api.md)
+
 ### Риски и зависимости
 - Зависит от F001 (Self-Healing core)
 - Playwright API stability (custom selectors — stable)

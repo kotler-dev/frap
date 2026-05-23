@@ -13,6 +13,13 @@
 
 Тестирование и аудит AI-агентов: capture MCP tool calls, assertion-based testing, A2A flow testing, prompt regression.
 
+**Fletta даёт AI-агенту надёжные руки и глаза:** 
+- **Глаза** — структурированный element map вместо скриншотов/DOM
+- **Руки** — deterministic resolution при изменении UI  
+- **Память** — audit trail всех действий для анализа behavior drift
+
+Fletta не заменяет AI-агент — Fletta делает его действия стабильными и объяснимыми.
+
 ## User workflow
 
 1. AI-агент тестирует приложение через fletta MCP

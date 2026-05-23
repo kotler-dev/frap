@@ -11,7 +11,7 @@
 
 **Для кого:** Инженеры, QA automation leads, tech leads
 
-**Конференции:** Heisenbug, TestConf, HolyJS, JPoint
+**Конференции:** TestConf, HolyJS, JPoint
 
 **Ключевые тезисы:**
 - Почему мы отказались от ML-подхода (конкуренты: Testim, Mabl)
@@ -157,7 +157,7 @@
 
 **Для кого:** QA automation engineers, SDET
 
-**Конференции:** Heisenbug, TestConf, QA Guild
+**Конференции:** TestConf, QA Guild
 
 **Ключевые тезисы:**
 - Что делает тест flaky: race conditions, тайминги, состояние
@@ -208,7 +208,7 @@
 |-------|------|-------------|------|
 | 3 | T005 (InSourceHub) | Внутренний митап банка | Найти первых пользователей |
 | 4 | T002 (Миграция) | Внутренний митап | Adoption в командах |
-| 6 | T001 (Self-Healing без ML) | Heisenbug/HolyJS | Первый публичный анонс |
+| 6 | T001 (Self-Healing без ML) | HolyJS | Первый публичный анонс |
 | 7 | T003 (MCP/AI) | AI Journey/CodeFest | Тренд на AI-агентов |
 | 8 | T008 (AI-Agent Testing) | AI-конференция | Новая категория — testing for AI |
 | 9 | T004 (RCA) | DevOops | Для enterprise аудитории |

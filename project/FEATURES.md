@@ -44,6 +44,7 @@
 
 | Фича | Статус | Severity | Release | Примечание |
 |------|--------|----------|---------|------------|
+| [F000: Core Platform API](./feature/F000-core-platform-api.md) | ❌ | Critical | v1.0.0 | Standalone API: WASM, FFI, JSON-RPC |
 | [F001: Self-Healing Selectors](./feature/F001-self-healing.md) | ⚠️ | Critical | v1.0.0 | Core реализован, тесты в CI |
 | [F008: Playwright Adapter](./feature/F008-playwright-adapter.md) | ⚠️ | Critical | v1.0.0 | Интеграция через wrapper API |
 | [F012: Debug Trace Mode](./feature/F012-debug-trace-mode.md) | ⚠️ | Medium | v1.0.0 | Реализован debug режим с HTML отчётом |
@@ -90,6 +91,7 @@
 ## Критичные фичи для релизов
 
 ### v1.0.0 MVP
+- [ ] F000: Core Platform API — standalone WASM/FFI
 - [ ] F001: Self-Healing Selectors — core алгоритм
 - [ ] F008: Playwright Adapter — интеграция
 - [x] F012: Debug Trace Mode — developer experience
@@ -107,12 +109,12 @@
 
 | Release | Всего | ✅ | ⚠️ | ❌ | Прогресс |
 |---------|-------|----|----|----|----------|
-| v1.0.0 | 3 | 0 | 3 | 0 | 75% |
+| v1.0.0 | 4 | 0 | 3 | 1 | 75% |
 | v1.1.0 | 2 | 0 | 0 | 2 | 0% |
 | v1.2.0 | 3 | 0 | 0 | 3 | 0% |
 | v2.0.0 | 3 | 0 | 0 | 3 | 0% |
 | v3.0.0 | 1 | 0 | 0 | 1 | 0% |
-| **Всего** | **12** | **0** | **3** | **9** | **25%** |
+| **Всего** | **13** | **0** | **3** | **10** | **23%** |
 
 ---
 

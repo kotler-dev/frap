@@ -1,5 +1,23 @@
 import type { Locator, Page } from '@playwright/test';
-import { HealingEngine, FlettaConfig, createHealingEngine, DOMSnapshot, DOMElementInfo, HealResult } from '@fletta/sdk';
+import {
+  HealingEngine,
+  FlettaConfig,
+  createHealingEngine,
+  DOMSnapshot,
+  DOMElementInfo,
+  HealResult,
+  buildElementFoundDebugReport,
+  writeDebugReport,
+  type HealPolicy,
+} from '@fletta/sdk';
+import type { WithFlettaOptions } from './config';
+import {
+  buildSemantics,
+  enrichDebugReport,
+  getCurrentPlaywrightTestId,
+  logHealSemantics,
+  recordHealingEvent,
+} from './healing-events';
 
 interface FlettaLocator extends Locator {
   __fletta?: {
@@ -15,16 +33,20 @@ const recordedSignatures = new Map<string, any>();
 export async function withFletta<T extends Locator>(
   locator: T,
   page: Page,
-  config?: Partial<FlettaConfig>,
+  config?: WithFlettaOptions,
   testName?: string
 ): Promise<FlettaLocator> {
+  const { testInfo, ...flettaConfig } = config ?? {};
   const fullConfig: FlettaConfig = {
     minConfidence: 0.85,
     reportDir: './fletta-reports',
     enableHealing: true,
     enableReporting: true,
-    ...config,
+    healPolicy: 'allow',
+    ...flettaConfig,
   };
+  const healPolicy: HealPolicy = fullConfig.healPolicy ?? 'allow';
+  const resolvedTestName = testName ?? getCurrentPlaywrightTestId(testInfo);
 
   const healingEngine = await createHealingEngine(fullConfig);
 
@@ -87,8 +109,34 @@ export async function withFletta<T extends Locator>(
               originalSig = constructSignatureFromSelector(cleanSelector, snapshot);
             }
 
-            const healResult = healingEngine.heal(cleanSelector, originalSig, snapshot, testName);
-            flettaLocator.__fletta!.lastHealResult = healResult;
+            const healResult = healingEngine.heal(cleanSelector, originalSig, snapshot, resolvedTestName);
+            const semantics = buildSemantics(
+              healPolicy,
+              healResult.healed,
+              true,
+              'selector_missing'
+            );
+            const enrichedResult: HealResult = { ...healResult, semantics };
+            flettaLocator.__fletta!.lastHealResult = enrichedResult;
+
+            recordHealingEvent(
+              {
+                healSessionName: resolvedTestName,
+                originalSelector: cleanSelector,
+                newSelector: healResult.healed ? healResult.selector : undefined,
+                healed: healResult.healed,
+                confidence: healResult.confidence,
+                trigger: semantics.trigger,
+                policy: semantics.policy,
+                outcome: semantics.outcome,
+              },
+              fullConfig.reportDir,
+              testInfo
+            );
+            logHealSemantics(semantics, cleanSelector, healResult.selector);
+            if (fullConfig.debug) {
+              enrichDebugReport(fullConfig.reportDir, semantics, resolvedTestName);
+            }
 
             console.log(`[fletta] Healing result: healed=${healResult.healed}, confidence=${healResult.confidence.toFixed(2)}, selector="${healResult.selector}"`);
             console.log(`[fletta] Top candidates: ${healResult.top_candidates.length}`);
@@ -109,9 +157,35 @@ export async function withFletta<T extends Locator>(
 
           // Element exists, proceed with normal action
           try {
-            return await value.apply(target, args);
+            const result = await value.apply(target, args);
+            if (fullConfig.debug) {
+              const report = buildElementFoundDebugReport(resolvedTestName, cleanSelector);
+              if (fullConfig.healPolicy === 'deny') {
+                report.semantics = buildSemantics(healPolicy, false, false, 'selector_missing');
+              }
+              writeDebugReport(fullConfig.reportDir, report);
+            }
+            return result;
           } catch (error: any) {
             console.log(`[fletta] Primary action failed: ${error.message}`);
+            const semantics = buildSemantics(healPolicy, false, true, 'action_failed');
+            recordHealingEvent(
+              {
+                healSessionName: resolvedTestName,
+                originalSelector: cleanSelector,
+                healed: false,
+                confidence: 0,
+                trigger: semantics.trigger,
+                policy: semantics.policy,
+                outcome: semantics.outcome,
+              },
+              fullConfig.reportDir,
+              testInfo
+            );
+            logHealSemantics(semantics, cleanSelector);
+            if (fullConfig.debug) {
+              enrichDebugReport(fullConfig.reportDir, semantics, resolvedTestName);
+            }
             throw error;
           }
         };

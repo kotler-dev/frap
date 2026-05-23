@@ -6,106 +6,236 @@
 
 ## One-liner (официальный)
 
-> **fletta** — open-source explainable self-healing для Playwright и Selenium: один сценарий связывает UI, console и network; чинит локаторы детерминированными алгоритмами, а не LLM; отдаёт объяснимые diffs в CI и в MCP для агентов.
+> **fletta** — deterministic engine для автоматического извлечения структуры UI: парсит деревья элементов (DOM, ViewTree, accessibility), кластеризует компоненты детерминированными алгоритмами, генерирует устойчивые идентификаторы для PageObject и тестов. Без ML в core, без облачных API — bank-grade deterministic. Внутренняя механика resolution обеспечивает стабильность при изменениях UI. AI-ready через MCP и optional enhancements tier: LLM получают структурированные element maps для генерации семантического кода.
 
-### Короткие варианты
+### Короткие варианты по аудиториям
 
-| Контекст | Текст |
-|----------|--------|
-| Elevator (RU) | Self-healing тестов без ML: объяснимо, on-prem, встраивается в Playwright/Selenium. |
-| Elevator (EN) | Explainable, algorithmic test healing — plug into Playwright/Selenium, no LLM required. |
-| InSourceHub / банк | Внутренний open source для стабилизации e2e: без облачных API, с аудитом healing в CI. |
-| GitHub README | Deterministic locator healing + unified UI/logs/network context for CI and MCP agents. |
+| Аудитория | One-liner |
+|-----------|-----------|
+| **Elevator (10 сек)** | Движок для извлечения структуры UI: парсит, кластеризует детерминированно, генерирует стабильные локаторы для PageObject — без ML в core, AI-ready через MCP |
+| **Java разработчик** | Получи структурированную карту элементов страницы для генерации PageObject с устойчивыми селекторами — встраивается в Selenium/Playwright, deterministic, on-prem |
+| **AI/LLM интегратор** | Дай LLM структурированный доступ к UI: element maps через MCP, стабильные идентификаторы, unified context для tool calls — Fletta даёт AI-агенту надёжные руки и глаза |
+| **Enterprise/Банк** | Platform-agnostic engine для структурного анализа UI: on-prem, deterministic (NO ML dependencies), генерирует maintainable test code, bank-grade security |
 
-### Что убрали из ранних формулировок
+---
 
-- «Ниша свободна» — заменено на **«ниша пересечена по частям, свободно пересечение OSS + no-ML + tri-plane + bank-grade»**.
-- «Автоматически генерирует Page Object» как главный месседж — заменено на **element map / locator graph** (POM — опциональный экспорт).
-- «Платформа тестирования» — заменено на **слой стабилизации и анализа поверх существующих раннеров**.
+## Architecture vs User Value
+
+Чёткое разделение между внутренней архитектурой и пользовательской ценностью:
+
+### Internal (для разработчиков/контрибьюторов)
+- **Tree-agnostic Core** — алгоритмы кластеризации и matching работают с abstract tree interface
+- **Clustering Algorithms** — Drain3-based deterministic grouping, NO ML training
+- **Resolution Mechanism** — signature matching для стабильной идентификации при изменениях UI
+- **Enhancement Adapters** — pluggable ML/LLM features (semantic naming, visual matching) как отдельные пакеты
+
+### User-facing (ценность для пользователей)
+- **Element Map** — структурированная карта UI с stable IDs и confidence scores
+- **Stable Identifiers** — надёжные селекторы, которые переживают рефакторинг UI
+- **Code Generation** — PageObject, тестовые сценарии на основе element maps
+- **MCP Integration** — инструменты для LLM-агентов: discovery, grounding, context
+
+---
+
+## Immediate Value vs Long-term Vision
+
+### Immediate Value (почему пробовать сейчас)
+
+**Конкретные боли, которые решает Fletta сегодня:**
+
+1. **"Получи структурированную карту UI для PageObject за секунды, не часы"**
+   - Вручную анализировать DOM для XPath/CSS — долго и ошибкоёмко
+   - Fletta `discover` даёт готовую element map с confidence scores
+
+2. **"Твои AI-агенты получают стабильный доступ к UI через MCP"**
+   - Playwright MCP позволяет агенту "видеть" страницу
+   - Fletta даёт структурированный element map — агент делает надёжные действия
+   - Метафора: **Fletta даёт AI-агенту надёжные руки и глаза**
+
+3. **"Без ML в core — работает в air-gapped environment"**
+   - Нет зависимости от OpenAI API
+   - Deterministic algorithms = reproducible results
+   - Bank-grade: нет утечки данных в облако
+
+### Long-term Vision (куда растём)
+
+**Архитектурное видение:**
+
+1. **Platform-agnostic Structure Engine**
+   - Сегодня: Web DOM
+   - Завтра: Android ViewTree, iOS UIView, JSON API schemas
+   - Один element map format для всех платформ
+
+2. **Enterprise Observability Layer**
+   - Drift detection: "эта страница изменилась с прошлого раза"
+   - Unified context: UI + network + logs в одном timeline
+   - RCA: "почему тест упал?" с root cause classification
+
+3. **AI-Native Testing Infrastructure**
+   - Не "Fletta генерирует тесты через LLM"
+   - А "Fletta даёт LLM инструменты для надёжного тестирования"
+   - Агент использует MCP tools: `fletta/discover`, `fletta/analyze`
+
+---
+
+## AI Positioning: Fletta как Grounding Layer
+
+### Что Fletta НЕ делает
+- **Fletta ≠ AI testing tool** — мы не генерируем тесты из требований
+- **Fletta ≠ LLM orchestrator** — мы не управляем диалогом с моделью
+- **Fletta ≠ prompt engineering framework** — мы не шаблонизируем промпты
+
+### Что Fletta делает для AI-агентов
+
+**Fletta = grounding layer для AI-агентов:**
+- **Глаза (discovery)** — структурированный element map вместо raw DOM
+- **Руки (execution)** — stable resolution при изменении UI
+- **Память (observability)** — audit trail действий для анализа
+
+**Взаимодействие:**
+```
+AI Agent (orchestrator, снаружи)
+    ↓ вызывает через MCP/API
+Fletta Core (grounding layer, внутри)
+    - discover(url) → element map
+    - resolve(selector) → stable element
+    - analyze(context) → RCA report
+```
+
+**Playwright MCP vs Fletta:**
+| | Playwright MCP | Fletta |
+|---|---|---|
+| **Роль** | Агент **действует** в браузере | Агент **стабилен и объясним** |
+| **Что делает** | Explore, click, navigate | Structure discovery, stable execution, audit |
+| **Когда падает** | Селектор не найден | Находит по signature, объясняет разницу |
+| **Детерминизм** | Зависит от LLM | Deterministic core, NO ML |
+
+**Метафора:**
+> **Fletta даёт AI-агенту надёжные руки и глаза** — стабильное зрение (element maps) и надёжные действия (resolution mechanism), deterministic и explainable.
 
 ---
 
 ## Проблема (Problem)
 
-Команды тратят значительную долю времени на поддержку селекторов и Page Object при изменениях UI. Рефакторинг фронтенда ломает e2e. Существующие self-healing решения часто:
+Команды тратят значительное время на ручной reverse engineering UI для создания PageObject и тестовых сценариев. При изменениях фронтенда приходится заново анализировать структуру и обновлять локаторы.
 
-- проприетарны и требуют облака (Testim, Mabl);
-- используют ML без объяснимости (Healenium);
-- лечат только UI, не отличая падение из-за API/логов;
-- не подходят для regulated / on-prem (банк, compliance).
+**Существующие инструменты:**
+- **Record-replay** (Playwright codegen, Selenium IDE) — дают хрупкий код, не maintainable PageObject
+- **Self-healing solutions** (Healenium, Testim) — лечат симптом (тест упал), не причину (структура непонятна)
+- **Code generation** — требует стабильных идентификаторов, которые ломаются при рефакторинге
+- **AI-агенты** — не имеют структурированного доступа к UI, действуют наугад по скриншотам/DOM
+
+**Enterprise ограничения:**
+- Банки/регулируемые индустрии не могут использовать облачные ML API
+- Нужен audit trail: "почему тест решил кликнуть сюда?"
+- Требуется on-prem deployment без внешних зависимостей
 
 ---
 
 ## Решение (Solution)
 
-**fletta** — алгоритмическое ядро (Rust → WASM) + тонкие адаптеры:
+**fletta** — platform-agnostic deterministic engine (Rust → WASM) для анализа UI-структур:
 
-1. **Self-healing** — primary-селектор сохраняется; fallback-цепочка по сигнатурам включается только при failure.
-2. **Explainable healing** — score, diff DOM/сигнатуры, альтернативы; порог confidence; иначе fail + review.
-3. **Unified context** (v2) — UI + console + network в одном timeline для RCA.
-4. **MCP** (v2+) — агенты **анализируют и стабилизируют** тесты; fletta не заменяет Playwright как драйвер.
+### Core Components
+
+1. **Structure Discovery** — извлечение полного element tree с семантической кластеризацией
+   - Platform adapters: Chrome/CDP, UIAutomator, XCUITest
+   - Output: unified element map (JSON)
+
+2. **Stable Identification** — генерация устойчивых идентификаторов на основе signature matching
+   - Signature = устойчивые атрибуты + структурный путь
+   - Confidence score по формуле, NO ML inference
+
+3. **Code Generation** — PageObject, test scenarios на основе структурированных element maps
+   - TypeScript/Java/Kotlin output
+   - Semantic method names (с enhancement adapter для LLM naming)
+
+4. **Robustness Layer** — resolution как internal mechanism
+   - При изменении UI: signature matching → candidate ranking → stable fallback
+   - Пользователь видит: "element map обновлён, diff: ..."
+
+5. **AI Integration** — MCP tools для LLM
+   - `fletta/discover` — element map для grounding
+   - `fletta/analyze` — RCA для понимания падений
+   - Fletta не генерирует тесты — даёт инструменты для генерации
+
+### No-ML by Default
+
+**Core (всегда deterministic):**
+- Signature extraction — правила, не нейросети
+- Clustering — Drain3 algorithm, hierarchical token matching
+- Resolution — weighted attribute comparison, fixed formula
+
+**Enhancements (опционально, M3+):**
+- Semantic naming via LLM — отдельный пакет `fletta-enhancements`
+- Visual matching — OpenCV-based adapter
+- Step generation — external LLM integration
 
 ---
 
 ## Зачем fletta, если есть Playwright MCP + healer?
 
-Это главный вопрос adoption. Ответ — **разные роли в стеке**.
+### Разные роли в стеке
 
 | | Playwright MCP | playwright-healer / AutoHeal | **fletta** |
-|---|----------------|------------------------------|------------|
-| **Роль** | Агент **действует** в браузере (explore, codegen) | Чинит локаторы в рантайме (часто с AI/heuristics) | **Стабилизирует и объясняет** существующие тесты в CI |
-| **Когда** | Разработка теста, ad-hoc сценарии | Падение локатора при прогоне | Регрессия, рефакторинг UI, audit, банк on-prem |
+|---|---|---|---|
+| **Роль** | Агент **действует** в браузере (explore, codegen) | Чинит локаторы в рантайме (часто с AI/heuristics) | **Grounding layer** — structure discovery + stable execution |
+| **Когда** | Разработка теста, ad-hoc сценарии | Падение локатора при прогоне | Структурный анализ, CI stabilization, audit |
 | **Детерминизм** | Зависит от LLM-клиента | Смешанно (эвристики + опционально AI) | **Всегда воспроизводимый** алгоритм + отчёт |
-| **UI + логи + сеть** | Сеть/консоль в сессии агента | Обычно только DOM | **Один сценарий, один timeline** (v2) |
-| **Legacy Selenium/Java** | Слабо | Healenium (ML, proxy) | Адаптер + JUnit (roadmap) |
-| **Compliance** | Облачный LLM часто недопустим | Внешние API у AI-healers | **Без ML по умолчанию**, OSS, on-prem |
+| **Output** | Действия в браузере | Исправленный селектор | Element map + stable identifiers + audit trail |
+| **AI Integration** | Действует через LLM | Пытается "починить" сам | Даёт **структуру** для надёжных AI-действий |
 
 ### One-liner для сравнения с MCP
 
-> Playwright MCP помогает агенту **действовать** в браузере; fletta **стабилизирует и объясняет** уже написанные тесты при изменении UI, логов и API — детерминированно, в CI, без обязательного LLM.
+> Playwright MCP помогает агенту **действовать** в браузере; fletta **даёт агенту структуру** для надёжных действий — element maps, stable identifiers, deterministic resolution, explainable audit.
 
 ### Совместное использование (не конкуренция)
 
 ```
-Требования → LLM + Playwright MCP (написать черновик теста)
-                    ↓
-            Playwright/Selenium тест в репозитории
-                    ↓
-            fletta adapter в CI (healing + отчёты + RCA)
-                    ↓
-            При падении: fletta MCP analyze → агент предлагает фикс PR
+Требования → LLM анализирует (снаружи)
+                ↓
+        LLM вызывает fletta/discover → получает element map
+                ↓
+        LLM генерирует test steps на основе структуры
+                ↓
+        Playwright MCP выполняет действия (внутри браузера)
+                ↓
+        Fletta resolution обеспечивает стабильность при изменениях UI
+                ↓
+        Fletta analyze даёт RCA если что-то пошло не так
 ```
 
-**fletta не заменяет Playwright.** Используем Playwright как раннер; fletta — custom selector / hook + отчёты + (опционально) MCP tools `heal`, `analyze`, `export`.
+**fletta не заменяет Playwright.** Playwright = browser driver; Fletta = structure engine + observability layer.
 
 ---
 
 ## Конкурентный ландшафт
 
-### Прямые (self-healing / POM)
+### Прямые (structure discovery / POM generation)
 
 | Продукт | Тип | Пересечение | Отличие fletta |
-|---------|-----|-------------|----------------|
-| [Healenium](https://github.com/healenium/healenium) | OSS + ML | Selenium healing | Без ML, без тяжёлого proxy/PostgreSQL по умолчанию, explainable |
-| playwright-healer, AutoHeal | OSS / AI | Playwright healing | No-ML default, tri-plane, bank on-prem narrative |
-| Testim, Mabl | Commercial | Smart locators | OSS, детерминизм, InSourceHub |
-| Pomgo, Locator Labs | Tools | POM generation | Healing + CI, не только генерация |
+|---|---|---|---|
+| [Healenium](https://github.com/healenium/healenium) | OSS + ML | Selenium healing | Без ML в core, без тяжёлого proxy/PostgreSQL, explainable |
+| playwright-healer, AutoHeal | OSS / AI | Playwright healing | No-ML default, platform-agnostic core, bank on-prem |
+| Testim, Mabl | Commercial | Smart locators | OSS, deterministic, element map export |
+| Pomgo, Locator Labs | Tools | POM generation | Discovery + CI observability, не только генерация |
 
 ### Смежные (не заменяем, интегрируемся)
 
 | Продукт | Роль |
-|---------|------|
-| Playwright + getByRole/testId | Best practices — fletta **не мешает**, дополняет при поломке |
-| Playwright MCP | Explore/codegen — fletta в **CI и audit** |
-| Karate | API+UI сценарии — fletta как post-run healing layer (future) |
-| Allure, ReportPortal | Отчёты — экспорт fletta healing events |
+|---|---|
+| Playwright + getByRole/testId | Best practices — fletta **не мешает**, дополняет структурным анализом |
+| Playwright MCP | Explore/codegen — fletta даёт **grounding** для стабильности |
+| Karate | API+UI сценарии — fletta как structure layer для UI части |
+| Allure, ReportPortal | Отчёты — fletta экспортирует discovery + resolution events |
 
 ### Защищаемый wedge (moat)
 
-1. **Explainable healing** — score, diff, policy (min confidence).
-2. **Tri-plane сценарий** — UI + console + network (редко в OSS).
-3. **Bank-first OSS** — InSourceHub, on-prem, без облачного inference.
-4. **MCP для стабилизации**, не для «ещё одного браузерного драйвера».
+1. **Deterministic Core** — NO ML dependencies, bank-grade security, on-prem ready
+2. **Platform-agnostic Architecture** — один element map format для Web/Android/iOS/API
+3. **Explainable Structure** — element map с confidence scores, не "black box matching"
+4. **MCP Grounding Layer** — даёт AI-агентам надёжный доступ к UI, не competing с AI tools
+5. **Enterprise Audit Trail** — resolution history, drift detection, policy hooks
 
 ---
 
@@ -113,14 +243,16 @@
 
 Использовать в README, InSourceHub, презентациях.
 
-| Было (слабо) | Стало (фиксировано) |
-|--------------|---------------------|
-| Генерирует Page Object | Генерирует **устойчивый element map / locator graph**; экспорт в POM/Java/TS — опция |
-| Self-healing без ML | **Explainable healing**: score, diff, альтернативы; ML не требуется |
-| Унифицированная платформа тестирования | **Слой стабилизации и RCA** поверх Playwright/Selenium |
-| Замена селекторов | **Primary + fallback chain**; healing только при failure primary |
-| AI генерирует тесты | **Алгоритмы чинят, LLM пишет/анализирует** (MCP) |
-| Ниша свободна | **Пересечение редкое**: OSS + deterministic + tri-plane + enterprise audit |
+### Было (самонадеянно) → Стало (фиксировано)
+
+| Было (самонадеянно) | Стало (фиксировано) |
+|---|---|
+| "Генерирует Page Object" | Генерирует **устойчивый element map / locator graph**; экспорт в POM/Java/TS — опция |
+| "Self-healing без ML" | **Deterministic resolution**: signature matching, confidence scores, explainable diff |
+| "Унифицированная платформа тестирования" | **Structure discovery engine** — анализирует UI для любых downstream tools |
+| "Заменяет селекторы" | **Stable identification** — primary + fallback signatures, resolution при drift |
+| "AI генерирует тесты" | **Алгоритмы дают структуру, LLM может генерировать** — Fletta = grounding layer |
+| "Ниша свободна" | **Пересечение редкое**: OSS + deterministic + platform-agnostic + enterprise audit |
 
 ### Value props по сегментам
 
@@ -131,11 +263,12 @@
 ## Позиционирование по фазам
 
 | Фаза | Позиция на рынке |
-|------|------------------|
-| PoC / MVP | «Playwright plugin с explainable self-healing на 3–5 UI-диффах» |
-| v2 | «CI healing + RCA: UI vs API vs flaky» |
-| v3 | «MCP tools для агентов + audit AI-agent tool calls» |
-| Enterprise | «Policy, SSO, audit log healing, InSourceHub-ready» |
+|---|---|
+| PoC / MVP (сейчас) | «Structure discovery engine: element map из любого UI за секунды» |
+| v1.2 (generation layer) | «PageObject generation с stable identifiers — deterministic, explainable» |
+| v2 (observability layer) | «CI structure drift detection + RCA: почему изменилась UI-структура» |
+| v3 (AI integration) | «MCP grounding layer для AI-агентов — надёжные руки и глаза» |
+| Enterprise | «Policy, SSO, audit log resolution, on-prem structure engine» |
 
 ---
 
@@ -143,17 +276,17 @@
 
 Детали: [benchmark.md](./benchmark.md).
 
-**PoC (неделя 1):**
+### PoC (неделя 1)
 
-- CP001–CP003 проходят на demo-приложении
-- 0 ложных «зелёных» кликов при confidence &lt; порога
-- Отчёт healing воспроизводим (два прогона — один diff)
+- CP001–CP003: element map coverage ≥ 90% для demo-приложения
+- Повторяемость: два прогона discover → одинаковые element maps (±5%)
+- 0 ложных «высоких confidence» при structural drift
 
-**MVP (недели 2–3):**
+### MVP (недели 2–3)
 
-- Benchmark repo: ≥5 UI-рефакторингов, сравнение с baseline Playwright
-- 3 команды в банке на Playwright adapter
-- Документированный adapter install &lt; 15 минут
+- Benchmark repo: ≥5 UI-рефакторингов, сравнение element map stability
+- 3 команды в банке используют `fletta discover` для PageObject
+- Документированный discover → element map → generated code workflow < 15 минут
 
 ---
 
@@ -162,5 +295,7 @@
 - [audience.md](./audience.md) — целевая аудитория
 - [integrations.md](./integrations.md) — интеграция, не замена
 - [benchmark.md](./benchmark.md) — PoC-кейсы и метрики
-- [monetization.md](./monetization.md) — монетизация
+- [monetization.md](./monetization.md) — монетизация (core OSS, enhancements tier)
 - [cases.md](./cases.md) — полный каталог кейсов
+- [strategy.md](./strategy.md) — 3 слоя архитектурного развития
+- [glossary.md](./glossary.md) — терминология (Discover, Element Map, Resolution)

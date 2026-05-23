@@ -219,6 +219,14 @@ impl DynamicElementHandler {
 }
 ```
 
+### Standalone Usage via F000
+Core можно использовать без адаптеров через F000 API:
+- **WASM**: `new HealingEngine().heal(...)` в браузере/Node.js
+- **FFI**: прямой вызов из Java/Swift/Python через C-API
+- **JSON-RPC**: внешние процессы через stdin/stdout
+
+См. [F000: Core Platform API](./F000-core-platform-api.md)
+
 ### Риски и зависимости
 - Производительность: большие DOM (>10k элементов) — оптимизация через индексацию
 - Детерминизм: одинаковые входы → одинаковые результаты (LCS/Levenshtein детерминированы)

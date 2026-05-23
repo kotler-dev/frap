@@ -1,5 +1,6 @@
 import { FlettaConfig } from './config';
-import { DebugTracer, DebugReport, ClusterView } from './debug';
+import { DebugTracer, DebugReport, ClusterView, writeDebugReport } from './debug';
+import type { HealingSemantics } from './healing-semantics';
 
 export interface Signature {
   path: DOMToken[];
@@ -32,6 +33,7 @@ export interface HealResult {
   diff?: string;
   top_candidates: Candidate[];
   original_signature: Signature;
+  semantics?: HealingSemantics;
 }
 
 export interface DOMElementInfo {
@@ -244,16 +246,8 @@ export class HealingEngine {
   }
 
   private saveDebugReport(report: DebugReport): void {
-    const fs = require('fs');
-    const path = require('path');
-    const reportPath = path.join(this.config.reportDir, 'fletta-debug.json');
-
-    if (!fs.existsSync(this.config.reportDir)) {
-      fs.mkdirSync(this.config.reportDir, { recursive: true });
-    }
-
-    fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
-    console.log(`[fletta:debug] Report saved to ${reportPath}`);
+    writeDebugReport(this.config.reportDir, report);
+    console.log(`[fletta:debug] Report saved for "${report.testName}"`);
   }
 
   private buildClusterViews(candidates: Candidate[], snapshot: DOMSnapshot): ClusterView[] {

@@ -1,282 +1,387 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import type { DebugReport, DebugStep } from '@fletta/sdk';
+import { debugReportSlug } from '@fletta/sdk';
+import {
+  escapeHtml,
+  renderGroupedIndexList,
+  renderIndexSummary,
+  renderReportHeader,
+} from './debug-chrome';
+import {
+  buildManifest,
+  type DebugManifest,
+  writeManifest,
+} from './debug-manifest';
+import { generateDebugExplorerPage } from './debug-explorer';
+import {
+  getOverallStatus,
+  getStepStatus,
+  isElementFoundWithoutHealing,
+  type DebugStatusType,
+} from './debug-status';
+import {
+  REPORT_EMBED_DETECT,
+  REPORT_EMBED_THEME_LISTENER,
+  REPORT_ICONS_SVG,
+  REPORT_STYLES,
+  REPORT_THEME_INIT,
+  REPORT_THEME_TOGGLE,
+} from './debug-report-styles';
 
-export function generateDebugHtml(report: DebugReport, outputDir: string): string {
+export interface GenerateDebugHtmlOptions {
+  htmlFileName?: string;
+  manifest?: DebugManifest;
+  currentEntryId?: string;
+}
+
+const EMBED_STYLES = `
+html.embed-mode .site-header { display: none; }
+html.embed-mode body { padding: 1rem 1.25rem; }
+`;
+
+export function generateDebugHtml(
+  report: DebugReport,
+  outputDir: string,
+  htmlFileNameOrOpts: string | GenerateDebugHtmlOptions = 'fletta-debug.html'
+): string {
+  const opts: GenerateDebugHtmlOptions =
+    typeof htmlFileNameOrOpts === 'string'
+      ? { htmlFileName: htmlFileNameOrOpts }
+      : htmlFileNameOrOpts;
+
+  const htmlFileName = opts.htmlFileName ?? 'fletta-debug.html';
   const status = getOverallStatus(report);
-  const statusBanner = getStatusBanner(status, report);
+  const manifest = opts.manifest;
+  const multiReport = manifest && manifest.reportCount > 1;
+  const entryId = opts.currentEntryId ?? debugReportSlug(report.testName);
+
+  const header = multiReport
+    ? renderReportHeader({
+        title: 'Fletta',
+        subtitle: `Debug report · ${report.testName}`,
+        manifest,
+        currentEntryId: entryId,
+        indexHref: '../fletta-debug.html',
+        explorerHref: '../fletta-debug-explorer.html',
+        showExplorerLink: true,
+      })
+    : renderReportHeader({
+        title: 'Fletta',
+        subtitle: `Debug report · ${report.testName}`,
+      });
 
   const html = `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light" data-palette="warm-neutrals-semantic">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fletta Debug Report - ${escapeHtml(report.testName)}</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
-    .container { max-width: 1200px; margin: 0 auto; }
-    h1 { color: #333; border-bottom: 3px solid #ddd; padding-bottom: 10px; }
-
-    /* Status Banner */
-    .status-banner {
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      text-align: center;
-      font-size: 1.5em;
-      font-weight: 600;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
-    .status-success {
-      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-      color: white;
-      border-left: 5px solid #2E7D32;
-    }
-    .status-warning {
-      background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
-      color: white;
-      border-left: 5px solid #E65100;
-    }
-    .status-failure {
-      background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
-      color: white;
-      border-left: 5px solid #b71c1c;
-    }
-
-    /* Summary Box */
-    .summary {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      border-left: 4px solid ${getStatusColor(status)};
-    }
-
-    /* Timeline */
-    .timeline {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .step {
-      display: flex;
-      align-items: center;
-      padding: 12px;
-      border-left: 3px solid #ddd;
-      margin: 8px 0;
-      background: #fafafa;
-      border-radius: 0 4px 4px 0;
-    }
-    .step-success { border-left-color: #4CAF50; background: #f1f8f4; }
-    .step-warning { border-left-color: #FF9800; background: #fff8f0; }
-    .step-failure { border-left-color: #f44336; background: #fdf2f2; }
-    .step-name { font-weight: 600; min-width: 200px; color: #333; }
-    .step-duration { color: #666; font-size: 0.9em; margin-left: 20px; }
-    .step-output { margin-left: auto; color: #666; font-size: 0.9em; }
-
-    /* Clusters */
-    .clusters {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      border-left: 4px solid #2196F3;
-    }
-    .cluster { margin: 15px 0; padding: 15px; background: #f9f9f9; border-radius: 6px; border-left: 3px solid #2196F3; }
-    .cluster-header { font-weight: 600; color: #333; margin-bottom: 10px; }
-    .cluster-elements { font-size: 0.9em; color: #666; }
-
-    /* Decision */
-    .decision {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      border-left: 4px solid ${getStatusColor(status)};
-    }
-    .decision-healed { color: #4CAF50; font-weight: 600; font-size: 1.2em; }
-    .decision-failed { color: #f44336; font-weight: 600; font-size: 1.2em; }
-    .decision-warning { color: #FF9800; font-weight: 600; font-size: 1.2em; }
-
-    /* Tables */
-    .candidates-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    .candidates-table th, .candidates-table td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
-    .candidates-table th { background: #f5f5f5; font-weight: 600; }
-    .confidence-high { color: #4CAF50; font-weight: 600; }
-    .confidence-medium { color: #FF9800; font-weight: 600; }
-    .confidence-low { color: #f44336; font-weight: 600; }
-
-    /* Metrics */
-    .metrics { display: flex; gap: 20px; margin-top: 15px; }
-    .metric-box {
-      flex: 1;
-      padding: 15px;
-      background: #f9f9f9;
-      border-radius: 6px;
-      text-align: center;
-    }
-    .metric-value { font-size: 2em; font-weight: 700; color: #333; }
-    .metric-label { font-size: 0.9em; color: #666; margin-top: 5px; }
-  </style>
+  <title>Fletta Debug — ${escapeHtml(report.testName)}</title>
+  <script>${REPORT_THEME_INIT}</script>
+  <script>${REPORT_EMBED_DETECT}</script>
+  <style>${REPORT_STYLES}${EMBED_STYLES}</style>
 </head>
 <body>
+  ${REPORT_ICONS_SVG}
+
   <div class="container">
-    <h1>Fletta Debug Report</h1>
+    ${header}
 
-    ${statusBanner}
+    ${getStatusCallout(status, report)}
 
-    <div class="summary">
-      <strong>Test:</strong> ${escapeHtml(report.testName)}<br>
-      <strong>Timestamp:</strong> ${report.timestamp}<br>
-      <strong>Duration:</strong> ${report.duration_ms}ms<br>
-      <strong>Elements Scanned:</strong> ${getTotalElements(report)}
-    </div>
-
-    <div class="metrics">
-      <div class="metric-box">
-        <div class="metric-value">${report.steps.length}</div>
-        <div class="metric-label">Steps Executed</div>
-      </div>
-      <div class="metric-box">
-        <div class="metric-value">${report.clusters.length}</div>
-        <div class="metric-label">DOM Clusters</div>
-      </div>
-      <div class="metric-box">
-        <div class="metric-value">${report.healing.top_candidates.length}</div>
-        <div class="metric-label">Candidates Found</div>
-      </div>
-    </div>
-
-    <div class="timeline">
-      <h2>Execution Timeline</h2>
-      ${report.steps.map(step => {
-        const stepStatus = getStepStatus(step, report);
-        return `
-        <div class="step step-${stepStatus}">
-          <span class="step-name">${formatStepName(step.name)}</span>
-          <span class="step-duration">${step.duration_ms}ms</span>
-          <span class="step-output">${formatStepOutput(step)}</span>
-        </div>
-      `;
-      }).join('')}
-    </div>
-
-    <div class="clusters">
-      <h2>DOM Clusters (${report.clusters.length})</h2>
-      ${report.clusters.map(cluster => `
-        <div class="cluster">
-          <div class="cluster-header">${escapeHtml(cluster.prefix)} (${cluster.element_count} elements)</div>
-          <div class="cluster-elements">
-            ${cluster.elements.map(e => escapeHtml(e.selector)).join(', ')}
+    <section class="section">
+      <h2>Summary</h2>
+      <div class="panel summary-panel">
+        <dl class="meta-list">
+          <div><strong>Test</strong> — ${escapeHtml(report.testName)}</div>
+          <div><strong>Timestamp</strong> — ${escapeHtml(report.timestamp)}</div>
+          <div><strong>Duration</strong> — ${report.duration_ms}ms</div>
+          <div><strong>Elements scanned</strong> — ${getTotalElements(report)}</div>
+        </dl>
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-value">${report.steps.length}</div>
+            <div class="metric-label">Steps</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">${report.clusters.length}</div>
+            <div class="metric-label">Clusters</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">${report.healing.top_candidates.length}</div>
+            <div class="metric-label">Candidates</div>
           </div>
         </div>
-      `).join('')}
-    </div>
-
-    <div class="decision">
-      <h2>Healing Decision</h2>
-      <div class="${getDecisionClass(status)}">
-        ${getDecisionIcon(status)} ${getDecisionText(status, report)}
       </div>
-      <p>Selector: <code>${escapeHtml(report.healing.selector) || 'N/A'}</code></p>
-      <p>Confidence: <span class="${getConfidenceClass(report.healing.confidence)}">${report.healing.confidence.toFixed(2)}</span></p>
-      ${getFailureReason(report)}
+    </section>
 
-      <h3>Top Candidates</h3>
-      <table class="candidates-table">
-        <tr><th>Rank</th><th>Selector</th><th>Confidence</th></tr>
-        ${report.healing.top_candidates.map((c, i) => `
-          <tr>
-            <td>${i + 1}</td>
-            <td><code>${escapeHtml(c.selector)}</code></td>
-            <td class="${getConfidenceClass(c.confidence)}">${c.confidence.toFixed(2)}</td>
-          </tr>
+    <section class="section">
+      <h2>Execution timeline</h2>
+      <div class="panel">
+        <div class="element-list">
+          ${report.steps.map(step => renderTimelineStep(step, report)).join('')}
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>DOM clusters (${report.clusters.length})</h2>
+      <div class="panel">
+        ${report.clusters.length === 0
+          ? '<p style="color:var(--text-muted);font-size:0.875rem">No clusters recorded.</p>'
+          : report.clusters.map(cluster => `
+          <div class="cluster-block">
+            <div class="cluster-prefix">${escapeHtml(cluster.prefix)} <span style="color:var(--text-muted);font-weight:400">(${cluster.element_count})</span></div>
+            <div class="cluster-elements">${cluster.elements.map(e => escapeHtml(e.selector)).join(', ')}</div>
+          </div>
         `).join('')}
-      </table>
-    </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Healing decision</h2>
+      <div class="panel">
+        <div class="decision-line">
+          ${getDecisionTag(status, report)}
+        </div>
+        <dl class="meta-list">
+          <div><strong>Selector</strong> — <code>${escapeHtml(report.healing.selector) || 'N/A'}</code></div>
+          <div><strong>Confidence</strong> — <span class="${getConfidenceValueClass(report.healing.confidence)}">${report.healing.confidence.toFixed(2)}</span></div>
+        </dl>
+        ${getSemanticsMeta(report)}
+        ${getFailureReason(status, report)}
+
+        <h3>Top candidates</h3>
+        ${renderCandidates(report)}
+      </div>
+    </section>
+
+    <footer class="report-footer">
+      Generated by Fletta · warm neutrals report theme
+    </footer>
   </div>
+
+  <script>${REPORT_EMBED_THEME_LISTENER}</script>
+  <script>${REPORT_THEME_TOGGLE}</script>
 </body>
 </html>`;
 
-  const htmlPath = path.join(outputDir, 'fletta-debug.html');
+  const htmlPath = path.join(outputDir, htmlFileName);
   fs.writeFileSync(htmlPath, html);
   console.log(`[fletta:debug] HTML report: ${htmlPath}`);
   return htmlPath;
 }
 
-type StatusType = 'success' | 'warning' | 'failure';
+export function generateClassicIndexHtml(reportDir: string, manifest: DebugManifest): void {
+  const grouped = renderGroupedIndexList(manifest);
+  const summary = renderIndexSummary(manifest);
 
-function getOverallStatus(report: DebugReport): StatusType {
-  if (report.healing.healed) return 'success';
+  const html = `<!DOCTYPE html>
+<html lang="en" data-theme="light" data-palette="warm-neutrals-semantic">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fletta Debug Reports</title>
+  <script>${REPORT_THEME_INIT}</script>
+  <style>${REPORT_STYLES}</style>
+</head>
+<body>
+  ${REPORT_ICONS_SVG}
+  <div class="container">
+    ${renderReportHeader({
+      title: 'Fletta',
+      subtitle: `${manifest.reportCount} tests with debug enabled · run ${manifest.generatedAt}`,
+      explorerHref: 'fletta-debug-explorer.html',
+      showExplorerLink: true,
+    })}
+    <section class="section">
+      <div class="index-hero">
+        <h2>Debug reports</h2>
+        ${summary}
+      </div>
+      <p class="index-hint">Only tests with <code>debug: true</code> appear here. Open <a class="nav-view-link" href="fletta-debug-explorer.html">Explorer view (B)</a> for sidebar navigation.</p>
+      <div class="panel">${grouped}</div>
+    </section>
+  </div>
+  <script>${REPORT_THEME_TOGGLE}</script>
+</body>
+</html>`;
 
-  // Check if failed due to ambiguity
-  const decisionStep = report.steps.find(s => s.name === 'healing_decision');
-  if (decisionStep?.output) {
-    const output = decisionStep.output as Record<string, unknown>;
-    if (output.reason === 'ambiguous') return 'warning';
-  }
-
-  return 'failure';
+  const indexPath = path.join(reportDir, 'fletta-debug.html');
+  fs.writeFileSync(indexPath, html);
+  console.log(
+    `[fletta:debug] Classic index: ${indexPath} (${manifest.reportCount} reports)`
+  );
 }
 
-function getStatusColor(status: StatusType): string {
-  switch (status) {
-    case 'success': return '#4CAF50';
-    case 'warning': return '#FF9800';
-    case 'failure': return '#f44336';
+export function generateAllDebugHtml(reportDir: string): DebugManifest | null {
+  const subDir = path.join(reportDir, 'debug-reports');
+  const items: Array<{ report: DebugReport; jsonFileName: string; htmlName: string }> = [];
+
+  if (fs.existsSync(subDir)) {
+    for (const file of fs.readdirSync(subDir).filter(f => f.endsWith('.json') && f !== 'manifest.json').sort()) {
+      const report = JSON.parse(
+        fs.readFileSync(path.join(subDir, file), 'utf-8')
+      ) as DebugReport;
+      const htmlName = file.replace(/\.json$/, '.html');
+      items.push({ report, jsonFileName: file, htmlName });
+    }
   }
+
+  const legacyJson = path.join(reportDir, 'fletta-debug.json');
+  if (items.length === 0 && fs.existsSync(legacyJson)) {
+    const report = JSON.parse(fs.readFileSync(legacyJson, 'utf-8')) as DebugReport;
+    generateDebugHtml(report, reportDir);
+    return null;
+  }
+
+  if (items.length === 0) {
+    return null;
+  }
+
+  const manifest = buildManifest(
+    items.map(({ report, jsonFileName }) => ({ report, jsonFileName }))
+  );
+  writeManifest(reportDir, manifest);
+
+  for (const item of items) {
+    generateDebugHtml(item.report, subDir, {
+      htmlFileName: item.htmlName,
+      manifest,
+      currentEntryId: item.jsonFileName.replace(/\.json$/, ''),
+    });
+  }
+
+  if (items.length === 1) {
+    fs.copyFileSync(
+      path.join(subDir, items[0].htmlName),
+      path.join(reportDir, 'fletta-debug.html')
+    );
+    generateDebugExplorerPage(reportDir, manifest);
+    return manifest;
+  }
+
+  generateClassicIndexHtml(reportDir, manifest);
+  generateDebugExplorerPage(reportDir, manifest);
+  return manifest;
 }
 
-function getStatusBanner(status: StatusType, report: DebugReport): string {
-  const titles = {
-    success: '✓ HEALING SUCCESSFUL',
-    warning: '⚠ HEALING WARNING',
-    failure: '✗ HEALING FAILED'
-  };
+function getSemanticsMeta(report: DebugReport): string {
+  if (!report.semantics) return '';
+  const s = report.semantics;
+  return `
+        <dl class="meta-list semantics-meta">
+          <div><strong>Trigger</strong> — <code>${escapeHtml(s.trigger)}</code></div>
+          <div><strong>Policy</strong> — <code>${escapeHtml(s.policy)}</code></div>
+          <div><strong>Outcome</strong> — <code>${escapeHtml(s.outcome)}</code></div>
+        </dl>`;
+}
 
-  const subtitles = {
-    success: `Element found with confidence ${report.healing.confidence.toFixed(2)}`,
-    warning: 'Multiple similar candidates detected',
-    failure: report.healing.top_candidates.length === 0
-      ? 'No matching candidates found'
-      : 'Confidence below threshold'
-  };
+function getStatusCallout(status: DebugStatusType, report: DebugReport): string {
+  const unexpected = report.semantics?.outcome === 'unexpected_heal';
+  const noHealingNeeded = isElementFoundWithoutHealing(report);
+  const config = {
+    success: {
+      class: 'callout-success',
+      icon: 'icon-check',
+      title: noHealingNeeded
+        ? 'No healing needed'
+        : unexpected
+          ? 'Unexpected heal'
+          : 'Healing successful',
+      sub: noHealingNeeded
+        ? `Selector matched: ${report.healing.selector}`
+        : unexpected
+          ? `Healing ran but policy is "${report.semantics!.policy}" (stable UI gate violated)`
+          : `Element found with confidence ${report.healing.confidence.toFixed(2)}`,
+    },
+    warning: {
+      class: 'callout-warning',
+      icon: 'icon-warning',
+      title: unexpected ? 'Unexpected heal' : 'Healing warning',
+      sub: unexpected
+        ? `Policy "${report.semantics!.policy}" forbids healing on this test`
+        : 'Multiple similar candidates detected',
+    },
+    failure: {
+      class: 'callout-failure',
+      icon: 'icon-warning',
+      title: 'Healing failed',
+      sub: report.healing.top_candidates.length === 0
+        ? 'No matching candidates found'
+        : 'Confidence below threshold',
+    },
+  }[status];
 
   return `
-    <div class="status-banner status-${status}">
-      <div>${titles[status]}</div>
-      <div style="font-size: 0.6em; margin-top: 8px; opacity: 0.9;">${subtitles[status]}</div>
+    <div class="callout ${config.class}">
+      <svg class="icon icon--md callout-icon" aria-hidden="true"><use href="#${config.icon}"/></svg>
+      <div>
+        <span class="callout-title">${config.title}</span>
+        <span class="callout-sub">${config.sub}</span>
+      </div>
     </div>
   `;
 }
 
-function getDecisionClass(status: StatusType): string {
-  return `decision-${status === 'success' ? 'healed' : status}`;
-}
-
-function getDecisionIcon(status: StatusType): string {
-  switch (status) {
-    case 'success': return '✓';
-    case 'warning': return '⚠';
-    case 'failure': return '✗';
+function getDecisionTag(status: DebugStatusType, report: DebugReport): string {
+  if (report.semantics?.outcome === 'unexpected_heal') {
+    return `<span class="tag tag-drift"><svg class="icon icon--sm" aria-hidden="true"><use href="#icon-warning"/></svg> unexpected heal · ${report.healing.confidence.toFixed(2)}</span>`;
   }
-}
-
-function getDecisionText(status: StatusType, report: DebugReport): string {
+  if (isElementFoundWithoutHealing(report)) {
+    return `<span class="tag tag-stable"><svg class="icon icon--sm" aria-hidden="true"><use href="#icon-check"/></svg> no healing needed</span>`;
+  }
   if (status === 'success') {
-    return `HEALED (confidence: ${report.healing.confidence.toFixed(2)})`;
+    return `<span class="tag tag-stable"><svg class="icon icon--sm" aria-hidden="true"><use href="#icon-check"/></svg> healed · ${report.healing.confidence.toFixed(2)}</span>`;
   }
   if (status === 'warning') {
-    return 'AMBIGUOUS - Multiple similar candidates';
+    return `<span class="tag tag-drift"><svg class="icon icon--sm" aria-hidden="true"><use href="#icon-warning"/></svg> ambiguous</span>`;
   }
-  return 'FAILED - No suitable element found';
+  return `<span class="tag tag-failed"><svg class="icon icon--sm" aria-hidden="true"><use href="#icon-warning"/></svg> failed</span>`;
 }
 
-function getFailureReason(report: DebugReport): string {
+function renderTimelineStep(step: DebugStep, report: DebugReport): string {
+  const stepStatus = getStepStatus(step, report);
+  const tagClass = stepStatus === 'success' ? 'tag-stable' : stepStatus === 'warning' ? 'tag-drift' : 'tag-failed';
+  const output = formatStepOutput(step);
+
+  return `
+    <div class="element-item">
+      <span class="tag ${tagClass}">${stepStatus}</span>
+      <span class="element-name">${formatStepName(step.name)}</span>
+      <span class="step-meta">
+        ${step.duration_ms}ms
+        ${output ? `<span class="step-output">${escapeHtml(output)}</span>` : ''}
+      </span>
+    </div>
+  `;
+}
+
+function renderCandidates(report: DebugReport): string {
+  const candidates = report.healing.top_candidates;
+  if (candidates.length === 0) {
+    return '<p style="color:var(--text-muted);font-size:0.875rem">No candidates ranked.</p>';
+  }
+
+  return `
+    <table class="candidates-table">
+      <thead><tr><th>#</th><th>Selector</th><th>Confidence</th></tr></thead>
+      <tbody>
+        ${candidates.map((c, i) => `
+          <tr>
+            <td>${i + 1}</td>
+            <td><code>${escapeHtml(c.selector)}</code></td>
+            <td class="${getConfidenceValueClass(c.confidence)}">${c.confidence.toFixed(2)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function getFailureReason(status: DebugStatusType, report: DebugReport): string {
+  if (status === 'success') return '';
+
   const decisionStep = report.steps.find(s => s.name === 'healing_decision');
   if (!decisionStep?.output) return '';
 
@@ -284,27 +389,21 @@ function getFailureReason(report: DebugReport): string {
   if (!output.reason || output.healed) return '';
 
   const reasons: Record<string, string> = {
-    'no_candidates': 'No candidates met minimum confidence threshold (0.5)',
-    'threshold_not_met': `Best candidate confidence (${output.confidence}) below threshold`,
-    'ambiguous': 'Top candidates too similar (difference < 0.1)',
+    no_candidates: 'No candidates met minimum confidence threshold (0.5)',
+    threshold_not_met: `Best candidate confidence (${output.confidence}) below threshold`,
+    ambiguous: 'Top candidates too similar (difference < 0.1)',
   };
 
-  return `<p style="color: #f44336; background: #ffebee; padding: 10px; border-radius: 4px; margin-top: 10px;">
-    <strong>Reason:</strong> ${reasons[output.reason as string] || output.reason}
-  </p>`;
-}
+  const text = reasons[output.reason as string] || String(output.reason);
 
-function getStepStatus(step: DebugStep, report: DebugReport): StatusType {
-  if (step.name === 'healing_decision') {
-    return getOverallStatus(report);
-  }
-  if (step.name === 'candidates_ranked') {
-    const output = step.output as Record<string, unknown> | undefined;
-    const top3 = output?.top_3 as Array<{confidence: number}> | undefined;
-    if (!top3 || top3.length === 0) return 'failure';
-    if (top3.length > 1 && top3[0].confidence - top3[1].confidence < 0.1) return 'warning';
-  }
-  return 'success';
+  const calloutClass = status === 'warning' ? 'callout-warning' : 'callout-failure';
+
+  return `
+    <div class="callout ${calloutClass}" style="margin-top:1rem;margin-bottom:0">
+      <svg class="icon icon--md callout-icon" aria-hidden="true"><use href="#icon-warning"/></svg>
+      <div><span class="callout-title">Reason</span><span class="callout-sub">${escapeHtml(text)}</span></div>
+    </div>
+  `;
 }
 
 function getTotalElements(report: DebugReport): number {
@@ -312,15 +411,6 @@ function getTotalElements(report: DebugReport): number {
   if (!domStep?.output) return 0;
   const output = domStep.output as Record<string, unknown>;
   return (output.total_elements as number) || (output.element_count as number) || 0;
-}
-
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
 }
 
 function formatStepName(name: string): string {
@@ -337,7 +427,7 @@ function formatStepOutput(step: DebugStep): string {
     return `Candidates: ${output.candidates_found}`;
   }
   if (step.name === 'candidates_ranked') {
-    const top3 = (output.top_3 as Array<{confidence: number}>) || [];
+    const top3 = (output.top_3 as Array<{ confidence: number }>) || [];
     return `Top: ${top3[0]?.confidence.toFixed(2) || 'N/A'}`;
   }
   if (step.name === 'healing_decision') {
@@ -346,8 +436,8 @@ function formatStepOutput(step: DebugStep): string {
   return '';
 }
 
-function getConfidenceClass(confidence: number): string {
-  if (confidence >= 0.85) return 'confidence-high';
-  if (confidence >= 0.5) return 'confidence-medium';
-  return 'confidence-low';
+function getConfidenceValueClass(confidence: number): string {
+  if (confidence >= 0.85) return 'confidence-value--high';
+  if (confidence >= 0.5) return 'confidence-value--medium';
+  return 'confidence-value--low';
 }

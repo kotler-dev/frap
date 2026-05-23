@@ -3,24 +3,37 @@
 Каталог сценариев для демонстрации, тестирования и разработки.
 Каждый кейс имеет ID, привязан к фичам, содержит пошаговый сценарий.
 
-**PoC / benchmark (быстрая проверка):** CP001–CP005 — см. [benchmark.md](./benchmark.md).  
+**Conference demo (E2E):** [e2e/conference/README.md](../e2e/conference/README.md) · кейсы `CONF-*` · [CASES.md](../project/cases/conference/CASES.md)  
+**PoC / benchmark:** CP001–CP005 (исторические ID) — см. [benchmark.md](./benchmark.md).  
 **Полные демо:** C001–C008 ниже.
 
 ---
 
-## PoC Cases (CP001–CP005)
+## Conference demo (CONF-*)
 
-Корневые кейсы для доказательства работоспособности за 1 неделю. Детали, метрики, gates: [benchmark.md](./benchmark.md).
+Основной автоматизированный demo-проект: **FixtureConf 2026 Spring**. Прогон: `./scripts/test.sh conference`.
 
-| ID | Название | Цель | Фичи | Gate |
-|----|----------|------|------|------|
-| CP001 | Happy path | Adapter не ломает стабильные тесты | F008 | 0 heals |
-| CP002 | Refactor heal | Core value — починили testid | F001, F008 | PASS + report |
-| CP003 | Safe fail | Нет ложного клика | F001 | FAIL + top-3 |
-| CP004 | Role locator | Дополняем Playwright, не заменяем | F008 | control + heal |
-| CP005 | CI export | JUnit/артефакты в pipeline | F008 | artifact in CI |
+| Было (CP) | Стало (CONF) |
+|-----------|----------------|
+| CP001 | CONF-PW-REG-PASS |
+| CP002 | CONF-SH-SCHED-PASS |
+| CP003 | CONF-SH-CFP-FAIL |
 
-**Порядок прогона PoC:** CP001 → CP002 → CP003 → CP004 → CP005.
+Полная матрица (pass + fail на каждую возможность Fletta): [project/cases/conference/CASES.md](../project/cases/conference/CASES.md).
+
+---
+
+## PoC Cases (CP001–CP005, legacy IDs)
+
+Исторические идентификаторы gates; реализация перенесена в Conference demo. Детали: [benchmark.md](./benchmark.md).
+
+| ID | Название | CONF-* |
+|----|----------|--------|
+| CP001 | Happy path | CONF-PW-REG-PASS |
+| CP002 | Refactor heal | CONF-SH-SCHED-PASS |
+| CP003 | Safe fail | CONF-SH-CFP-FAIL |
+| CP004 | Role locator | CONF-PW-SPK-PASS (+ будущие) |
+| CP005 | CI export | CONF-RPT-RUN-PASS |
 
 ---
 
