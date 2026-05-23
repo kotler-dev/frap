@@ -4,7 +4,7 @@
 
 - **Epic**: Integration → Playwright
 - **Roll-up target**: ## MVP v1.0.0
-- **Status**: in-progress
+- **Status**: done
 - **Target release**: v1.0.0
 - **Created**: 2026-05-20
 - **Related cases**: C001, C004, CP001–CP005
@@ -43,7 +43,7 @@
 - [x] Wrapper: `withFletta(page.getByTestId('pay-btn'))` работает
 - [x] CP001 проходит: stable тест без healing
 - [x] CP002 проходит: heal при смене testid
-- [ ] CP005 проходит: JUnit XML артефакт в CI
+- [x] CP005 проходит: JUnit XML артефакт в CI (`e2e/conference/verify-reports.mjs`, artifact `fletta-conference-reports`)
 - [x] Документация: quick start < 15 минут
 
 ### Implementation Status

@@ -11,12 +11,18 @@ description = "Fletta Core — public API aggregation (signature, clustering, he
 name = "fletta_core"
 crate-type = ["rlib", "cdylib"]
 
+[features]
+default = []
+wasm = ["dep:wasm-bindgen", "dep:getrandom"]
+
 [dependencies]
 serde = { workspace = true }
 serde_json = { workspace = true }
 signature = { path = "../signature" }
 clustering = { path = "../clustering" }
 healing = { path = "../healing" }
+wasm-bindgen = { workspace = true, optional = true }
+getrandom = { version = "0.3", features = ["wasm_js"], optional = true }
 
 [dev-dependencies]
 serde_json = { workspace = true }

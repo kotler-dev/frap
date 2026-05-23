@@ -4,7 +4,7 @@
 
 - **Epic**: Core → Self-Healing
 - **Roll-up target**: ## MVP v1.0.0
-- **Status**: in-progress
+- **Status**: done
 - **Target release**: v1.0.0
 - **Created**: 2026-05-20
 - **Related cases**: C001, CP001, CP002, CP003
@@ -53,7 +53,7 @@
 | Signature extraction | ✅ | `crates/signature/src/lib.rs` |
 | Clustering (Drain3) | ✅ | `crates/clustering/src/lib.rs` |
 | Healing engine | ✅ | `crates/healing/src/lib.rs` |
-| TS SDK bindings | ✅ | `sdk/typescript/src/core.ts` |
+| TS SDK (WASM runtime) | ✅ | `sdk/typescript/src/core.ts` → `fletta_core` WASM |
 | Algorithm tests | ✅ | Unit tests in each crate |
 | E2E tests (CP001-CP003) | ✅ | `e2e/*.spec.ts` |
 

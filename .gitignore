@@ -47,4 +47,5 @@ e2e/fletta-reports/
 
 # WASM
 pkg/
+sdk/typescript/wasm/
 *.wasm

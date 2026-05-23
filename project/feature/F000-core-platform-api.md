@@ -4,7 +4,7 @@
 
 - **Epic**: Core → Platform API
 - **Roll-up target**: ## MVP v1.0.0
-- **Status**: draft
+- **Status**: done (P0 WASM); P1 FFI → v1.4.0
 - **Target release**: v1.0.0
 - **Created**: 2026-05-22
 - **Related cases**: CP001, CP002, CP003, F001, F008, F006
@@ -52,10 +52,10 @@
 ### P0 — v1.0.0 MVP (критично)
 
 - [x] `crates/core` — публичный Rust API (re-export signature / clustering / healing)
-- [ ] WASM: `wasm-pack build`, функции `extract_signature` / `heal` → JSON
-- [ ] CI: сборка WASM + `cargo test` для core
-- [ ] `@fletta/sdk`: `HealingEngine` вызывает WASM (TS-fallback только в dev или удалён)
-- [ ] E2E CP001–CP003 проходят на WASM-пути
+- [x] WASM: `wasm-pack build`, `healJson` → JSON (`crates/core/src/wasm.rs`)
+- [x] CI: сборка WASM + `cargo test` для core
+- [x] `@fletta/sdk`: `HealingEngine` вызывает WASM (`FLETTA_TS_FALLBACK=1` для dev)
+- [x] Conference E2E (CP001–CP005 gates) на WASM-пути
 
 ### P1 — v1.4.0 Java (отложено)
 

@@ -5,6 +5,9 @@
 
 mod error;
 
+#[cfg(feature = "wasm")]
+pub mod wasm;
+
 pub use error::CoreError;
 
 // Algorithm crates (also available as `fletta_core::signature`, etc.)
@@ -155,6 +158,60 @@ mod tests {
         assert!(!result.healed);
         assert_eq!(result.selector, selector);
         assert_eq!(result.confidence, 1.0);
+    }
+
+    #[test]
+    fn schedule_heal_json_does_not_panic() {
+        let request = HealRequest {
+            primary_selector: "[data-testid='talk-open-healing']".to_string(),
+            original_signature: Signature {
+                path: vec![
+                    DOMToken {
+                        tag: "main".to_string(),
+                        role: None,
+                        semantic_type: None,
+                        structural_class: None,
+                        depth: 0,
+                    },
+                    DOMToken {
+                        tag: "a".to_string(),
+                        role: None,
+                        semantic_type: None,
+                        structural_class: None,
+                        depth: 2,
+                    },
+                ],
+                prefix: "main:->a:-".to_string(),
+                stable_attrs: [("data-testid".to_string(), "talk-open-healing".to_string())].into(),
+                text_content: Some("Смотреть доклад".to_string()),
+                position_in_parent: None,
+                children_hash: 0,
+                depth: 3,
+            },
+            dom_snapshot: DOMSnapshot {
+                html: String::new(),
+                elements: vec![DOMElementInfo {
+                    selector: "[data-testid='talk-card-open-healing']".to_string(),
+                    tag: "a".to_string(),
+                    attributes: [("data-testid".to_string(), "talk-card-open-healing".to_string())]
+                        .into(),
+                    text_content: Some("Смотреть доклад".to_string()),
+                    path: vec![
+                        "body:-".to_string(),
+                        "main:-".to_string(),
+                        "div:-".to_string(),
+                        "a:-".to_string(),
+                    ],
+                }],
+            },
+            min_confidence: Some(0.7),
+        };
+
+        let json = serde_json::to_string(&request).expect("serialize");
+        let mut core = FlettaCore::new();
+        let out = core.heal_json(&json).expect("heal_json");
+        let result: HealResult = serde_json::from_str(&out).expect("parse");
+        assert!(result.healed, "expected heal: {:?}", result);
     }
 
     #[test]

@@ -4,7 +4,7 @@
 
 - **Epic**: SDK → TypeScript
 - **Roll-up target**: ## MVP v1.0.0
-- **Status**: in-progress
+- **Status**: done
 - **Target release**: v1.0.0
 - **Created**: 2026-05-23
 - **Related cases**: CP001, CP002, CP003, CP004, CP005, C001, C004
@@ -42,15 +42,16 @@
 - [x] `HealingEngine.heal()` возвращает `HealResult` с confidence и candidates
 - [x] E2e используют SDK через `file:../sdk/typescript`
 - [x] F008 adapter зависит от `@fletta/sdk`
-- [ ] WASM Core подключён напрямую (сейчас TS-реализация алгоритмов; миграция на F000 WASM)
-- [ ] Документация: API reference в README SDK
+- [x] WASM Core подключён: `healJson` из `sdk/typescript/wasm/`
+- [x] Документация: API reference в `sdk/typescript/README.md`
 
 ### Implementation Status
 
 | Component | Status | Location |
 |-----------|--------|----------|
 | Package | ✅ | `sdk/typescript/package.json` |
-| Core engine | ⚠️ | `sdk/typescript/src/core.ts` |
+| Core engine (WASM) | ✅ | `sdk/typescript/src/core.ts` |
+| TS fallback (dev) | ✅ | `sdk/typescript/src/core-fallback.ts` |
 | Config | ✅ | `sdk/typescript/src/config.ts` |
 | Debug / F012 | ✅ | `sdk/typescript/src/debug.ts` |
 | Healing semantics | ✅ | `sdk/typescript/src/healing-semantics.ts` |

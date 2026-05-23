@@ -199,6 +199,19 @@ pub fn calculate_attribute_bonus(original: &Signature, candidate: &Signature) ->
         }
     }
 
+    if let (Some(orig_tid), Some(cand_tid)) = (
+        original.stable_attrs.get("data-testid"),
+        candidate.stable_attrs.get("data-testid"),
+    ) {
+        if orig_tid != cand_tid {
+            let orig_parts: Vec<&str> = orig_tid.split(&['-', '_'][..]).filter(|p| p.len() > 2).collect();
+            let cand_parts: Vec<&str> = cand_tid.split(&['-', '_'][..]).filter(|p| p.len() > 2).collect();
+            if orig_parts.iter().any(|p| cand_parts.iter().any(|c| c.contains(p) || p.contains(c))) {
+                bonus += 0.15;
+            }
+        }
+    }
+
     bonus
 }
 
