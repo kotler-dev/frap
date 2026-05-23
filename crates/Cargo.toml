@@ -1,5 +1,5 @@
 [workspace]
-members = ["signature", "clustering", "healing", "core", "context"]
+members = ["signature", "clustering", "healing", "core", "context", "rca"]
 resolver = "2"
 
 [workspace.package]

@@ -4,7 +4,7 @@
 
 - **Epic**: Feature → Analysis
 - **Roll-up target**: ## v1.1.0 (Context Layer)
-- **Status**: in-progress
+- **Status**: done
 - **Target release**: v1.1.0
 - **Created**: 2026-05-20
 - **Related cases**: C002, C003
@@ -36,12 +36,12 @@
 
 ## Acceptance criteria
 
-- [ ] Классификация: UI-change, API-error, Infrastructure, Flaky, Unknown
-- [ ] C002: при API timeout классифицируется как API-error
-- [ ] C003: при flaky тесте классифицируется как Flaky с паттерном
-- [ ] RCA-репорт содержит: primary cause, confidence, timeline excerpt, recommendation
-- [ ] JSON формат для MCP: `fletta/analyze` tool
-- [ ] Экспорт в JUnit: `<failure message="...">` с RCA
+- [x] Классификация: UI-change, API-error, Infrastructure, Flaky, Unknown
+- [x] C002: при API timeout классифицируется как API-error
+- [x] C003: при flaky тесте классифицируется как Flaky с паттерном
+- [x] RCA-репорт содержит: primary cause, confidence, timeline excerpt, recommendation
+- [x] JSON формат для MCP: `fletta/analyze` tool (stub)
+- [x] Экспорт в JUnit: `<failure message="...">` с RCA
 
 ## Implementation notes (sketch)
 
