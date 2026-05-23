@@ -74,6 +74,10 @@ await withFletta(page.getByTestId('pay-btn')).click();
 
 ## Selenium / Java (roadmap P4, зафиксировано для банка)
 
+**Минимальная интеграция** (JUnit 5 + Selenium + Page Object, фазы 0–2, CI): **[integrations-selenium-java.md](./integrations-selenium-java.md)**.
+
+**SDK Java / TypeScript / Python:** [sdk-strategy.md](../project/architecture/sdk-strategy.md).
+
 ### JUnit 5
 
 ```java

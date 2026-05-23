@@ -52,9 +52,12 @@ fletta/
 | Сценарии и кейсы | `project/cases/` |
 | Архитектура ядра | `project/architecture/` |
 | Позиционирование, конкуренты | `docs/positioning.md` |
+| Боли, scope, copy для сайта/презентаций | `docs/pains.md` |
 | Целевая аудитория | `docs/audience.md` |
 | PoC gates и метрики | `docs/benchmark.md` |
 | Интеграции | `docs/integrations.md` |
+| Selenium/Java (банк) | `docs/integrations-selenium-java.md` |
+| SDK (Java, TS, Python) | `project/architecture/sdk-strategy.md` |
 | Монетизация | `docs/monetization.md` |
 
 ## Принципы

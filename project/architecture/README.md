@@ -143,7 +143,7 @@ export class HealingEngine {
 project/architecture/
 ├── README.md           # Этот файл — обзор
 ├── core.md             # Детали Rust core
-├── sdk.md              # Детали SDK
+├── sdk-strategy.md     # SDK Java / TypeScript / Python
 ├── adapters.md         # Интеграции с фреймворками
 ├── platforms.md        # Мультиплатформа
 ├── mcp.md              # MCP/A2A протокол

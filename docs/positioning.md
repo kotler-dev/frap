@@ -41,21 +41,13 @@
 
 ### Immediate Value (почему пробовать сейчас)
 
-**Конкретные боли, которые решает Fletta сегодня:**
+Конкретные боли, границы scope, формулировки для сайта и конференций — **[pains.md](./pains.md)** (единый источник).
 
-1. **"Получи структурированную карту UI для PageObject за секунды, не часы"**
-   - Вручную анализировать DOM для XPath/CSS — долго и ошибкоёмко
-   - Fletta `discover` даёт готовую element map с confidence scores
+Кратко сегодня:
 
-2. **"Твои AI-агенты получают стабильный доступ к UI через MCP"**
-   - Playwright MCP позволяет агенту "видеть" страницу
-   - Fletta даёт структурированный element map — агент делает надёжные действия
-   - Метафора: **Fletta даёт AI-агенту надёжные руки и глаза**
-
-3. **"Без ML в core — работает в air-gapped environment"**
-   - Нет зависимости от OpenAI API
-   - Deterministic algorithms = reproducible results
-   - Bank-grade: нет утечки данных в облако
+1. **Структура UI за секунды** — `discover` → element map вместо часов ручного DOM.
+2. **Grounding для AI** — element map через MCP; метафора: надёжные руки и глаза.
+3. **On-prem, NO ML in core** — air-gapped, bank-grade, воспроизводимый результат.
 
 ### Long-term Vision (куда растём)
 
@@ -117,18 +109,9 @@ Fletta Core (grounding layer, внутри)
 
 ## Проблема (Problem)
 
-Команды тратят значительное время на ручной reverse engineering UI для создания PageObject и тестовых сценариев. При изменениях фронтенда приходится заново анализировать структуру и обновлять локаторы.
+Полный каталог болей (универсальные, по сегментам S1–S3), граница «что не решаем», готовые блоки для сайта и слайдов — **[pains.md](./pains.md)**.
 
-**Существующие инструменты:**
-- **Record-replay** (Playwright codegen, Selenium IDE) — дают хрупкий код, не maintainable PageObject
-- **Self-healing solutions** (Healenium, Testim) — лечат симптом (тест упал), не причину (структура непонятна)
-- **Code generation** — требует стабильных идентификаторов, которые ломаются при рефакторинге
-- **AI-агенты** — не имеют структурированного доступа к UI, действуют наугад по скриншотам/DOM
-
-**Enterprise ограничения:**
-- Банки/регулируемые индустрии не могут использовать облачные ML API
-- Нужен audit trail: "почему тест решил кликнуть сюда?"
-- Требуется on-prem deployment без внешних зависимостей
+Кратко: команды тратят время на reverse engineering UI и поддержку локаторов; существующие record-replay и opaque self-healing не дают maintainable PageObject и audit; enterprise требует on-prem и объяснимости без облачного ML.
 
 ---
 
@@ -292,6 +275,7 @@ Fletta Core (grounding layer, внутри)
 
 ## Связанные документы
 
+- [pains.md](./pains.md) — боли, scope, copy для сайта и конференций
 - [audience.md](./audience.md) — целевая аудитория
 - [integrations.md](./integrations.md) — интеграция, не замена
 - [benchmark.md](./benchmark.md) — PoC-кейсы и метрики

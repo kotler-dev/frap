@@ -22,7 +22,7 @@
 
 **Кто:** Команды с годами e2e на Selenium 4, Page Object, JUnit/TestNG, Jenkins/GitLab CI.
 
-**Боли:**
+**Боли:** ([pains.md](./pains.md#s1-legacy-selenium--java-enterprise-банк))
 
 - Хрупкие XPath/CSS, дорогой рефакторинг POM.
 - Healenium тяжёлый (ML, proxy, PostgreSQL) или не проходит security.
@@ -36,7 +36,7 @@
 
 **Сообщение:** «Стабилизируйте Selenium без ML и без облака — с аудитом в CI.»
 
-**Интеграция:** Selenium wrapper / listener → см. [integrations.md](./integrations.md).
+**Интеграция:** [integrations-selenium-java.md](./integrations-selenium-java.md) (минимальный путь); обзор — [integrations.md](./integrations.md).
 
 ---
 
@@ -44,7 +44,7 @@
 
 **Кто:** Новые и мигрирующие команды, e2e на Playwright, GitHub Actions / GitLab.
 
-**Боли:**
+**Боли:** ([pains.md](./pains.md#s2-playwright--typescript-mvp-wedge))
 
 - Даже getByRole ломается при смене текста/i18n/структуры.
 - Flaky из-за таймингов; непонятно UI vs API.
@@ -65,7 +65,7 @@
 
 **Кто:** Команды, которые тестируют продукты через LLM-агентов, MCP tools, мультиагентные flows.
 
-**Боли:**
+**Боли:** ([pains.md](./pains.md#s3-ai-native-qa-mcp-агенты))
 
 - Playwright MCP умеет **действовать**, но не **регрессировать и аудировать** стабильность тестов в CI.
 - Нет детерминированного отчёта по tool calls агента.
@@ -145,6 +145,7 @@
 
 ## Связанные документы
 
+- [pains.md](./pains.md) — боли, scope, copy для сайта и презентаций
 - [positioning.md](./positioning.md)
 - [integrations.md](./integrations.md)
 - [roadmap.md](./roadmap.md)

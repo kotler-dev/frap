@@ -9,6 +9,7 @@ docs/
 ├── README.md           # Этот файл — введение
 ├── index.md            # Связующий индекс (меню, маппинги)
 ├── positioning.md      # Позиционирование, one-liner, vs Playwright MCP
+├── pains.md            # Боли, scope, copy для сайта и конференций
 ├── audience.md         # ЦА: банк, InSourceHub, сегменты S1–S3
 ├── benchmark.md        # PoC/MVP gates, CP001–CP005, метрики
 ├── integrations.md     # Интеграция, не замена (Playwright, JUnit)
@@ -24,6 +25,7 @@ docs/
 | Задача | Документ |
 |--------|----------|
 | Питч, конкуренты, one-liner | [positioning.md](./positioning.md) |
+| Боли, сайт, презентация, конференция | [pains.md](./pains.md) |
 | Кого целим (банк, команды) | [audience.md](./audience.md) |
 | PoC за неделю | [benchmark.md](./benchmark.md) |
 | Playwright / JUnit | [integrations.md](./integrations.md) |
