@@ -217,4 +217,6 @@ jobs:
           path: |
             e2e/fletta-reports/context/fletta-context.json
             e2e/fletta-reports/context/fletta-context-events.jsonl
+            e2e/fletta-reports/context/fletta-rca.json
+            e2e/fletta-reports/context/junit.xml
           retention-days: 30
