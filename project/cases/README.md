@@ -21,6 +21,8 @@ project/cases/
 ├── README.md
 ├── conference/
 │   └── CASES.md
+├── C002-api-timeout.md
+├── C003-flaky-cart.md
 ├── poc/               # Исторические CP001–CP005 (документация gates)
 └── demo/              # Полные демо (C001–C009)
 ```
@@ -42,8 +44,8 @@ project/cases/
 | ID | Название | Фичи | Статус |
 |----|----------|------|--------|
 | C001 | Payment Button | F001 | concept |
-| C002 | API Timeout RCA | F002, F003 | concept |
-| C003 | Flaky Diagnosis | F001, F002, F003 | concept |
+| C002 | API Timeout RCA | F002, F003 | [validated](./C002-api-timeout.md) |
+| C003 | Flaky Diagnosis | F001, F002, F003 | [validated](./C003-flaky-cart.md) |
 | C004 | Page Object Gen | F004 | concept |
 | C005 | LLM Generation | F005 | concept |
 | C006 | Mobile Self-Healing | F006 | concept |

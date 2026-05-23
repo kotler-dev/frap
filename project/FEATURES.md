@@ -57,8 +57,8 @@
 
 | Фича | Статус | Severity | Release | Примечание |
 |------|--------|----------|---------|------------|
-| [F002: Unified Context](./feature/F002-unified-context.md) | ❌ | High | v1.1.0 | in progress — см. Subtasks в карточке |
-| [F003: Root Cause Analysis](./feature/F003-rca.md) | ❌ | High | v1.1.0 | in progress — см. Subtasks в карточке |
+| [F002: Unified Context](./feature/F002-unified-context.md) | ✅ | High | v1.1.0 | timeline + captureAll; C002/C003/C004 e2e |
+| [F003: Root Cause Analysis](./feature/F003-rca.md) | ⚠️ | High | v1.1.0 | in progress — F003.0–F003.5 |
 
 ---
 
@@ -119,8 +119,20 @@
 - [ ] F014: Java SDK & UI Adapters — JUnit 5 + WebDriver; Selenide P1
 
 ### v1.1.0 Context (in progress)
-- [ ] F002: Unified Context — timeline (F002.0–F002.5)
+- [x] F002: Unified Context — timeline (F002.0–F002.6)
 - [ ] F003: RCA — классификация причин (F003.0–F003.5)
+
+#### Подзадачи v1.1.0 (F002)
+
+| ID | Статус | Зависимости |
+|----|--------|-------------|
+| F002.0 Cases C002/C003 | ✅ | — |
+| F002.1 `crates/context` | ✅ | F002.0 (желательно) |
+| F002.2 Network capture | ✅ | F002.1 |
+| F002.3 Console capture | ✅ | F002.1 |
+| F002.4 Correlation + window | ✅ | F002.2, F002.3 |
+| F002.5 Report + `captureAll` | ✅ | F002.4 |
+| F002.6 WebSocket capture | ✅ | F002.2 |
 
 ### v1.2.0 AI
 - [ ] F005: MCP Integration — JSON-RPC сервер
@@ -134,17 +146,17 @@
 | Release | Всего | ✅ | ⚠️ | ❌ | Прогресс |
 |---------|-------|----|----|----|----------|
 | v1.0.0 | 5 | 5 | 0 | 0 | 100% |
-| v1.1.0 | 2 | 0 | 0 | 2 | 0% |
+| v1.1.0 | 2 | 1 | 1 | 0 | 75% |
 | v1.2.0 | 3 | 0 | 0 | 3 | 0% |
 | v1.4.0 | 1 | 0 | 0 | 1 | 0% |
 | backlog | 1 | 0 | 0 | 1 | 0% |
 | v2.0.0 | 3 | 0 | 0 | 3 | 0% |
 | v3.0.0 | 1 | 0 | 0 | 1 | 0% |
-| **Всего** | **16** | **5** | **0** | **11** | **31%** |
+| **Всего** | **16** | **6** | **1** | **9** | **41%** |
 
 ---
 
-*Обновлено: 2026-05-23*
+*Обновлено: 2026-05-24*
 
 ---
 
@@ -158,6 +170,8 @@ fletta/
 ├── adapters/playwright/ # Playwright adapter
 ├── test-app/           # FixtureConf pages (Conference demo)
 ├── e2e/conference/     # PoC gates CP001–CP005 (CONF-*)
+├── e2e/context/        # C002/C003/C004 context layer demos + verify-context.mjs
+├── crates/context/     # fletta-context (timeline, correlation, WebSocket model)
 └── .github/workflows/  # CI pipeline
 ```
 
@@ -167,7 +181,7 @@ fletta/
 - [x] TypeScript SDK: `HealingEngine` → WASM (`core.ts` + `core-fallback.ts` dev-only)
 - [x] Playwright adapter + JUnit/JSON reporter
 - [x] Conference E2E (CP001–CP005 gates) + `verify-reports.mjs`
-- [x] CI: Rust tests, WASM build, Conference E2E, JUnit artifact upload
+- [x] CI: Rust tests, WASM build, Conference E2E, Context Layer E2E, JUnit artifact upload
 
 ### Ожидает (v1.0.1 / v1.4.0)
 

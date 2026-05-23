@@ -9,6 +9,7 @@ import {
   loadAllHealingEvents,
 } from './healing-events';
 import { clearDebugReports } from '@fletta/sdk';
+import { clearContextBuffers, recordContextUiEvent, writeContextReport } from './context';
 
 export type { FlettaHealingEvent };
 /** @deprecated Use FlettaHealingEvent */
@@ -58,6 +59,15 @@ export class FlettaReporter implements Reporter {
       }
     }
 
+    if (this.config.captureAll && result.error) {
+      recordContextUiEvent(
+        this.config.reportDir,
+        testName,
+        'failure',
+        result.error.message
+      );
+    }
+
     if (result.error && this.config.enableHealing) {
       this.healingEvents.push({
         playwrightTestId: testName,
@@ -76,6 +86,9 @@ export class FlettaReporter implements Reporter {
     if (this.config.enableReporting && this.config.reportDir) {
       clearHealingEventsFile(this.config.reportDir);
       clearDebugReports(this.config.reportDir);
+      if (this.config.captureAll) {
+        clearContextBuffers(this.config.reportDir);
+      }
     }
   }
 
@@ -96,6 +109,13 @@ export class FlettaReporter implements Reporter {
 
     this.writeJsonReport(reportDir);
     this.writeJUnitReport(reportDir);
+
+    if (this.config.captureAll) {
+      const contextPath = writeContextReport(reportDir);
+      if (contextPath) {
+        console.log(`[fletta] Context report written to: ${contextPath}`);
+      }
+    }
 
     try {
       generateAllDebugHtml(reportDir);

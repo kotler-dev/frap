@@ -4,6 +4,14 @@ import { FlettaPlaywrightConfig, mergePlaywrightConfig } from './config';
 import { createFlettaSelectorEngine, initFlettaEngine, recordSignature } from './selector-engine';
 import { withFletta, getLastHealResult } from './wrapper';
 import { FlettaReporter, generateJsonReport } from './reporter';
+import {
+  attachFlettaContext,
+  recordContextUiEvent,
+  writeContextReport,
+  getContextTimeline,
+  clearContextBuffers,
+  loadAllContextEvents,
+} from './context';
 
 export { 
   withFletta, 
@@ -23,6 +31,16 @@ export {
   consumeHealingEvents,
 } from './healing-events';
 
+export {
+  attachFlettaContext,
+  recordContextUiEvent,
+  writeContextReport,
+  getContextTimeline,
+  clearContextBuffers,
+  loadAllContextEvents,
+};
+export type { ContextCaptureOptions } from './context';
+
 export function flettaPlaywright(
   userConfig?: Partial<FlettaPlaywrightConfig>
 ): Partial<PlaywrightTestConfig> {
@@ -38,6 +56,8 @@ export function flettaPlaywright(
     reportDir: config.reportDir,
     enableHealing: config.enableHealing,
     enableReporting: config.enableReporting,
+    captureAll: config.captureAll,
+    debug: config.debug,
   }]);
   
   const playwrightConfig: Partial<PlaywrightTestConfig> = {

@@ -22,6 +22,26 @@
 
 ---
 
+## Context Layer (F002)
+
+E2E gates C002–C004 (unified timeline):
+
+```bash
+./scripts/test.sh context
+./scripts/bench-context.sh   # captureAll overhead < 20%
+```
+
+Отчёт: `e2e/fletta-reports/context/fletta-context.json`. См. [e2e/context/README.md](../e2e/context/README.md).
+
+| Gate | Метрика | Порог |
+|------|---------|-------|
+| C002 | API 504 before UI `not_found` | network precedes UI in ±5s window |
+| C003 | Fast vs slow `/api/cart` latency | fast `<300ms`, slow `≥500ms` |
+| C004 | WebSocket capture | `open` + `message` in timeline |
+| Overhead | `captureAll` vs baseline page load | `< 20%` |
+
+---
+
 ## Корневые кейсы PoC (быстрая проверка)
 
 Исторические ID `CP00N`. Реализация — в Conference demo (`CONF-*`).

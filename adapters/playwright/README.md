@@ -66,11 +66,27 @@ test('payment flow', async ({ page }) => {
 | `enableHealing` | boolean | true | Enable self-healing |
 | `enableReporting` | boolean | true | Enable report generation |
 | `healPolicy` | `'allow' \| 'deny' \| 'expect_heal'` | `allow` | Gate semantics for reports (CP001: `deny`, CP002: `expect_heal`) |
+| `captureAll` | boolean | false | Unified context: network + console + UI → `fletta-context.json` (F002) |
+
+## Unified context (F002)
+
+```typescript
+import { attachFlettaContext } from '@fletta/playwright';
+
+test.beforeEach(async ({ page }) => {
+  attachFlettaContext(page, { reportDir: './fletta-reports', traceId: 'run-1' });
+});
+```
+
+Enable `captureAll: true` in `flettaPlaywright({ ... })` to write `fletta-context.json` next to `fletta-report.json`.
+
+Network events include HTTP (`protocol: http`, phases `request`/`response`/`failed`) and WebSocket (`protocol: websocket`, phases `open`/`message`/`close`). Message payloads are truncated to 256 characters in `payload_preview`.
 
 ## Reports
 
 After running tests, find reports in `fletta-reports/`:
 - `fletta-report.json` — events with `trigger`, `policy`, `outcome`; summary includes `unexpectedHeals`
+- `fletta-context.json` — unified timeline (when `captureAll` is enabled)
 - `junit.xml` — JUnit XML with `<healing trigger="..." policy="..." outcome="..."/>`
 - `fletta-debug.html` — Classic view (A): single test report, or grouped index when 2+ tests use `debug: true`
 - `fletta-debug-explorer.html` — Explorer view (B): sidebar + search when 2+ debug reports; stub with link to A when only 1
