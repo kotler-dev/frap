@@ -57,8 +57,8 @@
 
 | Фича | Статус | Severity | Release | Примечание |
 |------|--------|----------|---------|------------|
-| [F002: Unified Context](./feature/F002-unified-context.md) | ❌ | High | v1.1.0 | UI + logs + network в timeline |
-| [F003: Root Cause Analysis](./feature/F003-rca.md) | ❌ | High | v1.1.0 | Классификация причин падения |
+| [F002: Unified Context](./feature/F002-unified-context.md) | ❌ | High | v1.1.0 | in progress — см. Subtasks в карточке |
+| [F003: Root Cause Analysis](./feature/F003-rca.md) | ❌ | High | v1.1.0 | in progress — см. Subtasks в карточке |
 
 ---
 
@@ -118,9 +118,9 @@
 ### v1.4.0 Java
 - [ ] F014: Java SDK & UI Adapters — JUnit 5 + WebDriver; Selenide P1
 
-### v1.1.0 Context
-- [ ] F002: Unified Context — timeline
-- [ ] F003: RCA — классификация причин
+### v1.1.0 Context (in progress)
+- [ ] F002: Unified Context — timeline (F002.0–F002.5)
+- [ ] F003: RCA — классификация причин (F003.0–F003.5)
 
 ### v1.2.0 AI
 - [ ] F005: MCP Integration — JSON-RPC сервер
