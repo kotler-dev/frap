@@ -1,6 +1,6 @@
-use serde::{Deserialize, Serialize};
-use signature::{Candidate, HealResult, Signature, calculate_confidence, DEFAULT_MIN_CONFIDENCE};
 use clustering::DOMElementClusterer;
+use serde::{Deserialize, Serialize};
+use signature::{calculate_confidence, Candidate, HealResult, Signature, DEFAULT_MIN_CONFIDENCE};
 use std::collections::HashMap;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -53,10 +53,11 @@ impl HealingEngine {
             return HealResult::failed(vec![], original_signature.clone());
         }
 
-        let best = match candidates
-            .iter()
-            .max_by(|a, b| a.confidence.partial_cmp(&b.confidence).unwrap_or(std::cmp::Ordering::Equal))
-        {
+        let best = match candidates.iter().max_by(|a, b| {
+            a.confidence
+                .partial_cmp(&b.confidence)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        }) {
             Some(c) => c.clone(),
             None => return HealResult::failed(vec![], original_signature.clone()),
         };
@@ -79,7 +80,11 @@ impl HealingEngine {
         }
     }
 
-    fn find_by_selector<'a>(&self, selector: &str, snapshot: &'a DOMSnapshot) -> Option<&'a DOMElementInfo> {
+    fn find_by_selector<'a>(
+        &self,
+        selector: &str,
+        snapshot: &'a DOMSnapshot,
+    ) -> Option<&'a DOMElementInfo> {
         snapshot.elements.iter().find(|e| e.selector == selector)
     }
 
@@ -108,14 +113,14 @@ impl HealingEngine {
     }
 
     fn extract_signature_from_element(&self, element: &DOMElementInfo) -> Signature {
-        use signature::{DOMToken, extract_stable_attrs};
-        
+        use signature::{extract_stable_attrs, DOMToken};
+
         let mut tokens = Vec::new();
         for (i, path_token) in element.path.iter().enumerate() {
             let parts: Vec<&str> = path_token.split(':').collect();
             let tag = parts.first().copied().unwrap_or("unknown").to_string();
             let role = parts.get(1).filter(|&&r| r != "-").map(|&s| s.to_string());
-            
+
             tokens.push(DOMToken {
                 tag,
                 role,
@@ -184,9 +189,10 @@ impl HealingOrchestrator {
         dom_snapshot: &DOMSnapshot,
     ) -> HealResult {
         let original = self.original_signatures.get(primary_selector);
-        
+
         if let Some(original_sig) = original {
-            self.engine.heal(primary_selector, original_sig, dom_snapshot)
+            self.engine
+                .heal(primary_selector, original_sig, dom_snapshot)
         } else {
             HealResult::failed(
                 vec![],
@@ -217,15 +223,13 @@ mod tests {
 
     fn create_test_signature() -> Signature {
         Signature {
-            path: vec![
-                DOMToken {
-                    tag: "button".to_string(),
-                    role: Some("submit".to_string()),
-                    semantic_type: None,
-                    structural_class: None,
-                    depth: 0,
-                }
-            ],
+            path: vec![DOMToken {
+                tag: "button".to_string(),
+                role: Some("submit".to_string()),
+                semantic_type: None,
+                structural_class: None,
+                depth: 0,
+            }],
             prefix: "button:submit".to_string(),
             stable_attrs: [("data-testid".to_string(), "pay-btn".to_string())].into(),
             text_content: Some("Pay".to_string()),
@@ -238,15 +242,13 @@ mod tests {
     fn create_test_snapshot() -> DOMSnapshot {
         DOMSnapshot {
             html: "<button data-testid='checkout-pay'>Pay</button>".to_string(),
-            elements: vec![
-                DOMElementInfo {
-                    selector: "[data-testid='checkout-pay']".to_string(),
-                    tag: "button".to_string(),
-                    attributes: [("data-testid".to_string(), "checkout-pay".to_string())].into(),
-                    text_content: Some("Pay".to_string()),
-                    path: vec!["button:submit".to_string()],
-                }
-            ],
+            elements: vec![DOMElementInfo {
+                selector: "[data-testid='checkout-pay']".to_string(),
+                tag: "button".to_string(),
+                attributes: [("data-testid".to_string(), "checkout-pay".to_string())].into(),
+                text_content: Some("Pay".to_string()),
+                path: vec!["button:submit".to_string()],
+            }],
         }
     }
 
@@ -261,20 +263,18 @@ mod tests {
         let mut engine = HealingEngine::new();
         let snapshot = DOMSnapshot {
             html: "<button>Pay</button>".to_string(),
-            elements: vec![
-                DOMElementInfo {
-                    selector: "#pay-btn".to_string(),
-                    tag: "button".to_string(),
-                    attributes: HashMap::new(),
-                    text_content: Some("Pay".to_string()),
-                    path: vec!["button:-".to_string()],
-                }
-            ],
+            elements: vec![DOMElementInfo {
+                selector: "#pay-btn".to_string(),
+                tag: "button".to_string(),
+                attributes: HashMap::new(),
+                text_content: Some("Pay".to_string()),
+                path: vec!["button:-".to_string()],
+            }],
         };
-        
+
         let original = create_test_signature();
         let result = engine.heal("#pay-btn", &original, &snapshot);
-        
+
         assert!(!result.healed);
         assert_eq!(result.confidence, 1.0);
         assert_eq!(result.selector, "#pay-btn");
@@ -284,9 +284,9 @@ mod tests {
     fn test_healing_orchestrator() {
         let mut orchestrator = HealingOrchestrator::new();
         let sig = create_test_signature();
-        
+
         orchestrator.record_signature("[data-testid='pay-btn']".to_string(), sig);
-        
+
         assert_eq!(orchestrator.original_signatures.len(), 1);
     }
 
@@ -294,9 +294,9 @@ mod tests {
     fn test_heal_with_fallback_no_original() {
         let mut orchestrator = HealingOrchestrator::new();
         let snapshot = create_test_snapshot();
-        
+
         let result = orchestrator.heal_with_fallback("[data-testid='unknown']", &snapshot);
-        
+
         assert!(!result.healed);
         assert_eq!(result.confidence, 0.0);
     }
