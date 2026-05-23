@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Расписание v2 — FixtureConf</title>
+  <link rel="stylesheet" href="conference.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html">FixtureConf</a>
+    <a href="schedule-v1.html">Расписание v1</a>
+    <a href="schedule-v2.html">Расписание v2</a>
+    <a href="index.html">На главную</a>
+  </header>
+  <main class="container">
+    <h1>Расписание · 27 апреля (v2)</h1>
+    <div class="hint">Refactor: <code>talk-open-*</code> переименованы в <code>talk-card-open-*</code>.</div>
+    <div class="panel" id="schedule-list">
+      <div class="talk-row" data-talk-id="opening">
+        <div>
+          <strong>Открытие конференции</strong>
+          <div class="talk-meta">Зал 1 · 10:00</div>
+        </div>
+        <a class="btn" href="talk.html?id=opening" data-testid="talk-card-open-opening">Смотреть: Открытие</a>
+      </div>
+      <div class="talk-row" data-talk-id="healing">
+        <div>
+          <strong>Self-healing в E2E</strong>
+          <div class="talk-meta">Зал 2 · 11:30</div>
+        </div>
+        <a class="btn" href="talk.html?id=healing" data-testid="talk-card-open-healing">Смотреть: Self-healing</a>
+      </div>
+      <div class="talk-row" data-talk-id="agents">
+        <div>
+          <strong>Агенты в регрессе</strong>
+          <div class="talk-meta">Зал 3 · 14:00</div>
+        </div>
+        <a class="btn" href="talk.html?id=agents" data-testid="talk-card-open-agents">Смотреть: Агенты</a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

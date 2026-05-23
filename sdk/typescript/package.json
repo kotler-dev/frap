@@ -9,7 +9,8 @@
     "wasm/"
   ],
   "scripts": {
-    "build": "tsc",
+    "build:wasm": "cd ../../crates/core && wasm-pack build --target bundler --out-dir ../../sdk/typescript/wasm --features wasm",
+    "build": "npm run build:wasm && tsc",
     "dev": "tsc --watch",
     "test": "jest",
     "lint": "eslint src/ --ext .ts"

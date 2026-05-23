@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Спикер — FixtureConf</title>
+  <link rel="stylesheet" href="conference.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html">FixtureConf</a>
+    <a href="speakers.html">← Спикеры</a>
+  </header>
+  <main class="container">
+    <div class="panel">
+      <h1 id="speaker-name">Спикер</h1>
+      <p id="speaker-role" class="talk-meta"></p>
+      <p id="speaker-bio"></p>
+      <h2>Доклады на конференции</h2>
+      <ul id="speaker-talks"></ul>
+    </div>
+  </main>
+  <script>
+    const speakers = {
+      alexey: {
+        name: 'Алексей Тестов',
+        role: 'QA Lead · DemoCorp',
+        bio: 'Строит регресс и отчёты по healing. На FixtureConf — доклад про self-healing.',
+        talks: [{ id: 'healing', title: 'Self-healing в E2E' }],
+      },
+      maria: {
+        name: 'Мария Проверова',
+        role: 'Test Architect · FixtureBank',
+        bio: 'Архитектура агентных прогонов и мобильный регресс.',
+        talks: [{ id: 'agents', title: 'Агенты в регрессе' }],
+      },
+    };
+    const id = new URLSearchParams(location.search).get('id') || 'alexey';
+    const s = speakers[id] || speakers.alexey;
+    document.getElementById('speaker-name').textContent = s.name;
+    document.getElementById('speaker-role').textContent = s.role;
+    document.getElementById('speaker-bio').textContent = s.bio;
+    const list = document.getElementById('speaker-talks');
+    list.replaceChildren(
+      ...s.talks.map((t) => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = `talk.html?id=${t.id}`;
+        a.textContent = t.title;
+        li.appendChild(a);
+        return li;
+      })
+    );
+  </script>
+</body>
+</html>
