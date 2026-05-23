@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Регистрация — FixtureConf</title>
+  <link rel="stylesheet" href="conference.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html">FixtureConf</a>
+    <a href="register.html">Регистрация</a>
+  </header>
+  <main class="container">
+    <div class="panel">
+      <h1>Регистрация участника</h1>
+      <form id="register-form">
+        <label for="name">Имя</label>
+        <input id="name" data-testid="register-name" type="text" required>
+        <label for="email">Email</label>
+        <input id="email" data-testid="register-email" type="email" required>
+        <div class="form-actions">
+          <button type="submit" class="btn" data-testid="register-submit">Зарегистрироваться</button>
+        </div>
+      </form>
+      <div id="register-toast"></div>
+    </div>
+  </main>
+  <script>
+    document.getElementById('register-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const el = document.getElementById('register-toast');
+      el.textContent = 'Регистрация успешна! Билет отправлен на email.';
+      el.className = 'show';
+    });
+  </script>
+</body>
+</html>

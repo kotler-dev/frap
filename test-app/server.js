@@ -19,9 +19,13 @@ const MIME_TYPES = {
 const server = http.createServer((req, res) => {
     console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
     
-    let filePath = '.' + req.url;
+    const urlPath = req.url.split('?')[0].split('#')[0];
+    let filePath = '.' + urlPath;
     if (filePath === './') {
         filePath = './index.html';
+    }
+    if (filePath.endsWith('/')) {
+        filePath += 'index.html';
     }
 
     const extname = path.extname(filePath).toLowerCase();
@@ -63,10 +67,16 @@ server.listen(PORT, () => {
 ========================================
   Port: ${PORT}
   
-  Available test pages:
-  - http://localhost:${PORT}/cp001-stable.html      (CP001: Happy path)
-  - http://localhost:${PORT}/cp002-refactored.html  (CP002: Refactor heal)
-  - http://localhost:${PORT}/cp003-ambiguous.html   (CP003: Safe fail)
+  Conference demo (FixtureConf):
+  - http://localhost:${PORT}/conference/index.html
+  - http://localhost:${PORT}/conference/schedule-v1.html
+  - http://localhost:${PORT}/conference/schedule-v2.html
+  - http://localhost:${PORT}/conference/register.html
+  - http://localhost:${PORT}/conference/cfp.html
+  - http://localhost:${PORT}/conference/speakers.html
+  - http://localhost:${PORT}/conference/speaker.html?id=alexey
+  - http://localhost:${PORT}/conference/schedule-heal.html
+  - http://localhost:${PORT}/conference/talk.html?id=opening
   
   Press Ctrl+C to stop
 ========================================

@@ -39,7 +39,10 @@ impl ClusterNode {
     }
 
     pub fn add_element(&mut self, selector: String, signature: Signature) {
-        self.elements.push(ClusteredElement { selector, signature });
+        self.elements.push(ClusteredElement {
+            selector,
+            signature,
+        });
     }
 
     pub fn is_empty(&self) -> bool {
@@ -110,27 +113,31 @@ impl ParseTree {
             let key = format!("{}:{}", token.tag, token.role.as_deref().unwrap_or("-"));
 
             if !current.contains_key(&key) {
-                current.insert(
-                    key.clone(),
-                    ParseTreeNode::new(key.clone(), i as u8),
-                );
+                current.insert(key.clone(), ParseTreeNode::new(key.clone(), i as u8));
             }
 
             current_node_key = Some(key.clone());
-            
+
             if i < token_count - 1 {
                 let node = current.get_mut(&key).unwrap();
                 let next_key = if i + 1 < signature.path.len() {
                     let next_token = &signature.path[i + 1];
-                    format!("{}:{}", next_token.tag, next_token.role.as_deref().unwrap_or("-"))
+                    format!(
+                        "{}:{}",
+                        next_token.tag,
+                        next_token.role.as_deref().unwrap_or("-")
+                    )
                 } else {
                     break;
                 };
-                
+
                 if !node.has_child(&next_key) {
-                    node.add_child(next_key.clone(), ParseTreeNode::new(next_key.clone(), (i + 1) as u8));
+                    node.add_child(
+                        next_key.clone(),
+                        ParseTreeNode::new(next_key.clone(), (i + 1) as u8),
+                    );
                 }
-                
+
                 let next_node = node.get_child_mut(&next_key).unwrap();
                 let children_ref: *mut HashMap<String, ParseTreeNode> = &mut next_node.children;
                 current = unsafe { &mut *children_ref };
@@ -139,9 +146,9 @@ impl ParseTree {
 
         if let Some(key) = current_node_key {
             let node = self.root.get_mut(&key).unwrap();
-            
+
             let best_cluster = Self::find_best_cluster(node, signature);
-            
+
             if let Some(idx) = best_cluster {
                 return &mut node.clusters[idx];
             } else {
@@ -171,11 +178,14 @@ impl ParseTree {
     }
 
     fn calculate_cluster_similarity(template: &Signature, signature: &Signature) -> f64 {
-        use signature::{calculate_path_similarity, calculate_token_similarity, calculate_structural_similarity};
-        
+        use signature::{
+            calculate_path_similarity, calculate_structural_similarity, calculate_token_similarity,
+        };
+
         let path_sim = calculate_path_similarity(&template.prefix, &signature.prefix);
         let token_sim = calculate_token_similarity(&template.path, &signature.path);
-        let structural_sim = calculate_structural_similarity(template.children_hash, signature.children_hash);
+        let structural_sim =
+            calculate_structural_similarity(template.children_hash, signature.children_hash);
 
         0.5 * path_sim + 0.3 * token_sim + 0.2 * structural_sim
     }
@@ -209,12 +219,16 @@ impl ParseTree {
         None
     }
 
-    fn find_best_cluster_readonly<'a>(node: &'a ParseTreeNode, signature: &'a Signature) -> Option<&'a ClusterNode> {
+    fn find_best_cluster_readonly<'a>(
+        node: &'a ParseTreeNode,
+        signature: &'a Signature,
+    ) -> Option<&'a ClusterNode> {
         let mut best_score = 0.0;
         let mut best_cluster = None;
 
         for cluster in &node.clusters {
-            let score = Self::calculate_cluster_similarity_readonly(&cluster.signature_template, signature);
+            let score =
+                Self::calculate_cluster_similarity_readonly(&cluster.signature_template, signature);
             if score > best_score && score >= SIMILARITY_THRESHOLD {
                 best_score = score;
                 best_cluster = Some(cluster);
@@ -225,11 +239,14 @@ impl ParseTree {
     }
 
     fn calculate_cluster_similarity_readonly(template: &Signature, signature: &Signature) -> f64 {
-        use signature::{calculate_path_similarity, calculate_token_similarity, calculate_structural_similarity};
-        
+        use signature::{
+            calculate_path_similarity, calculate_structural_similarity, calculate_token_similarity,
+        };
+
         let path_sim = calculate_path_similarity(&template.prefix, &signature.prefix);
         let token_sim = calculate_token_similarity(&template.path, &signature.path);
-        let structural_sim = calculate_structural_similarity(template.children_hash, signature.children_hash);
+        let structural_sim =
+            calculate_structural_similarity(template.children_hash, signature.children_hash);
 
         0.5 * path_sim + 0.3 * token_sim + 0.2 * structural_sim
     }
@@ -265,7 +282,10 @@ impl DOMElementClusterer {
         self.tree.find_cluster(signature)
     }
 
-    pub fn find_elements_in_cluster<'a>(&'a self, signature: &'a Signature) -> Vec<&'a ClusteredElement> {
+    pub fn find_elements_in_cluster<'a>(
+        &'a self,
+        signature: &'a Signature,
+    ) -> Vec<&'a ClusteredElement> {
         if let Some(cluster) = self.find_cluster(signature) {
             cluster.elements.iter().collect()
         } else {
@@ -288,15 +308,13 @@ mod tests {
 
     fn create_test_signature(tag: &str, role: Option<&str>) -> Signature {
         Signature {
-            path: vec![
-                signature::DOMToken {
-                    tag: tag.to_string(),
-                    role: role.map(|s| s.to_string()),
-                    semantic_type: None,
-                    structural_class: None,
-                    depth: 0,
-                }
-            ],
+            path: vec![signature::DOMToken {
+                tag: tag.to_string(),
+                role: role.map(|s| s.to_string()),
+                semantic_type: None,
+                structural_class: None,
+                depth: 0,
+            }],
             prefix: format!("{}:{}", tag, role.unwrap_or("-")),
             stable_attrs: HashMap::new(),
             text_content: None,
@@ -311,9 +329,9 @@ mod tests {
         let mut clusterer = DOMElementClusterer::new();
         let sig = create_test_signature("button", Some("submit"));
         let cluster_id = clusterer.add_element("[data-testid='pay-btn']".to_string(), sig.clone());
-        
+
         assert!(!cluster_id.is_empty());
-        
+
         let elements = clusterer.find_elements_in_cluster(&sig);
         assert_eq!(elements.len(), 1);
     }
@@ -321,13 +339,13 @@ mod tests {
     #[test]
     fn test_cluster_grouping() {
         let mut clusterer = DOMElementClusterer::new();
-        
+
         let sig1 = create_test_signature("button", Some("submit"));
         let sig2 = create_test_signature("button", Some("submit"));
-        
+
         clusterer.add_element("#btn1".to_string(), sig1.clone());
         clusterer.add_element("#btn2".to_string(), sig2.clone());
-        
+
         let elements = clusterer.find_elements_in_cluster(&sig1);
         assert_eq!(elements.len(), 2);
     }

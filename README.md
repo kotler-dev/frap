@@ -136,8 +136,9 @@ test('payment flow', async ({ page }) => {
 
 ## Roadmap
 
-- **v1.0.0** (MVP): Core + Playwright adapter — 90% complete
-- **v1.1.0**: Unified Context + RCA
+- **v1.0.0** (MVP): Core + Playwright adapter — released ([CHANGELOG.md](CHANGELOG.md))
+- **v1.0.1**: Benchmark overhead gate (MVP-C)
+- **v1.1.0** (in progress): Unified Context (F002) + RCA (F003)
 - **v1.2.0**: MCP Integration + Page Object Generator
 - **v2.0.0**: Multi-platform (Android/iOS)
 

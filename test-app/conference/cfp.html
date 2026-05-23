@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CFP — FixtureConf</title>
+  <link rel="stylesheet" href="conference.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html">FixtureConf</a>
+    <a href="cfp.html">CFP</a>
+  </header>
+  <main class="container">
+    <div class="panel">
+      <h1>Стать спикером</h1>
+      <div class="hint">Две секции с кнопками «Отправить заявку» — сценарий ambiguous healing.</div>
+      <form id="cfp-main">
+        <h2>Основная заявка</h2>
+        <label for="title-main">Название доклада</label>
+        <input id="title-main" data-testid="cfp-title-main" type="text">
+        <div class="form-actions">
+          <button type="submit" class="btn" data-testid="cfp-submit-main">Отправить заявку</button>
+        </div>
+      </form>
+      <form id="cfp-workshop" style="margin-top: 1.5rem;">
+        <h2>Воркшоп</h2>
+        <label for="title-ws">Название воркшопа</label>
+        <input id="title-ws" data-testid="cfp-title-ws" type="text">
+        <div class="form-actions">
+          <button type="submit" class="btn btn-secondary" data-testid="cfp-submit-workshop">Отправить заявку</button>
+        </div>
+      </form>
+      <div id="cfp-toast"></div>
+    </div>
+  </main>
+  <script>
+    function showToast(msg) {
+      const el = document.getElementById('cfp-toast');
+      el.textContent = msg;
+      el.className = 'show';
+    }
+    document.getElementById('cfp-main').addEventListener('submit', function (e) {
+      e.preventDefault();
+      showToast('Основная заявка принята');
+    });
+    document.getElementById('cfp-workshop').addEventListener('submit', function (e) {
+      e.preventDefault();
+      showToast('Заявка на воркшоп принята');
+    });
+  </script>
+</body>
+</html>

@@ -1,9 +1,13 @@
+import type { HealPolicy } from './healing-semantics';
+
 export interface FlettaConfig {
   minConfidence: number;
   reportDir: string;
   enableHealing: boolean;
   enableReporting: boolean;
   debug?: boolean | 'verbose';
+  /** Default: allow. Use deny for stable-selector gates (CP001). */
+  healPolicy?: HealPolicy;
 }
 
 export const DEFAULT_CONFIG: FlettaConfig = {
@@ -12,6 +16,7 @@ export const DEFAULT_CONFIG: FlettaConfig = {
   enableHealing: true,
   enableReporting: true,
   debug: true,
+  healPolicy: 'allow',
 };
 
 export function mergeConfig(userConfig?: Partial<FlettaConfig>): FlettaConfig {

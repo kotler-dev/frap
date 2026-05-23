@@ -80,7 +80,12 @@ impl HealResult {
         }
     }
 
-    pub fn healed(selector: String, confidence: f64, candidates: Vec<Candidate>, original: Signature) -> Self {
+    pub fn healed(
+        selector: String,
+        confidence: f64,
+        candidates: Vec<Candidate>,
+        original: Signature,
+    ) -> Self {
         Self {
             healed: true,
             selector,
@@ -106,7 +111,7 @@ impl HealResult {
 pub fn levenshtein_distance(a: &str, b: &str) -> usize {
     let len_a = a.chars().count();
     let len_b = b.chars().count();
-    
+
     if len_a == 0 {
         return len_b;
     }
@@ -116,11 +121,11 @@ pub fn levenshtein_distance(a: &str, b: &str) -> usize {
 
     let mut matrix = vec![vec![0; len_b + 1]; len_a + 1];
 
-    for i in 0..=len_a {
-        matrix[i][0] = i;
+    for (i, row) in matrix.iter_mut().enumerate() {
+        row[0] = i;
     }
-    for j in 0..=len_b {
-        matrix[0][j] = j;
+    for (j, cell) in matrix[0].iter_mut().enumerate() {
+        *cell = j;
     }
 
     for (i, ca) in a.chars().enumerate() {
@@ -140,7 +145,11 @@ pub fn levenshtein_distance(a: &str, b: &str) -> usize {
     matrix[len_a][len_b]
 }
 
-pub fn longest_common_subsequence_len<T: Eq>(a: &[T], b: &[T], matcher: impl Fn(&T, &T) -> bool) -> usize {
+pub fn longest_common_subsequence_len<T: Eq>(
+    a: &[T],
+    b: &[T],
+    matcher: impl Fn(&T, &T) -> bool,
+) -> usize {
     let mut dp = vec![vec![0; b.len() + 1]; a.len() + 1];
 
     for i in 1..=a.len() {
@@ -199,13 +208,36 @@ pub fn calculate_attribute_bonus(original: &Signature, candidate: &Signature) ->
         }
     }
 
+    if let (Some(orig_tid), Some(cand_tid)) = (
+        original.stable_attrs.get("data-testid"),
+        candidate.stable_attrs.get("data-testid"),
+    ) {
+        if orig_tid != cand_tid {
+            let orig_parts: Vec<&str> = orig_tid
+                .split(&['-', '_'][..])
+                .filter(|p| p.len() > 2)
+                .collect();
+            let cand_parts: Vec<&str> = cand_tid
+                .split(&['-', '_'][..])
+                .filter(|p| p.len() > 2)
+                .collect();
+            if orig_parts
+                .iter()
+                .any(|p| cand_parts.iter().any(|c| c.contains(p) || p.contains(c)))
+            {
+                bonus += 0.15;
+            }
+        }
+    }
+
     bonus
 }
 
 pub fn calculate_confidence(original: &Signature, candidate: &Signature) -> f64 {
     let path_sim = calculate_path_similarity(&original.path_string(), &candidate.path_string());
     let token_sim = calculate_token_similarity(&original.path, &candidate.path);
-    let structural_sim = calculate_structural_similarity(original.children_hash, candidate.children_hash);
+    let structural_sim =
+        calculate_structural_similarity(original.children_hash, candidate.children_hash);
     let bonus = calculate_attribute_bonus(original, candidate);
 
     let confidence = 0.5 * path_sim + 0.3 * token_sim + 0.2 * structural_sim + bonus;
@@ -213,7 +245,14 @@ pub fn calculate_confidence(original: &Signature, candidate: &Signature) -> f64 
 }
 
 pub fn extract_stable_attrs(attrs: &[(String, String)]) -> HashMap<String, String> {
-    let stable_keys = ["role", "type", "placeholder", "aria-label", "aria-labelledby", "name"];
+    let stable_keys = [
+        "role",
+        "type",
+        "placeholder",
+        "aria-label",
+        "aria-labelledby",
+        "name",
+    ];
     let mut result = HashMap::new();
 
     for (key, value) in attrs {
@@ -226,12 +265,17 @@ pub fn extract_stable_attrs(attrs: &[(String, String)]) -> HashMap<String, Strin
 }
 
 pub fn looks_like_generated(value: &str) -> bool {
-    value.len() > 10 && (value.contains("-") || value.contains("_")) && 
-    (value.chars().any(|c| c.is_ascii_hexdigit()) || value.contains("uuid") || value.contains("id"))
+    value.len() > 10
+        && (value.contains("-") || value.contains("_"))
+        && (value.chars().any(|c| c.is_ascii_hexdigit())
+            || value.contains("uuid")
+            || value.contains("id"))
 }
 
 pub fn looks_like_semantic(value: &str) -> bool {
-    let semantic_keywords = ["submit", "search", "login", "logout", "save", "cancel", "confirm", "pay", "checkout"];
+    let semantic_keywords = [
+        "submit", "search", "login", "logout", "save", "cancel", "confirm", "pay", "checkout",
+    ];
     let lower = value.to_lowercase();
     semantic_keywords.iter().any(|kw| lower.contains(kw))
 }
@@ -262,12 +306,36 @@ mod tests {
     #[test]
     fn test_token_similarity() {
         let tokens_a = vec![
-            DOMToken { tag: "div".to_string(), role: None, semantic_type: None, structural_class: None, depth: 0 },
-            DOMToken { tag: "button".to_string(), role: Some("submit".to_string()), semantic_type: None, structural_class: None, depth: 1 },
+            DOMToken {
+                tag: "div".to_string(),
+                role: None,
+                semantic_type: None,
+                structural_class: None,
+                depth: 0,
+            },
+            DOMToken {
+                tag: "button".to_string(),
+                role: Some("submit".to_string()),
+                semantic_type: None,
+                structural_class: None,
+                depth: 1,
+            },
         ];
         let tokens_b = vec![
-            DOMToken { tag: "div".to_string(), role: None, semantic_type: None, structural_class: None, depth: 0 },
-            DOMToken { tag: "button".to_string(), role: Some("submit".to_string()), semantic_type: None, structural_class: None, depth: 1 },
+            DOMToken {
+                tag: "div".to_string(),
+                role: None,
+                semantic_type: None,
+                structural_class: None,
+                depth: 0,
+            },
+            DOMToken {
+                tag: "button".to_string(),
+                role: Some("submit".to_string()),
+                semantic_type: None,
+                structural_class: None,
+                depth: 1,
+            },
         ];
         let sim = calculate_token_similarity(&tokens_a, &tokens_b);
         assert_eq!(sim, 1.0);
@@ -285,8 +353,20 @@ mod tests {
     fn test_confidence_calculation() {
         let original = Signature {
             path: vec![
-                DOMToken { tag: "div".to_string(), role: Some("form".to_string()), semantic_type: None, structural_class: None, depth: 0 },
-                DOMToken { tag: "button".to_string(), role: Some("submit".to_string()), semantic_type: None, structural_class: None, depth: 1 },
+                DOMToken {
+                    tag: "div".to_string(),
+                    role: Some("form".to_string()),
+                    semantic_type: None,
+                    structural_class: None,
+                    depth: 0,
+                },
+                DOMToken {
+                    tag: "button".to_string(),
+                    role: Some("submit".to_string()),
+                    semantic_type: None,
+                    structural_class: None,
+                    depth: 1,
+                },
             ],
             prefix: "div:form>button:submit".to_string(),
             stable_attrs: [("role".to_string(), "button".to_string())].into(),

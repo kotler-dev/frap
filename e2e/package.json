@@ -8,7 +8,8 @@
     "test:debug": "playwright test --debug",
     "test:cp001": "playwright test cp001-happy-path.spec.ts",
     "test:cp002": "playwright test cp002-refactor-heal.spec.ts",
-    "test:cp003": "playwright test cp003-safe-fail.spec.ts"
+    "test:cp003": "playwright test cp003-safe-fail.spec.ts",
+    "test:conference": "playwright test --config=playwright.conference.config.ts"
   },
   "devDependencies": {
     "@playwright/test": "^1.44.0",

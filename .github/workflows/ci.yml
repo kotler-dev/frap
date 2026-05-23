@@ -10,167 +10,158 @@ jobs:
   rust-core:
     name: Rust Core Tests
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Install Rust toolchain
-      uses: dtolnay/rust-toolchain@stable
-      with:
-        components: rustfmt, clippy
-    
-    - name: Cache Rust dependencies
-      uses: Swatinem/rust-cache@v2
-      with:
-        workspaces: crates
-    
-    - name: Check formatting
-      run: cd crates && cargo fmt -- --check
-    
-    - name: Run Clippy
-      run: cd crates && cargo clippy -- -D warnings
-    
-    - name: Run Rust tests
-      run: cd crates && cargo test --workspace
+      - uses: actions/checkout@v5
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: crates
+
+      - name: Check formatting
+        run: cd crates && cargo fmt -- --check
+
+      - name: Run Clippy
+        run: cd crates && cargo clippy -- -D warnings
+
+      - name: Run Rust tests
+        run: cd crates && cargo test --workspace
 
   typescript-sdk:
-    name: TypeScript SDK Tests
+    name: TypeScript SDK (WASM + build)
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-        cache-dependency-path: sdk/typescript/package.json
-    
-    - name: Install dependencies
-      run: |
-        cd sdk/typescript
-        npm install
-    
-    - name: Build SDK
-      run: |
-        cd sdk/typescript
-        npm run build
+      - uses: actions/checkout@v5
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Add wasm32 target
+        run: rustup target add wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        run: cargo install wasm-pack --locked
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: crates
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: sdk/typescript/package.json
+
+      - name: Install dependencies and build
+        run: |
+          cd sdk/typescript
+          npm install
+          npm run build
+          test -f wasm/fletta_core.js
+          test -f wasm/fletta_core_bg.wasm
 
   playwright-adapter:
-    name: Playwright Adapter Tests
+    name: Playwright Adapter Build
     runs-on: ubuntu-latest
     needs: [typescript-sdk]
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-        cache-dependency-path: adapters/playwright/package.json
-    
-    - name: Install dependencies
-      run: |
-        cd sdk/typescript && npm install && npm run build
-        cd ../adapters/playwright && npm install
-    
-    - name: Build adapter
-      run: |
-        cd adapters/playwright
-        npm run build
 
-  e2e-poc:
-    name: E2E PoC Tests (CP001-CP003)
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Add wasm32 target
+        run: rustup target add wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        run: cargo install wasm-pack --locked
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+
+      - name: Build SDK and adapter
+        run: |
+          cd sdk/typescript && npm install && npm run build
+          cd ../../adapters/playwright && npm install && npm run build
+
+  e2e-conference:
+    name: E2E Conference (PoC CP001–CP005 gates)
     runs-on: ubuntu-latest
     needs: [rust-core, playwright-adapter]
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-        cache-dependency-path: e2e/package.json
-    
-    - name: Install Playwright browsers
-      run: |
-        cd e2e
-        npm install
-        npx playwright install chromium
-    
-    - name: Start test server
-      run: |
-        cd test-app
-        node server.js &
-        sleep 2
-        curl http://localhost:3000 || exit 1
-    
-    - name: Run CP001 (Happy Path)
-      run: |
-        cd e2e
-        npm run test:cp001
-    
-    - name: Run CP002 (Refactor Heal)
-      run: |
-        cd e2e
-        npm run test:cp002
-    
-    - name: Run CP003 (Safe Fail)
-      run: |
-        cd e2e
-        npm run test:cp003 || true
-    
-    - name: Upload test results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: test-results
-        path: |
-          e2e/results.json
-          e2e/fletta-reports/
-          e2e/test-results/
-        retention-days: 30
-    
-    - name: Check CP001 passed
-      run: |
-        cd e2e
-        if [ -f "results.json" ]; then
-          passed=$(cat results.json | jq '.suites[0].specs[] | select(.title == "CP001: Happy Path") | .tests[0].results[0].status' -r | grep -c "passed" || echo "0")
-          if [ "$passed" -eq "0" ]; then
-            echo "CP001 tests failed"
-            exit 1
-          fi
-        fi
-        echo "CP001: Happy path tests passed"
 
-  build-status:
-    name: Build & Package Check
-    runs-on: ubuntu-latest
-    needs: [rust-core, typescript-sdk, playwright-adapter]
-    
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Install wasm-pack
-      run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-    
-    - name: Build WASM package
-      run: |
-        cd crates
-        wasm-pack build --target bundler --out-dir ../sdk/typescript/wasm 2>/dev/null || echo "WASM build skipped (no wasm-bindgen setup in CI)"
-    
-    - name: Verify package structure
-      run: |
-        test -d crates/signature/src
-        test -d crates/clustering/src
-        test -d crates/healing/src
-        test -d sdk/typescript/src
-        test -d adapters/playwright/src
-        test -d test-app
-        test -d e2e
-        echo "Package structure verified"
+      - uses: actions/checkout@v5
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Add wasm32 target
+        run: rustup target add wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        run: cargo install wasm-pack --locked
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+
+      - name: Build packages
+        run: |
+          cd sdk/typescript && npm install && npm run build
+          cd ../../adapters/playwright && npm install && npm run build
+
+      - name: Install Playwright browsers
+        run: |
+          cd e2e
+          npm install
+          npx playwright install chromium
+
+      - name: Start test server
+        run: |
+          cd test-app
+          node server.js &
+          sleep 2
+          curl -sf http://localhost:3000
+
+      - name: Run Conference E2E
+        run: |
+          cd e2e
+          npx playwright test --config=playwright.conference.config.ts
+
+      - name: Verify CP005 report artifacts (CONF-RPT-RUN-PASS)
+        run: node e2e/conference/verify-reports.mjs
+
+      - name: Upload fletta reports (JUnit + JSON)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fletta-conference-reports
+          path: |
+            e2e/fletta-reports/conference/junit.xml
+            e2e/fletta-reports/conference/fletta-report.json
+            e2e/fletta-reports/conference/fletta-events.jsonl
+            e2e/fletta-reports/conference/fletta-debug.html
+          retention-days: 30
+
+      - name: Upload Playwright test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-test-results
+          path: |
+            e2e/test-results/
+            e2e/conference-results.json
+          retention-days: 14
