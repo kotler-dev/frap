@@ -56,6 +56,14 @@ export {
   networkBeforeUiFailure,
 } from './context';
 
+export {
+  PrimaryCause,
+  CauseDetails,
+  RcaReport,
+  analyzeRca,
+  formatRcaSummary,
+} from './rca';
+
 export const VERSION = '0.1.0';
 
 export function greet(name: string): string {

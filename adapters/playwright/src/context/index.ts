@@ -8,3 +8,4 @@ export {
   pushContextEvent,
   writeContextReport,
 } from './store';
+export { writeRcaReport, loadRcaReport, formatRcaSummary } from './rca';

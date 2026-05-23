@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 pub enum NetworkProtocol {
     #[default]
     Http,
+    #[serde(alias = "websocket")]
     WebSocket,
 }
 

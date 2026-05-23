@@ -1,0 +1,9 @@
+{
+  "primary_cause": "api_error",
+  "confidence": 0.92,
+  "details": {
+    "endpoint": "/api/payment-intent",
+    "status": 504
+  },
+  "recommendation": "Check backend latency"
+}
