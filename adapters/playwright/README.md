@@ -65,12 +65,16 @@ test('payment flow', async ({ page }) => {
 | `reportDir` | string | './fletta-reports' | Directory for healing reports |
 | `enableHealing` | boolean | true | Enable self-healing |
 | `enableReporting` | boolean | true | Enable report generation |
+| `healPolicy` | `'allow' \| 'deny' \| 'expect_heal'` | `allow` | Gate semantics for reports (CP001: `deny`, CP002: `expect_heal`) |
 
 ## Reports
 
 After running tests, find reports in `fletta-reports/`:
-- `fletta-report.json` — JSON report with healing details
-- `junit.xml` — JUnit XML with `<healing>` elements
+- `fletta-report.json` — events with `trigger`, `policy`, `outcome`; summary includes `unexpectedHeals`
+- `junit.xml` — JUnit XML with `<healing trigger="..." policy="..." outcome="..."/>`
+- `fletta-debug.html` — Classic view (A): single test report, or grouped index when 2+ tests use `debug: true`
+- `fletta-debug-explorer.html` — Explorer view (B): sidebar + search when 2+ debug reports; stub with link to A when only 1
+- `debug-reports/` — per-test JSON/HTML + `manifest.json`
 
 ## How It Works
 
