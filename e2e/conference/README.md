@@ -41,6 +41,8 @@ npx playwright test --config=playwright.conference.config.ts --grep 'CONF-SH-SCH
 
 `fletta-report.json` / `junit.xml` пишутся в `reporter.onEnd` **после** завершения Playwright — полная проверка CONF-RPT-RUN-PASS в `conference/verify-reports.mjs` (вызывается из `./scripts/test.sh conference`).
 
+Время в заголовке debug HTML — через системную команду `date` (локальная TZ, как в терминале); в JSON-артефактах — ISO UTC (`Z`).
+
 Открыть после прогона:
 
 ```bash

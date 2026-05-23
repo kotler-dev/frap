@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { formatTimestampUtc, type DebugManifest } from './debug-manifest';
+import { formatRunTimestamp, type DebugManifest } from './debug-manifest';
 import { escapeHtml, renderThemeToggle } from './debug-chrome';
 import {
   REPORT_ICONS_SVG,
@@ -76,7 +76,7 @@ function writeFullExplorerHtml(reportDir: string, manifest: DebugManifest): stri
 
   const manifestJson = JSON.stringify(manifest).replace(/</g, '\\u003c');
   const firstEmbed = manifest.entries[0]?.embedHref ?? '';
-  const generatedAt = formatTimestampUtc(manifest.generatedAt);
+  const generatedAt = formatRunTimestamp(manifest.generatedAt);
 
   const html = `<!DOCTYPE html>
 <html lang="en" data-theme="light" data-palette="warm-neutrals-semantic">

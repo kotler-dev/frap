@@ -1,3 +1,4 @@
+import { execSync } from 'node:child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import type { DebugReport } from '@fletta/sdk';
@@ -24,16 +25,30 @@ export interface DebugManifest {
   entries: DebugManifestEntry[];
 }
 
-/** ISO timestamp with explicit UTC suffix for HTML subtitles (keeps trailing Z). */
-export function formatTimestampUtc(iso: string): string {
-  const trimmed = iso.trim();
-  if (!trimmed) {
-    return 'UTC';
+/**
+ * Display timestamp in system local timezone (same instant as shell `date`, not `date -u`).
+ * `manifest.json` keeps ISO UTC; HTML subtitles use this for humans.
+ */
+export function formatRunTimestamp(iso: string): string {
+  const d = new Date(iso.trim());
+  if (Number.isNaN(d.getTime())) {
+    return iso;
   }
-  if (trimmed.endsWith('Z')) {
-    return `${trimmed} UTC`;
+
+  const sec = Math.floor(d.getTime() / 1000);
+  const env = { ...process.env };
+
+  try {
+    // BSD/macOS — same as typing `date` in the shell (respects TZ).
+    return execSync(`date -r ${sec}`, { encoding: 'utf8', env }).trim();
+  } catch {
+    try {
+      // GNU/Linux
+      return execSync(`date -d @${sec}`, { encoding: 'utf8', env }).trim();
+    } catch {
+      return d.toString();
+    }
   }
-  return `${trimmed} UTC`;
 }
 
 export function parseTestNameParts(testName: string): { groupPath: string[]; leafName: string } {
