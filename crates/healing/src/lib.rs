@@ -47,19 +47,25 @@ impl HealingEngine {
             return HealResult::success(element.selector.clone());
         }
 
-        self.build_clusters(dom_snapshot);
-
         let candidates = self.find_candidates(original_signature, dom_snapshot);
-        
+
         if candidates.is_empty() {
             return HealResult::failed(vec![], original_signature.clone());
         }
 
-        let best = candidates
+        let best = match candidates
             .iter()
-            .max_by(|a, b| a.confidence.partial_cmp(&b.confidence).unwrap())
-            .cloned()
-            .unwrap();
+            .max_by(|a, b| a.confidence.partial_cmp(&b.confidence).unwrap_or(std::cmp::Ordering::Equal))
+        {
+            Some(c) => c.clone(),
+            None => return HealResult::failed(vec![], original_signature.clone()),
+        };
+
+        if let Some(second) = candidates.get(1) {
+            if best.confidence - second.confidence < 0.1 {
+                return HealResult::failed(candidates, original_signature.clone());
+            }
+        }
 
         if best.confidence >= self.min_confidence {
             HealResult::healed(
@@ -77,35 +83,27 @@ impl HealingEngine {
         snapshot.elements.iter().find(|e| e.selector == selector)
     }
 
-    fn build_clusters(&mut self, snapshot: &DOMSnapshot) {
-        for element in &snapshot.elements {
-            let signature = self.extract_signature_from_element(element);
-            self.clusterer.add_element(element.selector.clone(), signature);
-        }
-    }
-
     fn find_candidates(&self, original: &Signature, snapshot: &DOMSnapshot) -> Vec<Candidate> {
-        let cluster_elements = self.clusterer.find_elements_in_cluster(original);
-        
         let mut candidates = Vec::new();
 
-        for clustered in cluster_elements {
-            let element_info = snapshot.elements.iter().find(|e| e.selector == clustered.selector);
-            if let Some(element_info) = element_info {
-                let candidate_sig = self.extract_signature_from_element(element_info);
-                let confidence = calculate_confidence(original, &candidate_sig);
-                
-                if confidence >= 0.5 {
-                    candidates.push(Candidate {
-                        selector: clustered.selector.clone(),
-                        signature: candidate_sig,
-                        confidence,
-                    });
-                }
+        for element_info in &snapshot.elements {
+            let candidate_sig = self.extract_signature_from_element(element_info);
+            let confidence = calculate_confidence(original, &candidate_sig);
+
+            if confidence >= 0.5 {
+                candidates.push(Candidate {
+                    selector: element_info.selector.clone(),
+                    signature: candidate_sig,
+                    confidence,
+                });
             }
         }
 
-        candidates.sort_by(|a, b| b.confidence.partial_cmp(&a.confidence).unwrap());
+        candidates.sort_by(|a, b| {
+            b.confidence
+                .partial_cmp(&a.confidence)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
         candidates
     }
 
@@ -134,12 +132,15 @@ impl HealingEngine {
             .collect::<Vec<_>>()
             .join(">");
 
-        let stable_attrs = extract_stable_attrs(
-            &element.attributes
-                .iter()
-                .map(|(k, v)| (k.clone(), v.clone()))
-                .collect::<Vec<_>>()
-        );
+        let attr_pairs: Vec<(String, String)> = element
+            .attributes
+            .iter()
+            .map(|(k, v)| (k.clone(), v.clone()))
+            .collect();
+        let mut stable_attrs = extract_stable_attrs(&attr_pairs);
+        if let Some(testid) = element.attributes.get("data-testid") {
+            stable_attrs.insert("data-testid".to_string(), testid.clone());
+        }
 
         Signature {
             path: tokens,
