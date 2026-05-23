@@ -10,7 +10,7 @@ import {
 } from './debug-chrome';
 import {
   buildManifest,
-  formatTimestampUtc,
+  formatRunTimestamp,
   type DebugManifest,
   writeManifest,
 } from './debug-manifest';
@@ -95,7 +95,7 @@ export function generateDebugHtml(
       <div class="panel summary-panel">
         <dl class="meta-list">
           <div><strong>Test</strong> — ${escapeHtml(report.testName)}</div>
-          <div><strong>Timestamp</strong> — ${escapeHtml(formatTimestampUtc(report.timestamp))}</div>
+          <div><strong>Timestamp</strong> — ${escapeHtml(formatRunTimestamp(report.timestamp))}</div>
           <div><strong>Duration</strong> — ${report.duration_ms}ms</div>
           <div><strong>Elements scanned</strong> — ${getTotalElements(report)}</div>
         </dl>
@@ -191,7 +191,7 @@ export function generateClassicIndexHtml(reportDir: string, manifest: DebugManif
   <div class="container">
     ${renderReportHeader({
       title: 'Fletta',
-      subtitle: `${manifest.reportCount} tests with debug enabled · run ${formatTimestampUtc(manifest.generatedAt)}`,
+      subtitle: `${manifest.reportCount} tests with debug enabled · run ${formatRunTimestamp(manifest.generatedAt)}`,
       explorerHref: 'fletta-debug-explorer.html',
       showExplorerLink: true,
     })}
