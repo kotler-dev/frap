@@ -8,6 +8,8 @@ export interface FlettaConfig {
   debug?: boolean | 'verbose';
   /** Default: allow. Use deny for stable-selector gates (CP001). */
   healPolicy?: HealPolicy;
+  /** Capture network, console, and UI events into `fletta-context.json` (F002). */
+  captureAll?: boolean;
 }
 
 export const DEFAULT_CONFIG: FlettaConfig = {

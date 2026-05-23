@@ -40,6 +40,22 @@ export {
   classifyHealOutcome,
 } from './healing-semantics';
 
+export {
+  ContextEvent,
+  ContextTimeline,
+  LogLevel,
+  NetworkPhase,
+  NetworkProtocol,
+  MessageDirection,
+  NetworkEventPayload,
+  LogEventPayload,
+  eventTimestampMs,
+  sortTimelineEvents,
+  getTimelineWindow,
+  eventsByTraceId,
+  networkBeforeUiFailure,
+} from './context';
+
 export const VERSION = '0.1.0';
 
 export function greet(name: string): string {

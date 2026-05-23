@@ -165,3 +165,56 @@ jobs:
             e2e/test-results/
             e2e/conference-results.json
           retention-days: 14
+
+  e2e-context:
+    name: E2E Context Layer (C002–C004)
+    runs-on: ubuntu-latest
+    needs: [rust-core, playwright-adapter]
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Add wasm32 target
+        run: rustup target add wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        run: cargo install wasm-pack --locked
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+
+      - name: Build packages
+        run: |
+          cd sdk/typescript && npm install && npm run build
+          cd ../../adapters/playwright && npm install && npm run build
+
+      - name: Install Playwright browsers
+        run: |
+          cd e2e
+          npm install
+          npx playwright install chromium
+
+      - name: Start test server
+        run: |
+          cd test-app
+          node server.js &
+          sleep 2
+          curl -sf http://localhost:3000
+
+      - name: Run Context Layer E2E
+        run: ./scripts/test.sh context
+
+      - name: Upload context reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fletta-context-reports
+          path: |
+            e2e/fletta-reports/context/fletta-context.json
+            e2e/fletta-reports/context/fletta-context-events.jsonl
+          retention-days: 30

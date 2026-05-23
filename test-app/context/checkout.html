@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>C002 — Checkout (payment flow)</title>
+  <link rel="stylesheet" href="context.css" />
+</head>
+<body>
+  <main>
+    <h1>Checkout</h1>
+    <p id="status">Initializing payment…</p>
+    <button type="button" data-testid="pay-btn" id="pay-btn" style="display:none">Pay now</button>
+  </main>
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const mode = params.get('mode') || 'normal';
+      const statusEl = document.getElementById('status');
+      const payBtn = document.getElementById('pay-btn');
+
+      fetch('/api/payment-intent?mode=' + encodeURIComponent(mode), { method: 'POST' })
+        .then(function (res) {
+          if (!res.ok) {
+            console.error('Payment intent failed:', res.status);
+            statusEl.textContent = 'Payment unavailable (API error)';
+            return;
+          }
+          return res.json();
+        })
+        .then(function (data) {
+          if (data && data.status === 'ready') {
+            statusEl.textContent = 'Ready to pay';
+            payBtn.style.display = 'inline-block';
+          }
+        })
+        .catch(function (err) {
+          console.error('Payment request error', err);
+          statusEl.textContent = 'Payment request failed';
+        });
+    })();
+  </script>
+</body>
+</html>
