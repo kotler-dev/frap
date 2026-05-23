@@ -36,13 +36,96 @@
 - Генерация кода под языки (backlog)
 - Графический интерфейс
 
+## Phased delivery
+
+| Фаза | Release | Суть |
+|------|---------|------|
+| **P0 — WASM + Rust API** | v1.0.0 | `crates/core`, wasm-bindgen, SDK вызывает Core; закрывает F000/F013/F001 для Playwright |
+| **P1 — FFI** | v1.4.0 | cdylib + cbindgen + C-header; блок для Java/JNI (F014) |
+| **P2 — JSON-RPC CLI** | v1.4.0 / backlog | subprocess для Python (F015), CI без Node |
+| **P3 — Standalone docs & examples** | v1.4.0+ | полный guide custom adapter, примеры вне Playwright |
+
+Подзадачи P0–P3 — см. раздел **Subtasks** ниже.
+
 ## Acceptance criteria
 
-- [ ] Core компилируется как standalone библиотека (cdylib, staticlib)
-- [ ] WASM сборка работает без Node.js-specific кода
-- [ ] Есть C-header для FFI (сгенерированный через cbindgen)
-- [ ] Пример standalone использования (CLI/скрипт)
-- [ ] Документация: "How to write custom adapter"
+### P0 — v1.0.0 MVP (критично)
+
+- [x] `crates/core` — публичный Rust API (re-export signature / clustering / healing)
+- [ ] WASM: `wasm-pack build`, функции `extract_signature` / `heal` → JSON
+- [ ] CI: сборка WASM + `cargo test` для core
+- [ ] `@fletta/sdk`: `HealingEngine` вызывает WASM (TS-fallback только в dev или удалён)
+- [ ] E2E CP001–CP003 проходят на WASM-пути
+
+### P1 — v1.4.0 Java (отложено)
+
+- [ ] Core как `cdylib` / `staticlib` (feature `ffi`)
+- [ ] C-header через cbindgen (`crates/core/fletta.h`)
+
+### P2 — v1.4.0 / Python backlog (отложено)
+
+- [ ] Бинарь/подкоманда `fletta-core rpc` (stdin/stdout JSON-RPC)
+- [ ] Integration test: JSON in → HealResult out
+
+### P3 — позже (отложено)
+
+- [ ] Документация: "How to write custom adapter" (полная)
+- [ ] Примеры standalone (CLI/скрипт без Playwright)
+- [ ] wasm-opt / размер бандла
+
+## Subtasks
+
+### P0 — v1.0.0 (критичный путь MVP)
+
+#### P0.1 — `crates/core` (Rust public API)
+
+- **Цель**: единая точка входа в алгоритмы; типы heal in/out (serde).
+- **Файлы**: `crates/core/Cargo.toml`, `crates/core/src/lib.rs`, `crates/Cargo.toml`, `crates/healing/Cargo.toml` (deps)
+- **Готово когда**: `cargo test -p fletta-core` (или имя crate), юнит-тесты heal на фикстурах DOM.
+
+#### P0.2 — WASM bindings
+
+- **Цель**: `wasm-bindgen` обёртки поверх `crates/core`.
+- **Файлы**: `crates/core/src/wasm.rs`, `crates/core/Cargo.toml` (feature `wasm`), скрипт/README: `wasm-pack build --target bundler`
+- **Готово когда**: артефакт в `sdk/typescript/wasm/` (или documented out-dir), smoke: heal из Node.
+
+#### P0.3 — SDK на WASM
+
+- **Цель**: убрать дублирование алгоритмов в TS; один источник истины — Rust.
+- **Файлы**: `sdk/typescript/src/core.ts`, `sdk/typescript/package.json`, `sdk/typescript/README.md` (краткий API)
+- **Готово когда**: `npm run build`, e2e CP001–CP003 без регрессий.
+
+#### P0.4 — CI для Core + WASM
+
+- **Цель**: сборка и тесты в pipeline.
+- **Файлы**: `.github/workflows/ci.yml`, опционально `crates/core/README.md`
+- **Готово когда**: green CI на PR с Rust + TS + e2e.
+
+**Связанные подзадачи MVP (не F000, но блокируют ✅ релиза):**
+
+| ID | Фича | Цель | Файлы | Release |
+|----|------|------|-------|---------|
+| MVP-A | F008 | CP005: JUnit XML артефакт в CI | `adapters/playwright/src/reporter.ts`, `e2e/`, `.github/workflows/ci.yml` | v1.0.0 |
+| MVP-B | F001/F013 | Статус ✅ после P0.3 + MVP-A | `project/FEATURES.md`, карточки F001/F013 | v1.0.0 |
+| MVP-C | PoC gates | Все CP001–CP005 в CI, overhead &lt; 10% (бенчмарк) | `docs/benchmark.md`, `e2e/`, CI | v1.0.0 или v1.0.1 |
+
+### P1 — v1.4.0 (FFI для Java)
+
+#### P1.1 — FFI layer + cbindgen
+
+- **Файлы**: `crates/core/src/ffi.rs`, `crates/core/cbindgen.toml`, generated `fletta.h`
+- **Готово когда**: `cargo build --features ffi`, smoke C или bindgen test.
+
+### P2 — v1.4.0 / backlog (JSON-RPC)
+
+#### P2.1 — RPC subprocess
+
+- **Файлы**: `crates/core/src/bin/rpc.rs` (или `crates/cli/`), `project/feature/F015-*.md`
+- **Готово когда**: integration test stdin/stdout; Python SDK может вызывать без WASM.
+
+### P3 — позже
+
+- Полный `docs/integrations.md` / adapter guide, standalone examples, wasm-opt.
 
 ## Implementation notes (sketch)
 

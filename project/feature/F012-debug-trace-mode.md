@@ -4,7 +4,7 @@
 
 - **Epic**: Core → Developer Experience
 - **Roll-up target**: ## MVP v1.0.0
-- **Status**: implemented
+- **Status**: done
 - **Target release**: v1.0.0
 - **Created**: 2026-05-21
 - **Related cases**: CP001, CP002, CP003

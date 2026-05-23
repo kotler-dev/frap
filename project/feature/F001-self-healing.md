@@ -4,7 +4,7 @@
 
 - **Epic**: Core → Self-Healing
 - **Roll-up target**: ## MVP v1.0.0
-- **Status**: draft
+- **Status**: in-progress
 - **Target release**: v1.0.0
 - **Created**: 2026-05-20
 - **Related cases**: C001, CP001, CP002, CP003
