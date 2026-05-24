@@ -35,10 +35,8 @@ pub fn detect_flaky_pattern(timeline: &Timeline) -> Option<RootCause> {
         let min = *durations.iter().min().unwrap();
         let max = *durations.iter().max().unwrap();
         let spread = max.saturating_sub(min);
-        if spread >= FLAKY_SPREAD_MS {
-            if best.as_ref().map(|(_, _, s)| spread > *s).unwrap_or(true) {
-                best = Some((endpoint, min, max));
-            }
+        if spread >= FLAKY_SPREAD_MS && best.as_ref().map(|(_, _, s)| spread > *s).unwrap_or(true) {
+            best = Some((endpoint, min, max));
         }
     }
 

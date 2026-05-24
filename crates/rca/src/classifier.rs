@@ -103,14 +103,13 @@ fn classify_network(
             ..
         } = event
         {
-            if request.is_failure() {
-                if best_fail
+            if request.is_failure()
+                && best_fail
                     .as_ref()
                     .map(|(t, _)| timestamp_ms > t)
                     .unwrap_or(true)
-                {
-                    best_fail = Some((*timestamp_ms, request.clone()));
-                }
+            {
+                best_fail = Some((*timestamp_ms, request.clone()));
             }
         }
     }
