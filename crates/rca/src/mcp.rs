@@ -55,7 +55,10 @@ mod tests {
         let json = serde_json::to_string(&mcp).unwrap();
         let parsed: McpAnalyzeResult = serde_json::from_str(&json).unwrap();
         assert_eq!(parsed.primary_cause, PrimaryCause::ApiError);
-        assert_eq!(parsed.details.endpoint.as_deref(), Some("/api/payment-intent"));
+        assert_eq!(
+            parsed.details.endpoint.as_deref(),
+            Some("/api/payment-intent")
+        );
     }
 
     #[test]
