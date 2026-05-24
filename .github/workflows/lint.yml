@@ -1,0 +1,58 @@
+name: Lint and Format Check
+
+on:
+  push:
+    branches: [main, feature/*]
+  pull_request:
+    branches: [main]
+
+jobs:
+  rust-format:
+    name: Rust Format Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - name: Check Rust formatting
+        run: cd crates && cargo fmt -- --check
+
+  rust-clippy:
+    name: Rust Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: crates
+      - name: Run Clippy
+        run: cd crates && cargo clippy -- -D warnings
+
+  typescript-lint:
+    name: TypeScript Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install and lint SDK
+        run: |
+          cd sdk/typescript
+          npm install
+          npm run lint
+        continue-on-error: true
+      - name: Install and lint Playwright adapter
+        run: |
+          cd adapters/playwright
+          npm install
+          npm run lint
+        continue-on-error: true

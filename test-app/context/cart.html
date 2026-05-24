@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>C003 — Cart (flaky flow)</title>
+  <link rel="stylesheet" href="context.css" />
+</head>
+<body>
+  <main>
+    <h1>Cart</h1>
+    <p id="status">Loading cart…</p>
+    <ul id="cart-items" style="display:none"></ul>
+    <p data-testid="cart-ready" id="cart-ready" style="display:none">Cart ready</p>
+  </main>
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const delay = params.get('delay') || '120';
+      const statusEl = document.getElementById('status');
+      const listEl = document.getElementById('cart-items');
+      const readyEl = document.getElementById('cart-ready');
+
+      fetch('/api/cart?delay=' + encodeURIComponent(delay))
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          statusEl.textContent = 'Cart loaded (' + data.latency_ms + 'ms)';
+          listEl.innerHTML = data.items
+            .map(function (item) { return '<li>' + item.name + '</li>'; })
+            .join('');
+          listEl.style.display = 'block';
+          readyEl.style.display = 'block';
+        })
+        .catch(function (err) {
+          console.warn('Cart load failed', err);
+          statusEl.textContent = 'Cart failed to load';
+        });
+    })();
+  </script>
+</body>
+</html>

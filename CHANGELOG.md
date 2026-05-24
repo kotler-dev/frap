@@ -19,6 +19,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Feature cards F000, F001, F008, F012, F013; `project/FEATURES.md` MVP 100%
 
+## [1.1.0] - Unreleased
+
+### Planned
+
+- F002: Unified Context — `crates/context`, network/console capture, `fletta-context.json`
+- F003: Root Cause Analysis — classification on timeline
+
+### Added
+
+- `fletta-context` Rust crate: `Timeline`, `Event`, correlation, window API
+- Playwright context capture: `attachFlettaContext`, `captureAll` config, `fletta-context.json`
+- C002/C003 fixtures: `test-app/context/`, `e2e/context/`, `./scripts/test.sh context`
+
 ## [1.0.1] - Unreleased
 
 ### Planned

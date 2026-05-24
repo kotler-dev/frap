@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Test script - runs fletta E2E tests
-# Usage: ./scripts/test.sh [conference|conference-fail|conference-dbg|conference-single|debug|all]
+# Usage: ./scripts/test.sh [conference|conference-fail|conference-dbg|conference-single|context|debug|all]
 
 set -e
 
@@ -18,6 +18,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 CONF_CONFIG="playwright.conference.config.ts"
+CTX_CONFIG="playwright.context.config.ts"
 
 echo -e "${BLUE}=== fletta Test Runner ===${NC}"
 echo ""
@@ -62,6 +63,18 @@ case $TEST_TYPE in
         echo -e "${BLUE}Running single debug case (explorer stub)${NC}"
         npx playwright test --config="$CONF_CONFIG" dbg-single.spec.ts
         ;;
+    context)
+        echo -e "${BLUE}Running Context Layer E2E (C002/C003/C004)${NC}"
+        cd "$PROJECT_ROOT/crates"
+        cargo test -p fletta-context
+        cd "$PROJECT_ROOT/e2e"
+        npx playwright test --config="$CTX_CONFIG"
+        node context/generate-rca.mjs
+        node context/verify-context.mjs
+        node context/verify-reports.mjs
+        node context/verify-rca.mjs
+        echo -e "${YELLOW}Note: C002 and slow C003 use test.fail (expected failures)${NC}"
+        ;;
     debug)
         echo -e "${BLUE}Running F012 debug-mode specs${NC}"
         npx playwright test debug-mode.spec.ts
@@ -78,4 +91,5 @@ echo -e "${GREEN}=== Tests complete! ===${NC}"
 echo ""
 echo "Reports:"
 echo "  - e2e/fletta-reports/conference/  (Conference project)"
+echo "  - e2e/fletta-reports/context/     (Context Layer C002–C004)"
 echo "  - e2e/test-results/"

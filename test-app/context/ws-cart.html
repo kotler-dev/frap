@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>C004 — WebSocket cart sync</title>
+  <link rel="stylesheet" href="context.css" />
+</head>
+<body>
+  <main>
+    <h1>Cart sync (WebSocket)</h1>
+    <p id="status">Connecting…</p>
+    <p data-testid="ws-ready" id="ws-ready" style="display:none">WebSocket ready</p>
+  </main>
+  <script>
+    (function () {
+      const statusEl = document.getElementById('status');
+      const readyEl = document.getElementById('ws-ready');
+      const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const ws = new WebSocket(protocol + '//' + location.host + '/ws/cart');
+
+      ws.onopen = function () {
+        statusEl.textContent = 'Connected — sending sync request';
+        ws.send(JSON.stringify({ action: 'sync', cartId: 'demo' }));
+      };
+
+      ws.onmessage = function (event) {
+        statusEl.textContent = 'Received: ' + event.data;
+        readyEl.style.display = 'block';
+      };
+
+      ws.onerror = function () {
+        console.error('WebSocket error');
+        statusEl.textContent = 'WebSocket error';
+      };
+    })();
+  </script>
+</body>
+</html>

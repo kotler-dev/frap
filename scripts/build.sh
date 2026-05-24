@@ -33,8 +33,27 @@ echo ""
 
 # Build Rust core (if Rust is installed)
 if command -v cargo &> /dev/null; then
-    echo -e "${YELLOW}Building Rust core...${NC}"
     cd "$PROJECT_ROOT/crates"
+    
+    # Check formatting first
+    echo -e "${YELLOW}Checking Rust formatting...${NC}"
+    if ! cargo fmt -- --check; then
+        echo -e "${RED}✗ Formatting check failed${NC}"
+        echo -e "${YELLOW}Run 'cd crates && cargo fmt' to fix${NC}"
+        exit 1
+    fi
+    echo -e "${GREEN}✓ Formatting OK${NC}"
+    
+    # Run clippy with warnings as errors (same as CI)
+    echo -e "${YELLOW}Running clippy checks...${NC}"
+    if ! cargo clippy -- -D warnings; then
+        echo -e "${RED}✗ Clippy found issues${NC}"
+        echo -e "${YELLOW}Run 'cd crates && cargo clippy' to see details${NC}"
+        exit 1
+    fi
+    echo -e "${GREEN}✓ Clippy passed${NC}"
+    
+    echo -e "${YELLOW}Building Rust core...${NC}"
     cargo build --release
     echo -e "${GREEN}✓ Rust core built${NC}"
     

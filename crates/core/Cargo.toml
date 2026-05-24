@@ -21,6 +21,7 @@ serde_json = { workspace = true }
 signature = { path = "../signature" }
 clustering = { path = "../clustering" }
 healing = { path = "../healing" }
+fletta-rca = { path = "../rca" }
 wasm-bindgen = { workspace = true, optional = true }
 getrandom = { version = "0.3", features = ["wasm_js"], optional = true }
 

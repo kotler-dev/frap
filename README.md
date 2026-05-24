@@ -6,6 +6,20 @@
 
 **fletta** parses element trees (DOM, ViewTree, accessibility), clusters components with deterministic algorithms, and generates stable locators for Page Objects and tests. When a selector breaks, it heals by signature matching with confidence scores and diff reports.
 
+## No ML in core, AI-ready
+
+Three layers — not one product category:
+
+| Layer | What | ML in fletta? |
+|-------|------|----------------|
+| **Core** (OSS) | Signatures, Drain3 clustering, self-healing, WASM | **No** — same input → same output |
+| **Integration** (roadmap) | MCP tools: `discover`, `resolve`, `analyze` | **No** — JSON-RPC wire to agents; LLM runs outside |
+| **Enhancements** (optional) | Semantic naming, step generation | **Optional** — separate package, BYO API key |
+
+**fletta is a grounding layer, not an AI testing tool.** It does not orchestrate LLMs or generate tests from prompts. An agent (Cursor, Claude, your stack) calls fletta for structured element maps, stable execution, and explainable RCA — deterministic infrastructure the model can rely on.
+
+Details: [docs/positioning.md](docs/positioning.md) · [docs/monetization.md](docs/monetization.md)
+
 ## Quick start
 
 ```bash
