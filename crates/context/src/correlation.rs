@@ -14,7 +14,8 @@ pub fn events_by_trace_id(timeline: &Timeline, trace_id: &str) -> Vec<Event> {
 
 /// Group events by trace_id (only events that have trace_id set).
 pub fn group_by_trace_id(timeline: &Timeline) -> std::collections::BTreeMap<String, Vec<Event>> {
-    let mut groups: std::collections::BTreeMap<String, Vec<Event>> = std::collections::BTreeMap::new();
+    let mut groups: std::collections::BTreeMap<String, Vec<Event>> =
+        std::collections::BTreeMap::new();
     for event in &timeline.events {
         if let Some(id) = event_trace_id(event) {
             groups.entry(id).or_default().push(event.clone());
@@ -34,7 +35,11 @@ pub fn network_before_ui_failure(timeline: &Timeline, failure_at_ms: i64, window
 
     for event in window {
         match &event {
-            Event::Network { timestamp_ms, request, .. } => {
+            Event::Network {
+                timestamp_ms,
+                request,
+                ..
+            } => {
                 if request.is_failure() {
                     last_network_fail = Some(*timestamp_ms);
                 }
