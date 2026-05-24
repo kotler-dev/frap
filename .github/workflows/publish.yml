@@ -49,6 +49,8 @@ jobs:
           cd sdk/typescript
           npm install
           npm run build
+          test -f wasm-node/fletta_core.js
+          test -f wasm-node/fletta_core_bg.wasm
 
       - name: Publish to npm
         run: |
