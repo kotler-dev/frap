@@ -1,5 +1,7 @@
 use crate::aggregate::{asymmetric_window, detect_flaky_pattern};
-use crate::rules::{endpoint_path, is_infrastructure_status, CauseDetails, PrimaryCause, RootCause};
+use crate::rules::{
+    endpoint_path, is_infrastructure_status, CauseDetails, PrimaryCause, RootCause,
+};
 use fletta_context::correlation::network_before_ui_failure;
 use fletta_context::logs::LogLevel;
 use fletta_context::timeline::{event_timestamp_ms, Event, Timeline};
@@ -35,12 +37,11 @@ pub fn classify(timeline: &Timeline, failure_at_ms: i64, window_ms: i64) -> Root
     let failure_at = if failure_at_ms > 0 {
         failure_at_ms
     } else {
-        failure_timestamp(timeline).unwrap_or_else(|| {
-            event_timestamp_ms(timeline.events.last().unwrap())
-        })
+        failure_timestamp(timeline)
+            .unwrap_or_else(|| event_timestamp_ms(timeline.events.last().unwrap()))
     };
 
-  if failure_timestamp(timeline).is_none() && failure_at_ms <= 0 {
+    if failure_timestamp(timeline).is_none() && failure_at_ms <= 0 {
         return RootCause::unknown("No UI failure marker in timeline");
     }
 
@@ -96,9 +97,18 @@ fn classify_network(
 
     let mut best_fail: Option<(i64, fletta_context::network::NetworkEvent)> = None;
     for event in window {
-        if let Event::Network { timestamp_ms, request, .. } = event {
+        if let Event::Network {
+            timestamp_ms,
+            request,
+            ..
+        } = event
+        {
             if request.is_failure() {
-                if best_fail.as_ref().map(|(t, _)| timestamp_ms > t).unwrap_or(true) {
+                if best_fail
+                    .as_ref()
+                    .map(|(t, _)| timestamp_ms > t)
+                    .unwrap_or(true)
+                {
                     best_fail = Some((*timestamp_ms, request.clone()));
                 }
             }
@@ -166,7 +176,10 @@ fn classify_logs(window: &[Event], timeline: &Timeline, failure_at: i64) -> Opti
     let error_logs: Vec<_> = window
         .iter()
         .filter_map(|e| {
-            if let Event::Log { timestamp_ms, log, .. } = e {
+            if let Event::Log {
+                timestamp_ms, log, ..
+            } = e
+            {
                 if log.level == LogLevel::Error && *timestamp_ms <= ui_at {
                     Some((timestamp_ms, log.message.clone()))
                 } else {
