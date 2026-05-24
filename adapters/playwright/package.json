@@ -1,6 +1,6 @@
 {
   "name": "@fletta/playwright",
-  "version": "0.1.0",
+  "version": "1.1.1",
   "description": "Playwright adapter for fletta self-healing selectors",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -26,6 +26,7 @@
     "@playwright/test": ">=1.40.0"
   },
   "devDependencies": {
+    "@fletta/sdk": "file:../../sdk/typescript",
     "@playwright/test": "^1.44.0",
     "@types/node": "^20.0.0",
     "typescript": "^5.4.0",
@@ -34,6 +35,6 @@
     "@typescript-eslint/parser": "^7.0.0"
   },
   "dependencies": {
-    "@fletta/sdk": "file:../../sdk/typescript"
+    "@fletta/sdk": "1.1.1"
   }
 }

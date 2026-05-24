@@ -19,17 +19,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Feature cards F000, F001, F008, F012, F013; `project/FEATURES.md` MVP 100%
 
-## [1.1.0] - Unreleased
+## [1.1.1] - 2026-05-24
 
-### Planned
+### Added
 
-- F002: Unified Context — `crates/context`, network/console capture, `fletta-context.json`
-- F003: Root Cause Analysis — classification on timeline
+- F002: Unified Context — `fletta-context.json`, C002–C004 E2E gates
+- F003: RCA via WASM (`wasm-node` target for Node), `generate-rca.mjs` post-run
+- npm publish workflow; first public `@fletta/sdk` and `@fletta/playwright` on registry.npmjs.org
+
+## [1.1.0] - 2026-05-24
 
 ### Added
 
 - `fletta-context` Rust crate: `Timeline`, `Event`, correlation, window API
-- Playwright context capture: `attachFlettaContext`, `captureAll` config, `fletta-context.json`
+- Playwright context capture: `attachFlettaContext`, `captureAll` config
 - C002/C003 fixtures: `test-app/context/`, `e2e/context/`, `./scripts/test.sh context`
 
 ## [1.0.1] - Unreleased
