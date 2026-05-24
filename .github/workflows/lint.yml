@@ -1,10 +1,11 @@
 name: Lint and Format Check
 
+# Rust fmt/clippy + TS lint on release tags (same cadence as fletta CI).
 on:
   push:
-    branches: [main, feature/*]
-  pull_request:
-    branches: [main]
+    tags:
+      - 'v*'
+  workflow_dispatch:
 
 jobs:
   rust-format:
