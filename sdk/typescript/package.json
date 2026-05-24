@@ -20,7 +20,8 @@
   },
   "files": [
     "dist/",
-    "wasm/"
+    "wasm/",
+    "wasm-node/"
   ],
   "repository": {
     "type": "git",
@@ -32,7 +33,9 @@
     "url": "https://github.com/kotler-dev/fletta/issues"
   },
   "scripts": {
-    "build:wasm": "cd ../../crates/core && wasm-pack build --target bundler --out-dir ../../sdk/typescript/wasm --features wasm",
+    "build:wasm:bundler": "cd ../../crates/core && wasm-pack build --target bundler --out-dir ../../sdk/typescript/wasm --features wasm",
+    "build:wasm:node": "cd ../../crates/core && wasm-pack build --target nodejs --out-dir ../../sdk/typescript/wasm-node --features wasm",
+    "build:wasm": "npm run build:wasm:bundler && npm run build:wasm:node",
     "build": "npm run build:wasm && tsc",
     "dev": "tsc --watch",
     "test": "jest",
