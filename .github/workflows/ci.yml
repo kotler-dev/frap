@@ -208,6 +208,8 @@ jobs:
 
       - name: Run Context Layer E2E
         run: ./scripts/test.sh context
+        env:
+          FLETTA_TS_FALLBACK: 1
 
       - name: Upload context reports
         uses: actions/upload-artifact@v4
