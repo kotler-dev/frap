@@ -30,6 +30,7 @@ export class HealingEngine {
   async init(): Promise<void> {
     if (process.env.FLETTA_TS_FALLBACK === '1') {
       console.warn('[fletta] FLETTA_TS_FALLBACK=1 — using TypeScript healing (dev only)');
+      this.wasmLoadAttempted = true;
       return;
     }
 

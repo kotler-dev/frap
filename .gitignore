@@ -13,6 +13,7 @@ yarn-debug.log*
 yarn-error.log*
 package-lock.json
 yarn.lock
+*.tgz
 
 # IDE
 .idea/
@@ -29,6 +30,7 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
+.npmrc
 
 # Test artifacts
 *.tmp
@@ -48,4 +50,5 @@ e2e/fletta-reports/
 # WASM
 pkg/
 sdk/typescript/wasm/
+sdk/typescript/wasm-node/
 *.wasm

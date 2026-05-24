@@ -9,10 +9,36 @@ import {
   loadAllHealingEvents,
 } from './healing-events';
 import { clearDebugReports } from '@fletta/sdk';
+import {
+  clearContextBuffers,
+  recordContextUiEvent,
+  writeContextReport,
+  loadRcaReport,
+  formatRcaSummary,
+  getContextTraceId,
+} from './context';
+import type { RcaReportV2 } from './context';
 
 export type { FlettaHealingEvent };
 /** @deprecated Use FlettaHealingEvent */
 export type HealingEvent = FlettaHealingEvent;
+
+export interface FlettaContextFailure {
+  playwrightTestId: string;
+  message: string;
+  timestamp: string;
+  rca?: RcaReportV2;
+}
+
+export interface FlettaContextTestResult {
+  playwrightTestId: string;
+  status: 'passed' | 'failed' | 'timedOut' | 'skipped' | 'interrupted';
+  durationMs: number;
+  message?: string;
+  timestamp: string;
+  traceId?: string;
+  rca?: RcaReportV2;
+}
 
 export interface FlettaReportSummary {
   totalAttempts: number;
@@ -26,6 +52,8 @@ export interface FlettaReportSummary {
 export class FlettaReporter implements Reporter {
   private config: FlettaPlaywrightConfig;
   private healingEvents: FlettaHealingEvent[] = [];
+  private contextFailures: FlettaContextFailure[] = [];
+  private contextTests: FlettaContextTestResult[] = [];
   private startTime: number = Date.now();
 
   constructor(config: FlettaPlaywrightConfig) {
@@ -58,6 +86,42 @@ export class FlettaReporter implements Reporter {
       }
     }
 
+    if (this.config.captureAll) {
+      // Use test.title (just the test title) for traceId lookup compatibility
+      // Tests pass testInfo.title to attachFlettaContext, not the full titlePath
+      const traceIdKey = test.title;
+      const traceId = getContextTraceId(this.config.reportDir, traceIdKey);
+
+      const testResult: FlettaContextTestResult = {
+        playwrightTestId: testName,
+        status: result.status,
+        durationMs: result.duration,
+        timestamp: new Date().toISOString(),
+        traceId: traceId ?? undefined,
+      };
+
+      if (result.error) {
+        const errorMessage = result.error.message ?? 'unknown error';
+        testResult.message = errorMessage;
+
+        recordContextUiEvent(
+          this.config.reportDir,
+          testName,
+          'failure',
+          errorMessage,
+          test.title
+        );
+
+        this.contextFailures.push({
+          playwrightTestId: testName,
+          message: errorMessage,
+          timestamp: testResult.timestamp,
+        });
+      }
+
+      this.contextTests.push(testResult);
+    }
+
     if (result.error && this.config.enableHealing) {
       this.healingEvents.push({
         playwrightTestId: testName,
@@ -76,10 +140,13 @@ export class FlettaReporter implements Reporter {
     if (this.config.enableReporting && this.config.reportDir) {
       clearHealingEventsFile(this.config.reportDir);
       clearDebugReports(this.config.reportDir);
+      if (this.config.captureAll) {
+        clearContextBuffers(this.config.reportDir);
+      }
     }
   }
 
-  onEnd(): void {
+  async onEnd(): Promise<void> {
     if (!this.config.enableReporting) {
       return;
     }
@@ -92,6 +159,14 @@ export class FlettaReporter implements Reporter {
     const diskEvents = loadAllHealingEvents(reportDir);
     if (diskEvents.length > 0) {
       this.healingEvents = diskEvents;
+    }
+
+    if (this.config.captureAll) {
+      const contextPath = writeContextReport(reportDir);
+      if (contextPath) {
+        console.log(`[fletta] Context report written to: ${contextPath}`);
+      }
+      // RCA (WASM) runs in e2e/context/generate-rca.mjs after Playwright — reporter loader cannot load .wasm.
     }
 
     this.writeJsonReport(reportDir);
@@ -120,14 +195,40 @@ export class FlettaReporter implements Reporter {
     };
   }
 
+  private buildContextSummary() {
+    const total = this.contextTests.length;
+    const passed = this.contextTests.filter(t => t.status === 'passed').length;
+    const failed = this.contextTests.filter(t => t.status === 'failed' || t.status === 'timedOut').length;
+    const skipped = this.contextTests.filter(t => t.status === 'skipped').length;
+
+    return {
+      total,
+      passed,
+      failed,
+      skipped,
+      durationMs: this.contextTests.reduce((sum, t) => sum + t.durationMs, 0),
+    };
+  }
+
   private writeJsonReport(reportDir: string): void {
     const summary = this.buildSummary();
-    const report = {
+    const report: Record<string, unknown> = {
       timestamp: new Date().toISOString(),
       duration: Date.now() - this.startTime,
       summary,
       events: this.healingEvents,
     };
+
+    if (this.config.captureAll && this.contextTests.length > 0) {
+      const contextSummary = this.buildContextSummary();
+      report.context_summary = contextSummary;
+      report.context_tests = this.contextTests;
+
+      const rcaV2 = loadRcaReport(reportDir);
+      if (rcaV2) {
+        report.rca = rcaV2;
+      }
+    }
 
     const reportPath = path.join(reportDir, 'fletta-report.json');
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
@@ -138,31 +239,66 @@ export class FlettaReporter implements Reporter {
   }
 
   private writeJUnitReport(reportDir: string): void {
-    const testCases = this.healingEvents.map(event => {
-      const attrs = [
-        `healed="${event.healed}"`,
-        `confidence="${event.confidence.toFixed(2)}"`,
-        `trigger="${this.escapeXml(event.trigger)}"`,
-        `policy="${this.escapeXml(event.policy)}"`,
-        `outcome="${this.escapeXml(event.outcome)}"`,
-        `original="${this.escapeXml(event.originalSelector)}"`,
-        `new="${this.escapeXml(event.newSelector || '')}"`,
-      ].join(' ');
-      const healingXml = `      <healing ${attrs}/>`;
+    const summary = this.buildSummary();
+    const healingFailures = summary.rejectedHeals + summary.unexpectedHeals;
 
-      return `    <testcase name="${this.escapeXml(event.playwrightTestId)}" time="0">
+    // Build fletta healing suite (only if there are healing events)
+    let flettaSuite = '';
+    if (this.healingEvents.length > 0) {
+      const healingCases = this.healingEvents.map(event => {
+        const attrs = [
+          `healed="${event.healed}"`,
+          `confidence="${event.confidence.toFixed(2)}"`,
+          `trigger="${this.escapeXml(event.trigger)}"`,
+          `policy="${this.escapeXml(event.policy)}"`,
+          `outcome="${this.escapeXml(event.outcome)}"`,
+          `original="${this.escapeXml(event.originalSelector)}"`,
+          `new="${this.escapeXml(event.newSelector || '')}"`,
+        ].join(' ');
+        const healingXml = `      <healing ${attrs}/>`;
+
+        return `    <testcase name="${this.escapeXml(event.playwrightTestId)}" time="0">
 ${healingXml}
     </testcase>`;
-    }).join('\n');
+      }).join('\n');
 
-    const summary = this.buildSummary();
-    const failures = summary.rejectedHeals + summary.unexpectedHeals;
+      flettaSuite = `
+  <testsuite name="fletta" tests="${this.healingEvents.length}" failures="${healingFailures}" timestamp="${new Date().toISOString()}">
+${healingCases}
+  </testsuite>`;
+    }
+
+    // Build fletta-context suite with all tests (if captureAll enabled)
+    let contextSuite = '';
+    if (this.config.captureAll && this.contextTests.length > 0) {
+      const contextSummary = this.buildContextSummary();
+      const rcaV2 = loadRcaReport(reportDir);
+      const suiteRca = rcaV2?.suite;
+
+      const contextCases = this.contextTests.map(test => {
+        const isFailed = test.status === 'failed' || test.status === 'timedOut';
+        let failureXml = '';
+
+        if (isFailed && test.message) {
+          const failureBody = suiteRca
+            ? this.escapeXml(formatRcaSummary(suiteRca))
+            : this.escapeXml(test.message);
+          failureXml = `
+      <failure message="${failureBody}">${failureBody}</failure>`;
+        }
+
+        return `    <testcase name="${this.escapeXml(test.playwrightTestId)}" time="${(test.durationMs / 1000).toFixed(3)}">${failureXml}
+    </testcase>`;
+      }).join('\n');
+
+      contextSuite = `
+  <testsuite name="fletta-context" tests="${contextSummary.total}" failures="${contextSummary.failed}" timestamp="${new Date().toISOString()}">
+${contextCases}
+  </testsuite>`;
+    }
 
     const junitXml = `<?xml version="1.0" encoding="UTF-8"?>
-<testsuites>
-  <testsuite name="fletta" tests="${this.healingEvents.length}" failures="${failures}" timestamp="${new Date().toISOString()}">
-${testCases}
-  </testsuite>
+<testsuites>${flettaSuite}${contextSuite}
 </testsuites>`;
 
     const junitPath = path.join(reportDir, 'junit.xml');
