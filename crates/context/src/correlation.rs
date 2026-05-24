@@ -8,7 +8,7 @@ pub fn events_by_trace_id(timeline: &Timeline, trace_id: &str) -> Vec<Event> {
         .filter(|e| event_trace_id(e).as_deref() == Some(trace_id))
         .cloned()
         .collect();
-    matched.sort_by_key(|e| event_timestamp_ms(e));
+    matched.sort_by_key(event_timestamp_ms);
     matched
 }
 
@@ -22,7 +22,7 @@ pub fn group_by_trace_id(timeline: &Timeline) -> std::collections::BTreeMap<Stri
         }
     }
     for events in groups.values_mut() {
-        events.sort_by_key(|e| event_timestamp_ms(e));
+        events.sort_by_key(event_timestamp_ms);
     }
     groups
 }
@@ -39,10 +39,8 @@ pub fn network_before_ui_failure(timeline: &Timeline, failure_at_ms: i64, window
                 timestamp_ms,
                 request,
                 ..
-            } => {
-                if request.is_failure() {
-                    last_network_fail = Some(*timestamp_ms);
-                }
+            } if request.is_failure() => {
+                last_network_fail = Some(*timestamp_ms);
             }
             Event::Ui {
                 timestamp_ms,

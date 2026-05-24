@@ -43,7 +43,7 @@ impl Timeline {
     }
 
     pub fn sort_by_time(&mut self) {
-        self.events.sort_by_key(|e| event_timestamp_ms(e));
+        self.events.sort_by_key(event_timestamp_ms);
     }
 
     /// Events with timestamps in [center_ms - window_ms, center_ms + window_ms].
