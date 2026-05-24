@@ -101,7 +101,8 @@ export class FlettaReporter implements Reporter {
           this.config.reportDir,
           testName,
           'failure',
-          errorMessage
+          errorMessage,
+          test.title
         );
 
         this.contextFailures.push({

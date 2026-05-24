@@ -145,6 +145,9 @@ export function attachFlettaContext(page: Page, options: ContextCaptureOptions):
   const traceId = resolveTraceId(options.reportDir, testId, options.traceId);
 
   page.on('request', (request: Request) => {
+    if (!shouldCaptureUrl(request.url())) {
+      return;
+    }
     const key = requestKey(request);
     pendingRequests.set(key, {
       startMs: nowMs(),
@@ -163,6 +166,9 @@ export function attachFlettaContext(page: Page, options: ContextCaptureOptions):
 
   page.on('response', (response: Response) => {
     const request = response.request();
+    if (!shouldCaptureUrl(request.url())) {
+      return;
+    }
     const key = requestKey(request);
     const pending = pendingRequests.get(key);
     const start = pending?.startMs ?? nowMs();
@@ -179,6 +185,9 @@ export function attachFlettaContext(page: Page, options: ContextCaptureOptions):
   });
 
   page.on('requestfailed', (request: Request) => {
+    if (!shouldCaptureUrl(request.url())) {
+      return;
+    }
     const key = requestKey(request);
     const pending = pendingRequests.get(key);
     pendingRequests.delete(key);
@@ -253,4 +262,14 @@ export function recordContextUiEvent(
 
 function requestKey(request: Request): string {
   return `${request.method()}:${request.url()}`;
+}
+
+/** Skip static assets to reduce capture overhead (F002 bench gate). */
+function shouldCaptureUrl(url: string): boolean {
+  try {
+    const path = new URL(url).pathname;
+    return !/\.(css|png|jpe?g|gif|svg|ico|woff2?|map)(\?|$)/i.test(path);
+  } catch {
+    return true;
+  }
 }

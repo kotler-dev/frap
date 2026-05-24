@@ -60,9 +60,22 @@ export function flettaPlaywright(
     debug: config.debug,
   }]);
   
+  const userBuild = config.playwrightConfig?.build;
+  const userExternal = userBuild?.external;
+  const externalList = Array.isArray(userExternal)
+    ? userExternal
+    : userExternal
+      ? [userExternal]
+      : [];
+
   const playwrightConfig: Partial<PlaywrightTestConfig> = {
     ...config.playwrightConfig,
     reporter: reporters as any,
+    build: {
+      ...userBuild,
+      // Keep @fletta/sdk (and WASM) on Node's native loader — Playwright must not babel-parse .wasm.
+      external: [...externalList, '@fletta/sdk'],
+    },
   };
 
   return playwrightConfig;
