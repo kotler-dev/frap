@@ -10,5 +10,5 @@ export {
   pushContextEvent,
   writeContextReport,
 } from './store';
-export { writeRcaReport, loadRcaReport, formatRcaSummary } from './rca';
+export { loadRcaReport, formatRcaSummary } from './rca';
 export type { PerTestRca, RcaReportV2 } from './rca';

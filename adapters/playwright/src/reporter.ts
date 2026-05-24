@@ -9,7 +9,14 @@ import {
   loadAllHealingEvents,
 } from './healing-events';
 import { clearDebugReports } from '@fletta/sdk';
-import { clearContextBuffers, recordContextUiEvent, writeContextReport, writeRcaReport, loadRcaReport, formatRcaSummary, getContextTraceId } from './context';
+import {
+  clearContextBuffers,
+  recordContextUiEvent,
+  writeContextReport,
+  loadRcaReport,
+  formatRcaSummary,
+  getContextTraceId,
+} from './context';
 import type { RcaReportV2 } from './context';
 
 export type { FlettaHealingEvent };
@@ -159,15 +166,7 @@ export class FlettaReporter implements Reporter {
       if (contextPath) {
         console.log(`[fletta] Context report written to: ${contextPath}`);
       }
-      const rcaPath = await writeRcaReport(reportDir, this.contextTests);
-      if (rcaPath) {
-        const rca = loadRcaReport(reportDir);
-        if (rca) {
-          for (const failure of this.contextFailures) {
-            failure.rca = rca;
-          }
-        }
-      }
+      // RCA (WASM) runs in e2e/context/generate-rca.mjs after Playwright — reporter loader cannot load .wasm.
     }
 
     this.writeJsonReport(reportDir);

@@ -43,7 +43,20 @@ async function loadWasmModule(): Promise<WasmRcaModule | null> {
 
   wasmLoadPromise = (async () => {
     try {
-      const wasm = (await import('../wasm/fletta_core.js')) as unknown as WasmRcaModule;
+      const { createRequire } = await import('node:module');
+      const { dirname, join } = await import('node:path');
+      const { fileURLToPath, pathToFileURL } = await import('node:url');
+      const require = createRequire(import.meta.url);
+      // file:// URL — Node native loader; avoids Playwright/babel parsing .wasm as JS.
+      const distDir = dirname(fileURLToPath(import.meta.url));
+      let wasmJs = join(distDir, '../wasm/fletta_core.js');
+      try {
+        const sdkRoot = dirname(require.resolve('@fletta/sdk/package.json'));
+        wasmJs = join(sdkRoot, 'wasm/fletta_core.js');
+      } catch {
+        // Monorepo — path next to dist/rca.js
+      }
+      const wasm = (await import(pathToFileURL(wasmJs).href)) as unknown as WasmRcaModule;
       if (typeof wasm.analyzeRcaJson !== 'function') {
         console.warn('[fletta] analyzeRcaJson export missing from fletta_core wasm');
         return null;
@@ -79,6 +92,3 @@ export async function analyzeRca(
   return JSON.parse(reportJson) as RcaReport;
 }
 
-export function formatRcaSummary(report: RcaReport): string {
-  return `[fletta-rca] ${report.primary_cause} (${report.confidence.toFixed(2)}): ${report.recommendation}`;
-}
