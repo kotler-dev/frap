@@ -85,12 +85,67 @@ Network events include HTTP (`protocol: http`, phases `request`/`response`/`fail
 ## Reports
 
 After running tests, find reports in `fletta-reports/`:
-- `fletta-report.json` — events with `trigger`, `policy`, `outcome`; summary includes `unexpectedHeals`
+- `fletta-report.json` — events with `trigger`, `policy`, `outcome`; summary includes `unexpectedHeals`; with `captureAll`: `context_summary` and `context_tests[]`
 - `fletta-context.json` — unified timeline (when `captureAll` is enabled)
-- `junit.xml` — JUnit XML with `<healing trigger="..." policy="..." outcome="..."/>`
+- `fletta-rca.json` — Root Cause Analysis v2 with `suite` (merged) and `by_test[]` (per-failed-test)
+- `junit.xml` — JUnit XML with `fletta-context` suite for all tests; `fletta` suite only when healing events exist
 - `fletta-debug.html` — Classic view (A): single test report, or grouped index when 2+ tests use `debug: true`
 - `fletta-debug-explorer.html` — Explorer view (B): sidebar + search when 2+ debug reports; stub with link to A when only 1
 - `debug-reports/` — per-test JSON/HTML + `manifest.json`
+
+### Context Layer Reports (F002 + F003)
+
+When `captureAll: true`, the reporter tracks all Playwright tests (not just failures):
+
+**fletta-report.json** includes:
+```json
+{
+  "context_summary": {
+    "total": 5,
+    "passed": 3,
+    "failed": 2,
+    "skipped": 0,
+    "durationMs": 12345
+  },
+  "context_tests": [
+    { "playwrightTestId": "...", "status": "passed", "durationMs": 329, "timestamp": "..." },
+    { "playwrightTestId": "...", "status": "failed", "durationMs": 10200, "message": "...", "timestamp": "..." }
+  ],
+  "rca": { "version": 2, "suite": {...}, "by_test": [...] }
+}
+```
+
+**fletta-rca.json v2** format:
+```json
+{
+  "version": 2,
+  "generated_at": "2026-05-24T08:11:08.759Z",
+  "suite": {
+    "primary_cause": "flaky",
+    "confidence": 0.92,
+    "recommendation": "..."
+  },
+  "by_test": [
+    {
+      "playwrightTestId": "...C002...",
+      "traceId": "uuid",
+      "rca": {
+        "primary_cause": "api_error",
+        "details": { "endpoint": "/api/payment-intent", "status": 504 }
+      }
+    }
+  ]
+}
+```
+
+- **suite**: RCA from merged timeline (all events) — good for detecting cross-test patterns like flaky latency
+- **by_test**: Per-test RCA using `trace_id` correlation — isolated timeline for each failed test
+
+**junit.xml** with `captureAll`:
+- Single `fletta-context` testsuite containing **all** test results
+- Passed tests have no `<failure>` element
+- Failed tests include RCA summary in `<failure message="[fletta-rca] ...">`
+- `fletta` suite (healing) only emitted when `enableHealing: true` produces events
 
 ## How It Works
 
