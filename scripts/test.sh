@@ -70,6 +70,7 @@ case $TEST_TYPE in
         cd "$PROJECT_ROOT/e2e"
         npx playwright test --config="$CTX_CONFIG"
         node context/verify-context.mjs
+        node context/verify-reports.mjs
         node context/verify-rca.mjs
         echo -e "${YELLOW}Note: C002 and slow C003 use test.fail (expected failures)${NC}"
         ;;

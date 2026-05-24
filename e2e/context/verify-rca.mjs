@@ -28,24 +28,30 @@ if (!fs.existsSync(contextPath)) {
 const rca = JSON.parse(fs.readFileSync(rcaPath, 'utf-8'));
 const context = JSON.parse(fs.readFileSync(contextPath, 'utf-8'));
 
-if (rca.version !== 1) {
-  fail(`Expected RCA version 1, got ${rca.version}`);
+// Handle both v1 (legacy) and v2 formats
+const isV2 = rca.version === 2;
+if (!isV2 && rca.version !== 1) {
+  fail(`Expected RCA version 1 or 2, got ${rca.version}`);
 }
+
+// For v2, use suite RCA; for v1, use the rca directly
+const suiteRca = isV2 ? rca.suite : rca;
+const perTestRcas = isV2 ? rca.by_test : [];
 
 const validCauses = ['ui_change', 'api_error', 'infrastructure', 'flaky', 'unknown'];
-if (!validCauses.includes(rca.primary_cause)) {
-  fail(`Invalid primary_cause: ${rca.primary_cause}`);
+if (!validCauses.includes(suiteRca.primary_cause)) {
+  fail(`Invalid primary_cause: ${suiteRca.primary_cause}`);
 }
 
-if (typeof rca.confidence !== 'number' || rca.confidence < 0 || rca.confidence > 1) {
+if (typeof suiteRca.confidence !== 'number' || suiteRca.confidence < 0 || suiteRca.confidence > 1) {
   fail('confidence must be a number between 0 and 1');
 }
 
-if (!rca.recommendation || typeof rca.recommendation !== 'string') {
+if (!suiteRca.recommendation || typeof suiteRca.recommendation !== 'string') {
   fail('recommendation must be a non-empty string');
 }
 
-if (!Array.isArray(rca.timeline_excerpt)) {
+if (!Array.isArray(suiteRca.timeline_excerpt)) {
   fail('timeline_excerpt must be an array');
 }
 
@@ -93,14 +99,42 @@ if (spread < 400) {
 }
 
 // Merged context run: flaky aggregate wins over single-run api_error (C003 AC).
-if (rca.primary_cause !== 'flaky') {
+if (suiteRca.primary_cause !== 'flaky') {
   fail(
-    `Expected primary_cause flaky for merged C002+C003 run, got ${rca.primary_cause}`
+    `Expected primary_cause flaky for merged C002+C003 run, got ${suiteRca.primary_cause}`
   );
 }
 
-if (!rca.details?.pattern?.includes('spread')) {
+if (!suiteRca.details?.pattern?.includes('spread')) {
   fail('Expected flaky pattern describing latency spread in RCA details');
+}
+
+// Validate per-test RCA for v2
+if (isV2) {
+  // Find C002 per-test RCA (should be api_error)
+  const c002Rca = perTestRcas.find(entry => 
+    entry.playwrightTestId.includes('C002') && 
+    entry.playwrightTestId.includes('payment')
+  );
+  
+  if (!c002Rca) {
+    fail('Missing per-test RCA for C002 (payment timeout test)');
+  }
+  
+  if (c002Rca.rca.primary_cause !== 'api_error') {
+    fail(
+      `Expected C002 per-test primary_cause api_error, got ${c002Rca.rca.primary_cause}`
+    );
+  }
+  
+  if (!c002Rca.rca.details?.endpoint?.includes('payment-intent')) {
+    fail('C002 per-test RCA missing payment-intent endpoint');
+  }
+  
+  // Validate traceId is present
+  if (!c002Rca.traceId) {
+    fail('C002 per-test RCA missing traceId');
+  }
 }
 
 const junitPath = path.join(reportDir, 'junit.xml');
@@ -112,5 +146,6 @@ if (fs.existsSync(junitPath)) {
 }
 
 console.log(
-  `[RCA-VERIFY] OK — primary_cause=${rca.primary_cause} confidence=${rca.confidence.toFixed(2)}`
+  `[RCA-VERIFY] OK — primary_cause=${suiteRca.primary_cause} confidence=${suiteRca.confidence.toFixed(2)}` +
+  (isV2 ? `, per-test entries: ${perTestRcas.length}` : '')
 );
