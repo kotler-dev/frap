@@ -56,13 +56,8 @@ export {
   networkBeforeUiFailure,
 } from './context';
 
-export {
-  PrimaryCause,
-  CauseDetails,
-  RcaReport,
-  analyzeRca,
-  formatRcaSummary,
-} from './rca';
+export type { PrimaryCause, CauseDetails, RcaReport } from './rca';
+export { formatRcaSummary } from './rca-summary';
 
 export const VERSION = '0.1.0';
 

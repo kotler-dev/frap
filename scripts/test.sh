@@ -69,6 +69,7 @@ case $TEST_TYPE in
         cargo test -p fletta-context
         cd "$PROJECT_ROOT/e2e"
         npx playwright test --config="$CTX_CONFIG"
+        node context/generate-rca.mjs
         node context/verify-context.mjs
         node context/verify-reports.mjs
         node context/verify-rca.mjs

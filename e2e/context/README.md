@@ -18,9 +18,10 @@ Demos for F002 Unified Context and F003 Root Cause Analysis: HTTP + WebSocket ne
 This executes:
 1. `cargo test -p fletta-context` — Rust unit tests
 2. `npx playwright test --config=playwright.context.config.ts` — E2E tests
-3. `node context/verify-context.mjs` — validate timeline schema
-4. `node context/verify-reports.mjs` — CP005-equivalent gate (reports structure)
-5. `node context/verify-rca.mjs` — validate RCA classification
+3. `node context/generate-rca.mjs` — RCA via WASM (Node loader; not Playwright reporter)
+4. `node context/verify-context.mjs` — validate timeline schema
+5. `node context/verify-reports.mjs` — CP005-equivalent gate (reports structure)
+6. `node context/verify-rca.mjs` — validate RCA classification
 
 Or run manually:
 
