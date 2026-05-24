@@ -8,12 +8,22 @@
     "dist/",
     "wasm/"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kotler-dev/fletta.git",
+    "directory": "sdk/typescript"
+  },
+  "homepage": "https://fletta.dev",
+  "bugs": {
+    "url": "https://github.com/kotler-dev/fletta/issues"
+  },
   "scripts": {
     "build:wasm": "cd ../../crates/core && wasm-pack build --target bundler --out-dir ../../sdk/typescript/wasm --features wasm",
     "build": "npm run build:wasm && tsc",
     "dev": "tsc --watch",
     "test": "jest",
-    "lint": "eslint src/ --ext .ts"
+    "lint": "eslint src/ --ext .ts",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "testing",
@@ -24,6 +34,9 @@
   ],
   "author": "fletta team",
   "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "typescript": "^5.4.0",
