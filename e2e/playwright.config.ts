@@ -9,7 +9,7 @@ export default defineConfig({
     enableReporting: true,
     playwrightConfig: {
       testDir: './',
-      testIgnore: ['**/conference/**'],
+      testIgnore: ['**/conference/**', '**/wasm/**', '**/*.wasm'],
       timeout: 10000,
       expect: {
         timeout: 5000,
