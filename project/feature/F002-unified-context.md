@@ -4,7 +4,7 @@
 
 - **Epic**: Core → Context Layer
 - **Roll-up target**: ## v1.1.0 (Context Layer)
-- **Status**: in-progress
+- **Status**: done
 - **Target release**: v1.1.0
 - **Created**: 2026-05-20
 - **Related cases**: C002, C003
@@ -16,7 +16,7 @@
 ## User workflow
 
 1. Тест запускается с capture-all режимом
-2. Система записывает: DOM-события, console logs, HTTP-запросы
+2. Система записывает: DOM-события, console logs, HTTP-запросы, WebSocket
 3. При падении строится timeline событий ±5 сек от failure
 4. Корреляция по trace_id и временным меткам
 5. RCA-анализ использует timeline для классификации причины
@@ -25,7 +25,7 @@
 
 ### In
 - Перехват network: HTTP запросы/ответы, WebSocket
-- Перехват logs: console, application logs
+- Перехват logs: console, page errors
 - Корреляция событий по времени и trace_id
 - Timeline API: доступ к событиям в окне времени
 - Сериализация в JSON для отчётов
@@ -37,13 +37,13 @@
 
 ## Acceptance criteria
 
-- [ ] Network capture: запросы/ответы с таймингами
-- [ ] Console capture: логи с уровнями (info, warn, error)
-- [ ] Timeline API: получить события в диапазоне [t-5s, t+5s]
-- [ ] Корреляция: trace_id связывает UI, network, logs
-- [ ] C002: timeline показывает API timeout перед UI failure
-- [ ] C003: timeline показывает различия между flaky runs
-- [ ] Performance overhead < 20%
+- [x] Network capture: запросы/ответы с таймингами
+- [x] Console capture: логи с уровнями (info, warn, error)
+- [x] Timeline API: получить события в диапазоне [t-5s, t+5s]
+- [x] Корреляция: trace_id связывает UI, network, logs
+- [x] C002: timeline показывает API timeout перед UI failure
+- [x] C003: timeline показывает различия между flaky runs
+- [x] Performance overhead < 20%
 
 ## Implementation notes (sketch)
 
@@ -51,10 +51,15 @@
 ```
 crates/context/
 ├── src/
-│   ├── network.rs    # HTTP/WebSocket capture
+│   ├── network.rs    # HTTP/WebSocket event model
 │   ├── logs.rs       # Console/application logs
 │   ├── timeline.rs   # Timeline структура и API
 │   └── correlation.rs # Trace ID matching
+
+adapters/playwright/src/context/
+├── capture.ts        # HTTP + WebSocket + console capture
+├── store.ts          # JSONL buffer
+└── index.ts
 ```
 
 ### Timeline структура
@@ -65,58 +70,58 @@ struct Timeline {
 
 enum Event {
     Ui { timestamp, element, action },
-    Network { timestamp, request, response, duration },
+    Network { timestamp, request, duration, protocol },
     Log { timestamp, level, message, source },
 }
 ```
 
 ### Интеграция с Playwright
-- Playwright уже имеет network interception
-- Консоль: `page.on('console', ...)`
-- Объединение в единый timeline через адаптер
-
-### Риски и зависимости
-- Производительность: полный capture может быть тяжёлым
-- Privacy: логи могут содержать чувствительные данные
-- Объём данных: нужна агрегация/сэмплирование
+- HTTP: `page.on('request'|'response'|'requestfailed')`
+- WebSocket: `page.on('websocket')` → open/message/close
+- Консоль: `page.on('console')`, `page.on('pageerror')`
+- Объединение в единый timeline через `attachFlettaContext`
 
 ## Subtasks
 
 ### F002.0 — Cases & fixtures (C002, C003)
 
 - **Цель**: воспроизводимые сценарии API timeout и flaky cart.
-- **Файлы**: `test-app/`, `e2e/conference/` (или `e2e/c002-*`), `project/cases/`, `docs/cases.md`
-- **Готово когда**: C002/C003 статус `script-ready`, spec падает предсказуемо.
+- **Файлы**: `test-app/context/`, `e2e/context/`, `project/cases/`
+- **Готово когда**: C002/C003 статус `validated`.
 
 ### F002.1 — Event model + `crates/context`
 
 - **Цель**: `Event`, `Timeline`, serde JSON schema.
-- **Файлы**: `crates/context/Cargo.toml`, `crates/context/src/{timeline,lib}.rs`, `crates/Cargo.toml`
+- **Файлы**: `crates/context/`, `crates/Cargo.toml`
 - **Готово когда**: `cargo test -p fletta-context`, round-trip JSON.
 
 ### F002.2 — Network capture (Playwright)
 
 - **Цель**: HTTP request/response + duration в timeline.
-- **Файлы**: `adapters/playwright/src/context/` (или `network-capture.ts`), hook в `wrapper.ts` / reporter
+- **Файлы**: `adapters/playwright/src/context/capture.ts`
 - **Готово когда**: в отчёте есть network events с таймингами.
 
 ### F002.3 — Console / logs capture
 
 - **Цель**: `page.on('console')` → Log events с level.
-- **Файлы**: те же + типы в SDK при необходимости
 - **Готово когда**: error/warn из консоли в timeline.
 
 ### F002.4 — Correlation + window API
 
 - **Цель**: `trace_id`, выборка `[t-5s, t+5s]`.
-- **Файлы**: `crates/context/src/correlation.rs`, TS API `getTimelineWindow(failureAt)`
+- **Файлы**: `crates/context/src/correlation.rs`, SDK `getTimelineWindow`
 - **Готово когда**: юнит-тесты корреляции; C002 показывает timeout перед UI fail.
 
 ### F002.5 — Report serialization + config
 
 - **Цель**: `captureAll` / `fletta-context.json` рядом с `fletta-report.json`.
-- **Файлы**: `adapters/playwright/src/reporter.ts`, `FlettaConfig`
 - **Готово когда**: C002/C003 acceptance; overhead замерен (< 20% per AC).
+
+### F002.6 — WebSocket capture
+
+- **Цель**: WebSocket open/message/close в timeline с `protocol: websocket`.
+- **Файлы**: `network.rs`, `capture.ts`, `test-app/context/ws-cart.html`, `e2e/context/c004-websocket.spec.ts`
+- **Готово когда**: C004 e2e проходит; WS events в `fletta-context.json`.
 
 | ID | Зависит от | Release |
 |----|------------|---------|
@@ -124,26 +129,29 @@ enum Event {
 | F002.1 | F002.0 (fixtures helpful) | v1.1.0 |
 | F002.2–F002.3 | F002.1 | v1.1.0 |
 | F002.4–F002.5 | F002.2, F002.3 | v1.1.0 |
+| F002.6 | F002.2 | v1.1.0 |
 
 ## Verification / Test plan
 
-### Manual smoke
+### Local smoke
 ```bash
-# C002: API Timeout RCA
-fletta replay --name "payment-flow" --capture-all
-# Expected: timeline содержит POST /api/payment-intent TIMEOUT перед UI failure
-
-# C003: Flaky diagnosis
-for i in {1..10}; do
-  fletta replay --name "cart-flow" --capture-all
-done
-fletta analyze --aggregate --name "cart-flow"
-# Expected: корреляция с /api/cart latency > 500ms
+./scripts/start.sh
+./scripts/build.sh
+./scripts/test.sh context          # C002, C003, C004 + verify-context.mjs
+./scripts/bench-context.sh         # overhead < 20%
+cargo test -p fletta-context       # Rust unit tests
 ```
 
+### Expected
+- C002: POST `/api/payment-intent` 504 **before** UI `not_found` (UI wait 10s, API delay 8s)
+- C003: fast cart `<300ms`, slow cart `≥500ms` в одном timeline
+- C004: WebSocket `open` + `message` events with `protocol: websocket`
+- `e2e/fletta-reports/context/fletta-context.json` содержит network + log + ui
+
 ### Automation
-- Юнит-тесты: корреляция событий
-- Интеграционные: C002, C003
+- Rust: `cargo test -p fletta-context` (correlation, window, JSON round-trip)
+- E2E: `./scripts/test.sh context` + `e2e/context/verify-context.mjs`
+- CI: job `e2e-context` в `.github/workflows/ci.yml`
 
 ## Related docs
 

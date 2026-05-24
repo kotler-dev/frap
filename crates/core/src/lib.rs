@@ -12,6 +12,10 @@ pub use error::CoreError;
 
 // Algorithm crates (also available as `fletta_core::signature`, etc.)
 pub use clustering;
+pub use fletta_rca::{
+    analyze_timeline_json, PrimaryCause as RcaPrimaryCause, RcaReport,
+    DEFAULT_WINDOW_MS as RCA_DEFAULT_WINDOW_MS,
+};
 pub use healing::{DOMElementInfo, DOMSnapshot, HealingEngine, HealingOrchestrator};
 pub use signature::{
     calculate_attribute_bonus, calculate_confidence, calculate_path_similarity,
@@ -86,6 +90,19 @@ impl FlettaCore {
     pub fn engine_mut(&mut self) -> &mut HealingEngine {
         &mut self.engine
     }
+}
+
+/// Standalone RCA JSON API (no engine state required).
+pub fn analyze_rca_json(
+    timeline_json: &str,
+    failure_at_ms: i64,
+    window_ms: i64,
+) -> Result<String, CoreError> {
+    Ok(analyze_timeline_json(
+        timeline_json,
+        failure_at_ms,
+        window_ms,
+    )?)
 }
 
 impl Default for FlettaCore {

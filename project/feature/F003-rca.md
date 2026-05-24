@@ -4,7 +4,7 @@
 
 - **Epic**: Feature → Analysis
 - **Roll-up target**: ## v1.1.0 (Context Layer)
-- **Status**: in-progress
+- **Status**: done
 - **Target release**: v1.1.0
 - **Created**: 2026-05-20
 - **Related cases**: C002, C003
@@ -36,12 +36,14 @@
 
 ## Acceptance criteria
 
-- [ ] Классификация: UI-change, API-error, Infrastructure, Flaky, Unknown
-- [ ] C002: при API timeout классифицируется как API-error
-- [ ] C003: при flaky тесте классифицируется как Flaky с паттерном
-- [ ] RCA-репорт содержит: primary cause, confidence, timeline excerpt, recommendation
-- [ ] JSON формат для MCP: `fletta/analyze` tool
-- [ ] Экспорт в JUnit: `<failure message="...">` с RCA
+- [x] Классификация: UI-change, API-error, Infrastructure, Flaky, Unknown
+- [x] C002: при API timeout классифицируется как API-error
+- [x] C003: при flaky тесте классифицируется как Flaky с паттерном
+- [x] RCA-репорт содержит: primary cause, confidence, timeline excerpt, recommendation
+- [x] JSON формат для MCP: `fletta/analyze` tool (stub)
+- [x] Экспорт в JUnit: `<failure message="...">` с RCA
+- [x] Per-test RCA по `trace_id`: C002 isolated → `api_error`
+- [x] CP005-эквивалент: `verify-reports.mjs` проверяет все артефакты
 
 ## Implementation notes (sketch)
 
@@ -115,15 +117,21 @@ enum RootCause {
 
 ### F003.3 — Playwright / JUnit integration
 
-- **Цель**: RCA в failure message JUnit.
+- **Цель**: RCA в failure message JUnit; все 5 тестов в отчёте; пустой healing suite скрыт.
 - **Файлы**: `adapters/playwright/src/reporter.ts`
-- **Готово когда**: CP005-совместимый XML с RCA snippet.
+- **Готово когда**: CP005-совместимый XML с RCA snippet; `tests="5"` в `fletta-context` suite.
+
+### F003.3a — Per-test RCA по trace_id
+
+- **Цель**: Изолированный RCA для каждого failed test через `trace_id` correlation.
+- **Файлы**: `adapters/playwright/src/context/store.ts`, `rca.ts`, `reporter.ts`
+- **Готово когда**: `fletta-rca.json` v2 с `suite` (merged) и `by_test[]` (per-test); C002 isolated → `api_error`.
 
 ### F003.4 — Flaky aggregate (C003)
 
-- **Цель**: сравнение N прогонов, паттерн latency.
-- **Файлы**: `crates/rca/` + CLI или reporter hook `analyze --aggregate` (минимальный MVP)
-- **Готово когда**: C003 классифицируется как `flaky` с паттерном.
+- **Цель**: сравнение N прогонов, паттерн latency (single-run MVP: merged timeline).
+- **Файлы**: `crates/rca/` + reporter hook
+- **Готово когда**: C003 классифицируется как `flaky` с паттерном на merged run.
 
 ### F003.5 — MCP-shaped JSON (stub)
 
@@ -131,12 +139,20 @@ enum RootCause {
 - **Файлы**: `crates/rca/src/mcp.rs` или schema в docs
 - **Готово когда**: fixture JSON в тестах; полный MCP → v1.2.0.
 
+### F003.6 — Verify gates (CP005-equivalent)
+
+- **Цель**: Автоматическая проверка всех context-артефактов после прогона.
+- **Файлы**: `e2e/context/verify-reports.mjs`, `verify-rca.mjs`, `scripts/test.sh`
+- **Готово когда**: `./scripts/test.sh context` → 4 verify-скрипта OK (context + reports + rca).
+
 | ID | Зависит от | Release |
 |----|------------|---------|
 | F003.0–F003.1 | F002.4 (timeline window) | v1.1.0 |
 | F003.2–F003.3 | F003.1 | v1.1.0 |
+| F003.3a | F003.2 | v1.1.0 |
 | F003.4 | F002.5 + несколько прогонов C003 | v1.1.0 |
 | F003.5 | F003.2 | v1.1.0 (stub); F005 v1.2.0 |
+| F003.6 | F003.3, F003.3a | v1.1.0 |
 
 ## Verification / Test plan
 

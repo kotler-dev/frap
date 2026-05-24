@@ -1,0 +1,11 @@
+# Include WASM files even though they are gitignored
+!wasm/
+!wasm/**
+
+# But exclude these
+node_modules/
+*.log
+src/
+tsconfig.json
+.eslintrc.js
+jest.config.js

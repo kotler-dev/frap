@@ -1,0 +1,10 @@
+body {
+  font-family: system-ui, sans-serif;
+  margin: 2rem;
+  max-width: 40rem;
+}
+
+button[data-testid='pay-btn'] {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+}
