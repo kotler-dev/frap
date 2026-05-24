@@ -68,6 +68,8 @@ jobs:
           npm run build
           test -f wasm/fletta_core.js
           test -f wasm/fletta_core_bg.wasm
+          test -f wasm-node/fletta_core.js
+          test -f wasm-node/fletta_core_bg.wasm
 
   playwright-adapter:
     name: Playwright Adapter Build
