@@ -11,6 +11,7 @@ export default defineConfig({
     captureAll: true,
     playwrightConfig: {
       testDir: './context',
+      testIgnore: process.env.FLETTA_BENCH_OVERHEAD ? [] : ['**/overhead.spec.ts'],
       timeout: 30_000,
       expect: { timeout: 5000 },
       fullyParallel: false,

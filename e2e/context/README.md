@@ -106,7 +106,8 @@ Located in `e2e/fletta-reports/context/` (not committed to git):
 ## Expected Test Results
 
 - `C002` and slow `C003` use `test.fail` (intentional failure; counted as pass by Playwright).
-- JUnit reports 5 testcases: 3 passed (C003 fast, C004, overhead), 2 failed (C002, C003 slow).
+- JUnit reports 4 testcases in `test.sh context`: 2 passed (C003 fast, C004), 2 failed (C002, C003 slow).
+- Overhead gate (`< 20%`): `./scripts/bench-context.sh` (runs `overhead.spec.ts` only).
 - Both failed tests include RCA in `<failure message="[fletta-rca] ...">`.
 
 ## Pages

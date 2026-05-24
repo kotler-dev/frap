@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { attachFlettaContext } from '@fletta/playwright';
 import { CONTEXT_PATH, CONTEXT_REPORT_DIR } from './helpers';
 
+const WARMUP = 1;
 const ITERATIONS = 3;
 const OVERHEAD_LIMIT = 0.2;
 
@@ -10,7 +11,8 @@ async function measureCartLoad(
   withCapture: boolean
 ): Promise<number> {
   const times: number[] = [];
-  for (let i = 0; i < ITERATIONS; i++) {
+  const totalRuns = WARMUP + ITERATIONS;
+  for (let i = 0; i < totalRuns; i++) {
     const page = await browser.newPage();
     if (withCapture) {
       attachFlettaContext(page, {
@@ -21,7 +23,9 @@ async function measureCartLoad(
     const start = Date.now();
     await page.goto(CONTEXT_PATH.cartFast);
     await page.getByTestId('cart-ready').waitFor();
-    times.push(Date.now() - start);
+    if (i >= WARMUP) {
+      times.push(Date.now() - start);
+    }
     await page.close();
   }
   return times.reduce((sum, t) => sum + t, 0) / times.length;

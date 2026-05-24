@@ -52,12 +52,12 @@ if (!report.context_summary || typeof report.context_summary !== 'object') {
 }
 
 const ctxSummary = report.context_summary;
-if (typeof ctxSummary.total !== 'number' || ctxSummary.total !== 5) {
-  fail(`Expected context_summary.total === 5, got ${ctxSummary.total}`);
+if (typeof ctxSummary.total !== 'number' || ctxSummary.total !== 4) {
+  fail(`Expected context_summary.total === 4, got ${ctxSummary.total}`);
 }
 
-if (typeof ctxSummary.passed !== 'number' || ctxSummary.passed !== 3) {
-  fail(`Expected context_summary.passed === 3, got ${ctxSummary.passed}`);
+if (typeof ctxSummary.passed !== 'number' || ctxSummary.passed !== 2) {
+  fail(`Expected context_summary.passed === 2, got ${ctxSummary.passed}`);
 }
 
 if (typeof ctxSummary.failed !== 'number' || ctxSummary.failed !== 2) {
@@ -73,8 +73,8 @@ if (typeof ctxSummary.durationMs !== 'number' || ctxSummary.durationMs < 0) {
 }
 
 // Validate context_tests array
-if (!Array.isArray(report.context_tests) || report.context_tests.length !== 5) {
-  fail('fletta-report.json missing context_tests array with 5 entries');
+if (!Array.isArray(report.context_tests) || report.context_tests.length !== 4) {
+  fail('fletta-report.json missing context_tests array with 4 entries');
 }
 
 const validStatuses = ['passed', 'failed', 'timedOut', 'skipped', 'interrupted'];
@@ -110,7 +110,7 @@ if (!Array.isArray(report.rca.by_test)) {
   fail('rca.by_test must be an array');
 }
 
-// Validate junit.xml has fletta-context suite with 5 testcases
+// Validate junit.xml has fletta-context suite with 4 testcases (overhead runs via bench-context.sh)
 const junitPath = path.join(reportDir, 'junit.xml');
 const junit = fs.readFileSync(junitPath, 'utf-8');
 
@@ -122,8 +122,8 @@ if (!suiteMatch) {
 const suiteTests = parseInt(suiteMatch[1], 10);
 const suiteFailures = parseInt(suiteMatch[2], 10);
 
-if (suiteTests !== 5) {
-  fail(`Expected fletta-context tests="5", got "${suiteTests}"`);
+if (suiteTests !== 4) {
+  fail(`Expected fletta-context tests="4", got "${suiteTests}"`);
 }
 
 if (suiteFailures !== 2) {
@@ -136,8 +136,8 @@ const contextSuiteEnd = junit.indexOf('</testsuite>', contextSuiteStart) + '</te
 const contextSuite = junit.slice(contextSuiteStart, contextSuiteEnd);
 const testCaseMatches = contextSuite.match(/<testcase /g) || [];
 
-if (testCaseMatches.length !== 5) {
-  fail(`Expected 5 testcases in fletta-context suite, found ${testCaseMatches.length}`);
+if (testCaseMatches.length !== 4) {
+  fail(`Expected 4 testcases in fletta-context suite, found ${testCaseMatches.length}`);
 }
 
 console.log(

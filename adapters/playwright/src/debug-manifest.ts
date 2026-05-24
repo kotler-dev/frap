@@ -39,15 +39,12 @@ export function formatRunTimestamp(iso: string): string {
   const env = { ...process.env };
 
   try {
-    // BSD/macOS — same as typing `date` in the shell (respects TZ).
-    return execSync(`date -r ${sec}`, { encoding: 'utf8', env }).trim();
+    // BSD/macOS: `date -r SEC`. GNU date treats `-r` as a reference file — use `-d @SEC` on Linux.
+    const cmd =
+      process.platform === 'darwin' ? `date -r ${sec}` : `date -d @${sec}`;
+    return execSync(cmd, { encoding: 'utf8', env }).trim();
   } catch {
-    try {
-      // GNU/Linux
-      return execSync(`date -d @${sec}`, { encoding: 'utf8', env }).trim();
-    } catch {
-      return d.toString();
-    }
+    return d.toString();
   }
 }
 

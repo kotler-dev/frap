@@ -92,6 +92,7 @@ export function pushContextEvent(
   event: ContextEvent,
   _testId?: string
 ): void {
+  // Sync append: workers and reporter run in separate processes; in-memory buffers are not shared.
   appendEventToDisk(reportDir, event);
 }
 
