@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { attachFrapContext, recordContextUiEvent } from 'frapcode-playwright';
+import { attachFrapContext, recordContextUiEvent } from '@frap/frap-playwright';
 import { CONTEXT_PATH, CONTEXT_REPORT_DIR } from './helpers';
 
 test.describe('C003 Flaky Cart Diagnosis', () => {

@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import type { DebugReport, DebugStep } from 'frapcode';
-import { debugReportSlug } from 'frapcode';
+import type { DebugReport, DebugStep } from '@frap/frap';
+import { debugReportSlug } from '@frap/frap';
 import {
   escapeHtml,
   renderGroupedIndexList,

@@ -1,5 +1,5 @@
 [package]
-name = "clustering"
+name = "frap-clustering"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
@@ -14,7 +14,7 @@ crate-type = ["cdylib", "rlib"]
 wasm-bindgen = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
-signature = { path = "../signature" }
+frap-signature = { path = "../signature", version = "0.1.0" }
 
 [dev-dependencies]
 serde_json = { workspace = true }

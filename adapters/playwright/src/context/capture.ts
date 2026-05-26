@@ -5,7 +5,7 @@ import type {
   MessageDirection,
   NetworkPhase,
   NetworkProtocol,
-} from 'frapcode';
+} from '@frap/frap';
 import { randomUUID } from 'crypto';
 import {
   getContextTraceId,
