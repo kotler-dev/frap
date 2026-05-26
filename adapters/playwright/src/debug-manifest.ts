@@ -1,8 +1,8 @@
 import { execSync } from 'node:child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import type { DebugReport } from 'frapcode';
-import { debugReportSlug } from 'frapcode';
+import type { DebugReport } from '@frap/frap';
+import { debugReportSlug } from '@frap/frap';
 import { getOverallStatus, type DebugStatusType } from './debug-status';
 
 export interface DebugManifestEntry {

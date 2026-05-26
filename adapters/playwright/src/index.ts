@@ -1,5 +1,5 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
-import type { FrapConfig } from 'frapcode';
+import type { FrapConfig } from '@frap/frap';
 import { FrapPlaywrightConfig, mergePlaywrightConfig } from './config';
 import { createFrapSelectorEngine, initFrapEngine, recordSignature } from './selector-engine';
 import { withFrap, getLastHealResult } from './wrapper';
@@ -51,7 +51,7 @@ export function frapPlaywright(
     ? (Array.isArray(baseReporter) ? baseReporter : [baseReporter])
     : [['list']];
 
-  reporters.push(['frapcode-playwright/dist/reporter.js', {
+  reporters.push(['@frap/frap-playwright/dist/reporter.js', {
     minConfidence: config.minConfidence,
     reportDir: config.reportDir,
     enableHealing: config.enableHealing,
@@ -73,8 +73,8 @@ export function frapPlaywright(
     reporter: reporters as any,
     build: {
       ...userBuild,
-      // Keep frapcode (and WASM) on Node's native loader — Playwright must not babel-parse .wasm.
-      external: [...externalList, 'frapcode'],
+      // Keep @frap/frap (and WASM) on Node's native loader — Playwright must not babel-parse .wasm.
+      external: [...externalList, '@frap/frap'],
     },
   };
 

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { attachFrapContext } from 'frapcode-playwright';
+import { attachFrapContext } from '@frap/frap-playwright';
 import { CONTEXT_PATH, CONTEXT_REPORT_DIR } from './helpers';
 
 const WARMUP = 1;
