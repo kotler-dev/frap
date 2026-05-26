@@ -1,0 +1,62 @@
+# cbindgen configuration for frap-core FFI
+# Generates C headers for JNI and other bindings
+
+language = "C"
+cpp_compat = true
+
+[parse]
+parse_deps = false
+include = ["ffi"]
+
+[export]
+include = [
+    "FrapCoreHandle",
+    "FrapHealResult",
+    "FrapError",
+    "FrapErrorCode",
+    "frap_core_new",
+    "frap_core_with_confidence",
+    "frap_core_free",
+    "frap_heal",
+    "frap_heal_result_free",
+    "frap_analyze_rca",
+    "frap_string_free",
+    "frap_last_error",
+    "frap_last_error_code",
+    "frap_clear_error",
+]
+
+[fn]
+# Prefix all functions with frap_
+prefix = "frap_"
+
+[struct]
+# Add visibility annotations
+rename_fields = "ScreamingSnakeCase"
+
+[enum]
+# Rename enum variants to SCREAMING_SNAKE_CASE
+rename_variants = "ScreamingSnakeCase"
+
+[defines]
+"feature = ffi" = "FRAP_FFI_ENABLED"
+
+[header]
+# Header content
+content = """
+/*
+ * Frap Core FFI API
+ * 
+ * C bindings for Frap self-healing selectors.
+ * 
+ * Usage:
+ *   FrapCoreHandle* core = frap_core_new();
+ *   FrapHealResult* result = NULL;
+ *   int rc = frap_heal(core, request_json, &result);
+ *   if (rc == 0) {
+ *       // Use result
+ *       frap_heal_result_free(result);
+ *   }
+ *   frap_core_free(core);
+ */
+"""

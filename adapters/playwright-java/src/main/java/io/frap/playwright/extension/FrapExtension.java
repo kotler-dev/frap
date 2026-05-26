@@ -7,9 +7,13 @@ import org.junit.jupiter.api.extension.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JUnit 5 Extension for Frap Playwright integration.
@@ -113,21 +117,38 @@ public class FrapExtension implements BeforeAllCallback, BeforeEachCallback, Aft
         Path reportDir = Paths.get(config.frap().reportDir());
         logger.info("[frap] Generating reports in: {}", reportDir);
 
-        // Context timeline report
-        generateContextReport(reportDir);
+        try {
+            var generator = new io.frap.playwright.reports.ReportGenerator(reportDir);
 
-        // Frap report (healing events)
-        generateFrapReport(reportDir);
+            // Load healing events and generate report
+            var events = generator.loadHealingEvents();
+            var contextTests = loadContextTests(reportDir);
+            generator.generateJsonReport(events, contextTests);
+            generator.generateJUnitXml(contextTests, "frap-conference");
+
+            logger.info("[frap] Reports generated: {} events, {} tests", events.size(), contextTests.size());
+        } catch (Exception e) {
+            logger.warn("[frap] Failed to generate reports: {}", e.getMessage());
+        }
     }
 
-    private void generateContextReport(Path reportDir) {
-        // Merge context events into timeline
-        // Implementation similar to TypeScript reporter
-    }
+    private List<io.frap.playwright.reports.FrapReport.ContextTestResult> loadContextTests(Path reportDir) {
+        // Load context test results from events file
+        List<io.frap.playwright.reports.FrapReport.ContextTestResult> results = new ArrayList<>();
 
-    private void generateFrapReport(Path reportDir) {
-        // Aggregate healing events
-        // Implementation similar to TypeScript reporter
+        try {
+            Path eventsFile = reportDir.resolve("frap-context-events.jsonl");
+            if (!Files.exists(eventsFile)) {
+                return results;
+            }
+
+            // Parse context events and build test results
+            // Implementation would aggregate events by test
+        } catch (Exception e) {
+            logger.debug("[frap] No context tests to load: {}", e.getMessage());
+        }
+
+        return results;
     }
 
     private com.microsoft.playwright.Page findPageField(Object instance) {
