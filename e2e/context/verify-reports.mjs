@@ -8,7 +8,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const reportDir = path.resolve(__dirname, '..', 'frap-reports', 'context');
+const reportDir = path.resolve(__dirname, '..', 'fletta-reports', 'context');
 
 function fail(msg) {
   console.error(`[CTX-RPT-VERIFY] ${msg}`);
@@ -17,9 +17,9 @@ function fail(msg) {
 
 // Check required files exist
 const requiredFiles = [
-  'frap-report.json',
-  'frap-context.json',
-  'frap-rca.json',
+  'fletta-report.json',
+  'fletta-context.json',
+  'fletta-rca.json',
   'junit.xml',
 ];
 
@@ -30,25 +30,25 @@ for (const file of requiredFiles) {
   }
 }
 
-// Validate frap-report.json
-const reportPath = path.join(reportDir, 'frap-report.json');
+// Validate fletta-report.json
+const reportPath = path.join(reportDir, 'fletta-report.json');
 const report = JSON.parse(fs.readFileSync(reportPath, 'utf-8'));
 
 if (!report.timestamp || typeof report.timestamp !== 'string') {
-  fail('frap-report.json missing timestamp');
+  fail('fletta-report.json missing timestamp');
 }
 
 if (typeof report.duration !== 'number' || report.duration < 0) {
-  fail('frap-report.json missing or invalid duration');
+  fail('fletta-report.json missing or invalid duration');
 }
 
 if (!report.summary || typeof report.summary !== 'object') {
-  fail('frap-report.json missing summary');
+  fail('fletta-report.json missing summary');
 }
 
 // Validate context_summary exists with correct structure
 if (!report.context_summary || typeof report.context_summary !== 'object') {
-  fail('frap-report.json missing context_summary');
+  fail('fletta-report.json missing context_summary');
 }
 
 const ctxSummary = report.context_summary;
@@ -74,7 +74,7 @@ if (typeof ctxSummary.durationMs !== 'number' || ctxSummary.durationMs < 0) {
 
 // Validate context_tests array
 if (!Array.isArray(report.context_tests) || report.context_tests.length !== 4) {
-  fail('frap-report.json missing context_tests array with 4 entries');
+  fail('fletta-report.json missing context_tests array with 4 entries');
 }
 
 const validStatuses = ['passed', 'failed', 'timedOut', 'skipped', 'interrupted'];
@@ -95,7 +95,7 @@ for (const test of report.context_tests) {
 
 // Validate rca v2 structure
 if (!report.rca || typeof report.rca !== 'object') {
-  fail('frap-report.json missing rca');
+  fail('fletta-report.json missing rca');
 }
 
 if (report.rca.version !== 2) {
@@ -110,34 +110,34 @@ if (!Array.isArray(report.rca.by_test)) {
   fail('rca.by_test must be an array');
 }
 
-// Validate junit.xml has frapcode-context suite with 4 testcases (overhead runs via bench-context.sh)
+// Validate junit.xml has fletta-context suite with 4 testcases (overhead runs via bench-context.sh)
 const junitPath = path.join(reportDir, 'junit.xml');
 const junit = fs.readFileSync(junitPath, 'utf-8');
 
-const suiteMatch = junit.match(/<testsuite name="frapcode-context" tests="(\d+)" failures="(\d+)"/);
+const suiteMatch = junit.match(/<testsuite name="fletta-context" tests="(\d+)" failures="(\d+)"/);
 if (!suiteMatch) {
-  fail('junit.xml missing frapcode-context testsuite');
+  fail('junit.xml missing fletta-context testsuite');
 }
 
 const suiteTests = parseInt(suiteMatch[1], 10);
 const suiteFailures = parseInt(suiteMatch[2], 10);
 
 if (suiteTests !== 4) {
-  fail(`Expected frapcode-context tests="4", got "${suiteTests}"`);
+  fail(`Expected fletta-context tests="4", got "${suiteTests}"`);
 }
 
 if (suiteFailures !== 2) {
-  fail(`Expected frapcode-context failures="2", got "${suiteFailures}"`);
+  fail(`Expected fletta-context failures="2", got "${suiteFailures}"`);
 }
 
-// Count actual testcase elements in frapcode-context suite
-const contextSuiteStart = junit.indexOf('name="frapcode-context"');
+// Count actual testcase elements in fletta-context suite
+const contextSuiteStart = junit.indexOf('name="fletta-context"');
 const contextSuiteEnd = junit.indexOf('</testsuite>', contextSuiteStart) + '</testsuite>'.length;
 const contextSuite = junit.slice(contextSuiteStart, contextSuiteEnd);
 const testCaseMatches = contextSuite.match(/<testcase /g) || [];
 
 if (testCaseMatches.length !== 4) {
-  fail(`Expected 4 testcases in frapcode-context suite, found ${testCaseMatches.length}`);
+  fail(`Expected 4 testcases in fletta-context suite, found ${testCaseMatches.length}`);
 }
 
 console.log(

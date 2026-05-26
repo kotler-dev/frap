@@ -31,16 +31,16 @@ function writeExplorerStubHtml(reportDir: string, manifest: DebugManifest): stri
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Frap Debug Explorer</title>
+  <title>Fletta Debug Explorer</title>
   <script>${REPORT_THEME_INIT}</script>
   <style>${REPORT_STYLES}</style>
 </head>
 <body>
   ${REPORT_ICONS_SVG}
   <div class="container">
-      <header class="site-header">
+    <header class="site-header">
       <div class="site-header__brand">
-        <h1>Frap Explorer</h1>
+        <h1>Fletta Explorer</h1>
         <p class="subtitle">Not available for this run</p>
       </div>
       <div class="site-header__actions">
@@ -51,13 +51,13 @@ function writeExplorerStubHtml(reportDir: string, manifest: DebugManifest): stri
       <svg class="icon icon--md callout-icon" aria-hidden="true"><use href="#icon-warning"/></svg>
       <div>
         <span class="callout-title">Explorer needs 2+ debug reports</span>
-        <span class="callout-sub">This run has only one test with <code>debug: true</code> (${testLabel}). Use <a class="nav-view-link" href="frap-debug.html">Classic view (A)</a> — it contains the full report. Run more debug-enabled tests in the same suite to enable sidebar navigation here.</span>
+        <span class="callout-sub">This run has only one test with <code>debug: true</code> (${testLabel}). Use <a class="nav-view-link" href="fletta-debug.html">Classic view (A)</a> — it contains the full report. Run more debug-enabled tests in the same suite to enable sidebar navigation here.</span>
       </div>
     </div>
     <section class="section">
       <div class="panel">
         <p style="font-size:0.875rem;color:var(--text-muted);margin:0">
-          <a class="nav-view-link" href="frap-debug.html">← Open frap-debug.html</a>
+          <a class="nav-view-link" href="fletta-debug.html">← Open fletta-debug.html</a>
         </p>
       </div>
     </section>
@@ -66,9 +66,9 @@ function writeExplorerStubHtml(reportDir: string, manifest: DebugManifest): stri
 </body>
 </html>`;
 
-  const outPath = path.join(reportDir, 'frap-debug-explorer.html');
+  const outPath = path.join(reportDir, 'fletta-debug-explorer.html');
   fs.writeFileSync(outPath, html);
-  console.log(`[frap:debug] Explorer stub (1 report): ${outPath}`);
+  console.log(`[fletta:debug] Explorer stub (1 report): ${outPath}`);
   return outPath;
 }
 
@@ -83,20 +83,20 @@ function writeFullExplorerHtml(reportDir: string, manifest: DebugManifest): stri
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Frap Debug Explorer</title>
+  <title>Fletta Debug Explorer</title>
   <script>${REPORT_THEME_INIT}</script>
   <style>${REPORT_STYLES}${REPORT_EXPLORER_STYLES}</style>
 </head>
 <body class="explorer-layout">
   ${REPORT_ICONS_SVG}
   <div class="explorer-shell">
-      <header class="explorer-topbar">
+    <header class="explorer-topbar">
       <div>
-        <h1>Frap Explorer</h1>
+        <h1>Fletta Explorer</h1>
         <p class="subtitle">${manifest.reportCount} tests with debug enabled · run ${escapeHtml(generatedAt)}</p>
       </div>
       <div class="explorer-topbar__actions">
-        <a class="nav-view-link" href="frap-debug.html">Classic view (A)</a>
+        <a class="nav-view-link" href="fletta-debug.html">Classic view (A)</a>
         ${renderThemeToggle()}
       </div>
     </header>
@@ -112,15 +112,15 @@ function writeFullExplorerHtml(reportDir: string, manifest: DebugManifest): stri
       </main>
     </div>
   </div>
-  <script type="application/json" id="frap-manifest">${manifestJson}</script>
+  <script type="application/json" id="fletta-manifest">${manifestJson}</script>
   <script>${EXPLORER_SCRIPT}</script>
   <script>${REPORT_THEME_TOGGLE_EXPLORER}</script>
 </body>
 </html>`;
 
-  const outPath = path.join(reportDir, 'frap-debug-explorer.html');
+  const outPath = path.join(reportDir, 'fletta-debug-explorer.html');
   fs.writeFileSync(outPath, html);
-  console.log(`[frap:debug] Explorer: ${outPath}`);
+  console.log(`[fletta:debug] Explorer: ${outPath}`);
   return outPath;
 }
 
@@ -130,7 +130,7 @@ export function generateDebugExplorerHtml(reportDir: string, manifest: DebugMani
 }
 
 const EXPLORER_SCRIPT = `(function () {
-  var manifestEl = document.getElementById('frap-manifest');
+  var manifestEl = document.getElementById('fletta-manifest');
   var nav = document.getElementById('explorer-nav');
   var frame = document.getElementById('report-frame');
   var filterInput = document.getElementById('explorer-filter');

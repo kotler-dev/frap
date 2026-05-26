@@ -1,11 +1,11 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
-import type { FrapConfig } from '@frap/frap';
-import { FrapPlaywrightConfig, mergePlaywrightConfig } from './config';
-import { createFrapSelectorEngine, initFrapEngine, recordSignature } from './selector-engine';
-import { withFrap, getLastHealResult } from './wrapper';
-import { FrapReporter, generateJsonReport } from './reporter';
+import { FlettaConfig } from '@fletta/sdk';
+import { FlettaPlaywrightConfig, mergePlaywrightConfig } from './config';
+import { createFlettaSelectorEngine, initFlettaEngine, recordSignature } from './selector-engine';
+import { withFletta, getLastHealResult } from './wrapper';
+import { FlettaReporter, generateJsonReport } from './reporter';
 import {
-  attachFrapContext,
+  attachFlettaContext,
   recordContextUiEvent,
   writeContextReport,
   getContextTimeline,
@@ -13,17 +13,17 @@ import {
   loadAllContextEvents,
 } from './context';
 
-export {
-  withFrap,
+export { 
+  withFletta, 
   getLastHealResult,
-  createFrapSelectorEngine,
-  initFrapEngine,
+  createFlettaSelectorEngine,
+  initFlettaEngine,
   recordSignature,
-  FrapReporter,
+  FlettaReporter,
   generateJsonReport,
 };
-export type { FrapPlaywrightConfig, WithFrapOptions } from './config';
-export type { FrapHealingEvent, HealingEvent, FrapReportSummary } from './reporter';
+export type { FlettaPlaywrightConfig, WithFlettaOptions } from './config';
+export type { FlettaHealingEvent, HealingEvent, FlettaReportSummary } from './reporter';
 export {
   setCurrentPlaywrightTestId,
   getCurrentPlaywrightTestId,
@@ -32,7 +32,7 @@ export {
 } from './healing-events';
 
 export {
-  attachFrapContext,
+  attachFlettaContext,
   recordContextUiEvent,
   writeContextReport,
   getContextTimeline,
@@ -41,17 +41,17 @@ export {
 };
 export type { ContextCaptureOptions } from './context';
 
-export function frapPlaywright(
-  userConfig?: Partial<FrapPlaywrightConfig>
+export function flettaPlaywright(
+  userConfig?: Partial<FlettaPlaywrightConfig>
 ): Partial<PlaywrightTestConfig> {
   const config = mergePlaywrightConfig(userConfig);
-
+  
   const baseReporter = config.playwrightConfig?.reporter;
   const reporters: any[] = baseReporter
     ? (Array.isArray(baseReporter) ? baseReporter : [baseReporter])
     : [['list']];
-
-  reporters.push(['@frap/frap-playwright/dist/reporter.js', {
+  
+  reporters.push(['@fletta/playwright/dist/reporter.js', { 
     minConfidence: config.minConfidence,
     reportDir: config.reportDir,
     enableHealing: config.enableHealing,
@@ -59,7 +59,7 @@ export function frapPlaywright(
     captureAll: config.captureAll,
     debug: config.debug,
   }]);
-
+  
   const userBuild = config.playwrightConfig?.build;
   const userExternal = userBuild?.external;
   const externalList = Array.isArray(userExternal)
@@ -73,30 +73,30 @@ export function frapPlaywright(
     reporter: reporters as any,
     build: {
       ...userBuild,
-      // Keep @frap/frap (and WASM) on Node's native loader — Playwright must not babel-parse .wasm.
-      external: [...externalList, '@frap/frap'],
+      // Keep @fletta/sdk (and WASM) on Node's native loader — Playwright must not babel-parse .wasm.
+      external: [...externalList, '@fletta/sdk'],
     },
   };
 
   return playwrightConfig;
 }
 
-export async function registerFrapSelector(
+export async function registerFlettaSelector(
   selectors: any,
-  config?: Partial<FrapConfig>
+  config?: Partial<FlettaConfig>
 ): Promise<void> {
-  const fullConfig: FrapConfig = {
+  const fullConfig: FlettaConfig = {
     minConfidence: 0.85,
-    reportDir: './frap-reports',
+    reportDir: './fletta-reports',
     enableHealing: true,
     enableReporting: true,
     ...config,
   };
 
-  await initFrapEngine(fullConfig);
-
-  const engine = createFrapSelectorEngine(fullConfig);
-  await selectors.register('frap', engine);
+  await initFlettaEngine(fullConfig);
+  
+  const engine = createFlettaSelectorEngine(fullConfig);
+  await selectors.register('fletta', engine);
 }
 
 export const VERSION = '0.1.0';

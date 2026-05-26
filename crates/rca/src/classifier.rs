@@ -2,9 +2,9 @@ use crate::aggregate::{asymmetric_window, detect_flaky_pattern};
 use crate::rules::{
     endpoint_path, is_infrastructure_status, CauseDetails, PrimaryCause, RootCause,
 };
-use frap_context::correlation::network_before_ui_failure;
-use frap_context::logs::LogLevel;
-use frap_context::timeline::{event_timestamp_ms, Event, Timeline};
+use fletta_context::correlation::network_before_ui_failure;
+use fletta_context::logs::LogLevel;
+use fletta_context::timeline::{event_timestamp_ms, Event, Timeline};
 
 const DEFAULT_WINDOW_MS: i64 = 5000;
 
@@ -95,7 +95,7 @@ fn classify_network(
         return None;
     }
 
-    let mut best_fail: Option<(i64, frap_context::network::NetworkEvent)> = None;
+    let mut best_fail: Option<(i64, fletta_context::network::NetworkEvent)> = None;
     for event in window {
         if let Event::Network {
             timestamp_ms,
@@ -242,8 +242,8 @@ fn classify_ui_only(window: &[Event]) -> Option<RootCause> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use frap_context::logs::{LogEvent, LogLevel};
-    use frap_context::network::{NetworkEvent, NetworkPhase, NetworkProtocol};
+    use fletta_context::logs::{LogEvent, LogLevel};
+    use fletta_context::network::{NetworkEvent, NetworkPhase, NetworkProtocol};
 
     fn c002_timeline() -> Timeline {
         let mut t = Timeline::new();

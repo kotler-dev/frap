@@ -1,7 +1,7 @@
 {
   "name": "@frap/frap-playwright",
-  "version": "0.1.0",
-  "description": "Playwright adapter for Frap deterministic selectors",
+  "version": "1.1.1",
+  "description": "Playwright adapter for Frap self-healing selectors",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -20,17 +20,8 @@
     "selectors",
     "frap"
   ],
-  "author": "frap team",
+  "author": "Frap team",
   "license": "Apache-2.0",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kotler-dev/frap.git",
-    "directory": "adapters/playwright"
-  },
-  "homepage": "https://github.com/kotler-dev/frap#readme",
-  "bugs": {
-    "url": "https://github.com/kotler-dev/frap/issues"
-  },
   "peerDependencies": {
     "@playwright/test": ">=1.40.0"
   },
@@ -44,6 +35,6 @@
     "@typescript-eslint/parser": "^7.0.0"
   },
   "dependencies": {
-    "@frap/frap": "0.1.0"
+    "@frap/frap": "1.1.1"
   }
 }

@@ -16,7 +16,7 @@ Demos for F002 Unified Context and F003 Root Cause Analysis: HTTP + WebSocket ne
 ```
 
 This executes:
-1. `cargo test -p frapcode-context` — Rust unit tests
+1. `cargo test -p fletta-context` — Rust unit tests
 2. `npx playwright test --config=playwright.context.config.ts` — E2E tests
 3. `node context/generate-rca.mjs` — RCA via WASM (Node loader; not Playwright reporter)
 4. `node context/verify-context.mjs` — validate timeline schema
@@ -41,19 +41,19 @@ Performance gate:
 
 ## Report Artifacts
 
-Located in `e2e/frap-reports/context/` (not committed to git):
+Located in `e2e/fletta-reports/context/` (not committed to git):
 
 | File | Description | Schema |
 |------|-------------|--------|
-| `frap-context.json` | Full timeline: HTTP, WebSocket, console, UI events | version: 1, timeline.events[] |
-| `frap-context-events.jsonl` | Raw events line-by-line (pre-aggregation) | JSONL |
-| `frap-rca.json` | Root Cause Analysis v2 | version: 2, suite + by_test[] |
-| `frap-report.json` | Frap summary with context_summary | summary (healing) + context_summary + context_tests[] + rca |
-| `junit.xml` | JUnit XML with frapcode-context suite | 5 testcases (3 passed, 2 failed with RCA) |
+| `fletta-context.json` | Full timeline: HTTP, WebSocket, console, UI events | version: 1, timeline.events[] |
+| `fletta-context-events.jsonl` | Raw events line-by-line (pre-aggregation) | JSONL |
+| `fletta-rca.json` | Root Cause Analysis v2 | version: 2, suite + by_test[] |
+| `fletta-report.json` | Fletta summary with context_summary | summary (healing) + context_summary + context_tests[] + rca |
+| `junit.xml` | JUnit XML with fletta-context suite | 5 testcases (3 passed, 2 failed with RCA) |
 
 **Note:** Artifacts are in `.gitignore`. Run `./scripts/test.sh context` to generate fresh reports locally.
 
-## frap-rca.json v2 Format
+## fletta-rca.json v2 Format
 
 ```json
 {
@@ -81,7 +81,7 @@ Located in `e2e/frap-reports/context/` (not committed to git):
 - **suite**: RCA from merged timeline (all tests)
 - **by_test**: Per-test RCA for failed tests (isolated timeline by trace_id)
 
-## frap-report.json Context Section
+## fletta-report.json Context Section
 
 ```json
 {
@@ -109,7 +109,7 @@ Located in `e2e/frap-reports/context/` (not committed to git):
 - `C002` and slow `C003` use `test.fail` (intentional failure; counted as pass by Playwright).
 - JUnit reports 4 testcases in `test.sh context`: 2 passed (C003 fast, C004), 2 failed (C002, C003 slow).
 - Overhead gate (`< 20%`): `./scripts/bench-context.sh` (runs `overhead.spec.ts` only).
-- Both failed tests include RCA in `<failure message="[frapcode-rca] ...">`.
+- Both failed tests include RCA in `<failure message="[fletta-rca] ...">`.
 
 ## Pages
 
