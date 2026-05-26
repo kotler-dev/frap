@@ -8,6 +8,9 @@ mod error;
 #[cfg(feature = "wasm")]
 pub mod wasm;
 
+#[cfg(feature = "ffi")]
+pub mod ffi;
+
 pub use error::CoreError;
 
 // Algorithm crates (also available as `frap_core::signature`, etc.)
