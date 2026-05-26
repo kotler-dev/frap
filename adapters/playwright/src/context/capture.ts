@@ -5,7 +5,7 @@ import type {
   MessageDirection,
   NetworkPhase,
   NetworkProtocol,
-} from '@frap/sdk';
+} from '@frap/frap';
 import { randomUUID } from 'crypto';
 import {
   getContextTraceId,
@@ -139,7 +139,7 @@ function attachWebSocketCapture(
  * Attach network and console listeners for unified context capture (F002).
  * Call once per page in `beforeEach` when `captureAll` is enabled.
  */
-export function attachFlettaContext(page: Page, options: ContextCaptureOptions): string {
+export function attachFrapContext(page: Page, options: ContextCaptureOptions): string {
   const testId = resolveTestId(options.testId);
   markContextTestStart(options.reportDir, testId);
   const traceId = resolveTraceId(options.reportDir, testId, options.traceId);

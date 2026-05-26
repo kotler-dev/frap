@@ -1,5 +1,5 @@
-import type { RcaReport } from '@frap/sdk';
-import { formatRcaSummary } from '@frap/sdk';
+import type { RcaReport } from '@frap/frap';
+import { formatRcaSummary } from '@frap/frap';
 import * as fs from 'fs';
 import * as path from 'path';
 

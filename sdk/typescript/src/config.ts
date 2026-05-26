@@ -1,6 +1,6 @@
 import type { HealPolicy } from './healing-semantics';
 
-export interface FlettaConfig {
+export interface FrapConfig {
   minConfidence: number;
   reportDir: string;
   enableHealing: boolean;
@@ -12,7 +12,7 @@ export interface FlettaConfig {
   captureAll?: boolean;
 }
 
-export const DEFAULT_CONFIG: FlettaConfig = {
+export const DEFAULT_CONFIG: FrapConfig = {
   minConfidence: 0.85,
   reportDir: './frap-reports',
   enableHealing: true,
@@ -21,7 +21,7 @@ export const DEFAULT_CONFIG: FlettaConfig = {
   healPolicy: 'allow',
 };
 
-export function mergeConfig(userConfig?: Partial<FlettaConfig>): FlettaConfig {
+export function mergeConfig(userConfig?: Partial<FrapConfig>): FrapConfig {
   return {
     ...DEFAULT_CONFIG,
     ...userConfig,

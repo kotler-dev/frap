@@ -31,7 +31,7 @@ function writeExplorerStubHtml(reportDir: string, manifest: DebugManifest): stri
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fletta Debug Explorer</title>
+  <title>Frap Debug Explorer</title>
   <script>${REPORT_THEME_INIT}</script>
   <style>${REPORT_STYLES}</style>
 </head>
@@ -40,7 +40,7 @@ function writeExplorerStubHtml(reportDir: string, manifest: DebugManifest): stri
   <div class="container">
     <header class="site-header">
       <div class="site-header__brand">
-        <h1>Fletta Explorer</h1>
+        <h1>Frap Explorer</h1>
         <p class="subtitle">Not available for this run</p>
       </div>
       <div class="site-header__actions">
@@ -83,7 +83,7 @@ function writeFullExplorerHtml(reportDir: string, manifest: DebugManifest): stri
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fletta Debug Explorer</title>
+  <title>Frap Debug Explorer</title>
   <script>${REPORT_THEME_INIT}</script>
   <style>${REPORT_STYLES}${REPORT_EXPLORER_STYLES}</style>
 </head>
@@ -92,7 +92,7 @@ function writeFullExplorerHtml(reportDir: string, manifest: DebugManifest): stri
   <div class="explorer-shell">
     <header class="explorer-topbar">
       <div>
-        <h1>Fletta Explorer</h1>
+        <h1>Frap Explorer</h1>
         <p class="subtitle">${manifest.reportCount} tests with debug enabled · run ${escapeHtml(generatedAt)}</p>
       </div>
       <div class="explorer-topbar__actions">
