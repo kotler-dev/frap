@@ -1,0 +1,18 @@
+[package]
+name = "frapcode-context"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Frap unified context — timeline of UI, network, and log events"
+
+[lib]
+name = "frapcode_context"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }

@@ -1,0 +1,107 @@
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      package:
+        description: 'Package to publish (sdk or playwright or both)'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - sdk
+          - playwright
+          - both
+
+jobs:
+  publish-sdk:
+    name: Publish frapcode
+    runs-on: ubuntu-latest
+    if: github.event.inputs.package == 'sdk' || github.event.inputs.package == 'both' || github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Add wasm32 target
+        run: rustup target add wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        run: cargo install wasm-pack --locked
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: crates
+
+      - name: Install dependencies and build
+        run: |
+          cd sdk/typescript
+          npm install
+          npm run build
+          test -f wasm-node/frapcode_core.js
+          test -f wasm-node/frapcode_core_bg.wasm
+
+      - name: Publish to npm
+        run: |
+          cd sdk/typescript
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-playwright:
+    name: Publish frapcode-playwright
+    runs-on: ubuntu-latest
+    needs: publish-sdk
+    if: github.event.inputs.package == 'playwright' || github.event.inputs.package == 'both' || github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Add wasm32 target
+        run: rustup target add wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        run: cargo install wasm-pack --locked
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: crates
+
+      - name: Install dependencies and build SDK
+        run: |
+          cd sdk/typescript
+          npm install
+          npm run build
+
+      - name: Install dependencies and build Playwright adapter
+        run: |
+          cd adapters/playwright
+          npm install
+          npm run build
+
+      - name: Publish to npm
+        run: |
+          cd adapters/playwright
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -1,0 +1,19 @@
+[package]
+name = "frapcode-rca"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Frap root cause analysis — classify test failures from unified context timelines"
+
+[lib]
+name = "frapcode_rca"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+frapcode-context = { path = "../context" }
+
+[dev-dependencies]
+serde_json = { workspace = true }
