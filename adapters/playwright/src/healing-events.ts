@@ -1,13 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { debugReportJsonPath, writeDebugReport, type DebugReport } from 'frapcode';
+import { debugReportJsonPath, writeDebugReport, type DebugReport } from '@frap/frap';
 import {
   classifyHealOutcome,
   type HealPolicy,
   type HealTrigger,
   type HealingSemantics,
   type HealOutcome,
-} from 'frapcode';
+} from '@frap/frap';
 
 export interface FrapHealingEvent {
   playwrightTestId: string;

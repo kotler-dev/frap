@@ -33,7 +33,7 @@ mod tests {
     use super::*;
     use crate::report::RcaReport;
     use crate::rules::CauseDetails;
-    use frapcode_context::timeline::Timeline;
+    use frap_context::timeline::Timeline;
 
     #[test]
     fn mcp_result_matches_fixture_shape() {

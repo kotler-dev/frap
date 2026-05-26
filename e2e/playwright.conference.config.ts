@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-import { frapPlaywright } from 'frapcode-playwright';
+import { frapPlaywright } from '@frap/frap-playwright';
 
 export default defineConfig({
   ...frapPlaywright({

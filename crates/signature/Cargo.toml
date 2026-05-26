@@ -1,5 +1,5 @@
 [package]
-name = "signature"
+name = "frap-signature"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true

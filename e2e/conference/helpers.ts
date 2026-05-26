@@ -1,4 +1,4 @@
-import type { WithFrapOptions } from 'frapcode-playwright';
+import type { WithFrapOptions } from '@frap/frap-playwright';
 
 /** Frap artifacts for the Conference Playwright project */
 export const CONF_REPORT_DIR = './frap-reports/conference';

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { withFrap } from 'frapcode-playwright';
+import { withFrap } from '@frap/frap-playwright';
 import { CONF_PATH, confFrap } from './helpers';
 
 test.describe('Conference 2026 Spring', () => {

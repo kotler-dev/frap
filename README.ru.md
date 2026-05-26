@@ -62,12 +62,11 @@ await page.locator('frap:[data-testid="submit"]').click();
 
 ## Документация
 
-| Язык | Быстрый старт | Интеграции |
-|------|---------------|------------|
-| **English** | [docs/en/quickstart.md](docs/en/quickstart.md) | [docs/en/integrations.md](docs/en/integrations.md) |
-| **Русский** | [docs/ru/quickstart.md](docs/ru/quickstart.md) | [docs/ru/integrations.md](docs/ru/integrations.md) |
+| Язык | Быстрый старт | Интеграции | Дизайн |
+|------|---------------|------------|--------|
+| **English** | [docs/en/quickstart.md](docs/en/quickstart.md) | [docs/en/integrations.md](docs/en/integrations.md) | [Frap.en.md](Frap.en.md) |
+| **Русский** | [docs/ru/quickstart.md](docs/ru/quickstart.md) | [docs/ru/integrations.md](docs/ru/integrations.md) | [Frap.md](Frap.md) |
 
-Полное описание: [Frap.md](Frap.md)  
 API адаптера: [adapters/playwright/README.md](adapters/playwright/README.md)
 
 ---

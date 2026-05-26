@@ -11,13 +11,13 @@ pub mod wasm;
 pub use error::CoreError;
 
 // Algorithm crates (also available as `frapcode_core::signature`, etc.)
-pub use clustering;
-pub use frapcode_rca::{
+pub use frap_clustering;
+pub use frap_healing::{DOMElementInfo, DOMSnapshot, HealingEngine, HealingOrchestrator};
+pub use frap_rca::{
     analyze_timeline_json, PrimaryCause as RcaPrimaryCause, RcaReport,
     DEFAULT_WINDOW_MS as RCA_DEFAULT_WINDOW_MS,
 };
-pub use healing::{DOMElementInfo, DOMSnapshot, HealingEngine, HealingOrchestrator};
-pub use signature::{
+pub use frap_signature::{
     calculate_attribute_bonus, calculate_confidence, calculate_path_similarity,
     calculate_structural_similarity, calculate_token_similarity, extract_stable_attrs,
     levenshtein_distance, longest_common_subsequence_len, looks_like_generated,

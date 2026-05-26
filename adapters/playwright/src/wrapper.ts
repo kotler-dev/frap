@@ -9,7 +9,7 @@ import {
   buildElementFoundDebugReport,
   writeDebugReport,
   type HealPolicy,
-} from 'frapcode';
+} from '@frap/frap';
 import type { WithFrapOptions } from './config';
 import {
   buildSemantics,

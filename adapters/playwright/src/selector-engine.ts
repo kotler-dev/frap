@@ -3,7 +3,7 @@ type SelectorEngine = {
   query(root: Element | Document, selector: string): Element | null | Promise<Element | null>;
   queryAll?(root: Element | Document, selector: string): Element[] | Promise<Element[]>;
 };
-import { HealingEngine, FrapConfig, createHealingEngine, DOMSnapshot, DOMElementInfo } from 'frapcode';
+import { HealingEngine, FrapConfig, createHealingEngine, DOMSnapshot, DOMElementInfo } from '@frap/frap';
 
 interface FrapSelectorEngine extends SelectorEngine {
   _healingEngine?: HealingEngine;
