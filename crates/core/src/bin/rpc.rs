@@ -268,7 +268,11 @@ mod tests {
         let mut core = FlettaCore::new();
         let response = handle_heal(request, &mut core);
 
-        assert!(response.error.is_none(), "Unexpected error: {:?}", response.error);
+        assert!(
+            response.error.is_none(),
+            "Unexpected error: {:?}",
+            response.error
+        );
         assert!(response.result.is_some());
         let result: serde_json::Value =
             serde_json::from_str(&response.result.unwrap()).expect("parse result");
@@ -310,10 +314,7 @@ mod tests {
             params: json!({}),
         };
         let mut core = FlettaCore::new();
-        let response = handle_request(
-            &serde_json::to_string(&request).unwrap(),
-            &mut core,
-        );
+        let response = handle_request(&serde_json::to_string(&request).unwrap(), &mut core);
 
         assert!(response.error.is_some());
         assert_eq!(response.error.unwrap().code, "METHOD_NOT_FOUND");
