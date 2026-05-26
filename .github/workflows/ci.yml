@@ -35,6 +35,12 @@ jobs:
       - name: Run Rust tests
         run: cd crates && cargo test --workspace
 
+      - name: Build frap-core-rpc binary
+        run: cd crates && cargo build --release -p frap-core --bin frap-core-rpc
+
+      - name: Run frap-core-rpc smoke tests
+        run: ./scripts/smoke-frap-core-rpc.sh ./crates/target/release/frap-core-rpc
+
   typescript-sdk:
     name: TypeScript SDK (WASM + build)
     runs-on: ubuntu-latest
