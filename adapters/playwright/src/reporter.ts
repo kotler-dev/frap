@@ -30,8 +30,6 @@ export interface FrapContextFailure {
   rca?: RcaReportV2;
 }
 
-/** @deprecated Use FrapContextFailure instead */
-
 export interface FrapContextTestResult {
   playwrightTestId: string;
   status: 'passed' | 'failed' | 'timedOut' | 'skipped' | 'interrupted';
@@ -41,8 +39,6 @@ export interface FrapContextTestResult {
   traceId?: string;
   rca?: RcaReportV2;
 }
-
-/** @deprecated Use FrapContextTestResult instead */
 
 export interface FrapReportSummary {
   totalAttempts: number;
@@ -68,9 +64,9 @@ export class FrapReporter implements Reporter {
     const testName = test.titlePath().join(' > ');
 
     // Legacy: Playwright annotations (optional, if tests attach them manually)
-    const annotations = test.annotations.filter(a => a.type.startsWith('frap.') || a.type.startsWith('frap.'));
+    const annotations = test.annotations.filter(a => a.type.startsWith('frap.'));
     for (const annotation of annotations) {
-      if (annotation.type === 'frap.heal' || annotation.type === 'frap.heal') {
+      if (annotation.type === 'frap.heal') {
         try {
           const healData = JSON.parse(annotation.description || '{}');
           this.healingEvents.push({

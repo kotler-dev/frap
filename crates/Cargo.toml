@@ -7,7 +7,7 @@ version = "0.1.0"
 edition = "2021"
 authors = ["frap team"]
 license = "Apache-2.0"
-repository = "https://github.com/kotler-dev/frap"
+repository = "https://github.com/frap/frap"
 
 [workspace.dependencies]
 wasm-bindgen = "0.2.92"

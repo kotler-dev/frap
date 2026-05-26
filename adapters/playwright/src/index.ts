@@ -1,5 +1,5 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
-import type { FrapConfig } from '@frap/frap';
+import { FrapConfig } from '@frap/frap';
 import { FrapPlaywrightConfig, mergePlaywrightConfig } from './config';
 import { createFrapSelectorEngine, initFrapEngine, recordSignature } from './selector-engine';
 import { withFrap, getLastHealResult } from './wrapper';
@@ -45,13 +45,13 @@ export function frapPlaywright(
   userConfig?: Partial<FrapPlaywrightConfig>
 ): Partial<PlaywrightTestConfig> {
   const config = mergePlaywrightConfig(userConfig);
-
+  
   const baseReporter = config.playwrightConfig?.reporter;
   const reporters: any[] = baseReporter
     ? (Array.isArray(baseReporter) ? baseReporter : [baseReporter])
     : [['list']];
-
-  reporters.push(['@frap/frap-playwright/dist/reporter.js', {
+  
+  reporters.push(['@frap/playwright/dist/reporter.js', { 
     minConfidence: config.minConfidence,
     reportDir: config.reportDir,
     enableHealing: config.enableHealing,
@@ -59,7 +59,7 @@ export function frapPlaywright(
     captureAll: config.captureAll,
     debug: config.debug,
   }]);
-
+  
   const userBuild = config.playwrightConfig?.build;
   const userExternal = userBuild?.external;
   const externalList = Array.isArray(userExternal)
@@ -81,7 +81,7 @@ export function frapPlaywright(
   return playwrightConfig;
 }
 
-export async function registerFrapSelector(
+export async function registerFlettaSelector(
   selectors: any,
   config?: Partial<FrapConfig>
 ): Promise<void> {

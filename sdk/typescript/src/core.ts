@@ -28,21 +28,21 @@ export class HealingEngine {
   }
 
   async init(): Promise<void> {
-    if (process.env.FRAP_TS_FALLBACK === '1') {
-      console.warn('[frap] FRAP_TS_FALLBACK=1 — using TypeScript healing (dev only)');
+    if (process.env.FLETTA_TS_FALLBACK === '1') {
+      console.warn('[frap] FLETTA_TS_FALLBACK=1 — using TypeScript healing (dev only)');
       this.wasmLoadAttempted = true;
       return;
     }
 
     try {
-      const wasm = (await import('../wasm/frapcode_core.js')) as WasmHealModule;
+      const wasm = (await import('../wasm/frap_core.js')) as WasmHealModule;
       if (typeof wasm.healJson !== 'function') {
-        throw new Error('healJson export missing from frapcode_core wasm');
+        throw new Error('healJson export missing from frap_core wasm');
       }
       this.wasmModule = wasm;
     } catch (err) {
       console.warn(
-        '[frap] WASM module not loaded; run `npm run build:wasm` in sdk/typescript or set FRAP_TS_FALLBACK=1',
+        '[frap] WASM module not loaded; run `npm run build:wasm` in sdk/typescript or set FLETTA_TS_FALLBACK=1',
         err
       );
     } finally {
@@ -112,7 +112,7 @@ export class HealingEngine {
       return result;
     }
 
-    if (process.env.FRAP_TS_FALLBACK !== '1') {
+    if (process.env.FLETTA_TS_FALLBACK !== '1') {
       console.warn('[frap] WASM unavailable — using TS fallback for this heal() call');
     }
 

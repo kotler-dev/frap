@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Setup git hooks for Frap development
+# Setup git hooks for frap development
 # Usage: ./scripts/setup-hooks.sh
 
 set -e
@@ -8,7 +8,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
-echo "Setting up git hooks for Frap development..."
+echo "Setting up git hooks for frap development..."
 
 # Create hooks directory if not exists
 mkdir -p "$PROJECT_ROOT/.git/hooks"
