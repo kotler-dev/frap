@@ -1,0 +1,49 @@
+{
+  "name": "frapcode-playwright",
+  "version": "0.1.0",
+  "description": "Playwright adapter for Frap deterministic selectors",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "playwright test",
+    "lint": "eslint src/ --ext .ts"
+  },
+  "keywords": [
+    "playwright",
+    "testing",
+    "self-healing",
+    "selectors",
+    "frap"
+  ],
+  "author": "frap team",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kotler-dev/frap.git",
+    "directory": "adapters/playwright"
+  },
+  "homepage": "https://github.com/kotler-dev/frap#readme",
+  "bugs": {
+    "url": "https://github.com/kotler-dev/frap/issues"
+  },
+  "peerDependencies": {
+    "@playwright/test": ">=1.40.0"
+  },
+  "devDependencies": {
+    "frapcode": "file:../../sdk/typescript",
+    "@playwright/test": "^1.44.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0",
+    "eslint": "^8.57.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0"
+  },
+  "dependencies": {
+    "frapcode": "0.1.0"
+  }
+}
