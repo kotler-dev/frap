@@ -1,0 +1,79 @@
+name: Build Native Binaries
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: dtolnay/rust-toolchain@stable
+      
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: crates
+      
+      - name: Build frap-core-rpc
+        run: cd crates && cargo build --release -p frap-core --bin frap-core-rpc
+      
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: frap-core-rpc-linux-x86_64
+          path: crates/target/release/frap-core-rpc
+          retention-days: 30
+
+  build-macos-x86_64:
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: dtolnay/rust-toolchain@stable
+      
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: crates
+      
+      - name: Build frap-core-rpc
+        run: cd crates && cargo build --release -p frap-core --bin frap-core-rpc
+      
+      - name: Rename binary
+        run: mv crates/target/release/frap-core-rpc crates/target/release/frap-core-rpc-macos-x86_64
+      
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: frap-core-rpc-macos-x86_64
+          path: crates/target/release/frap-core-rpc-macos-x86_64
+          retention-days: 30
+
+  build-macos-aarch64:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin
+      
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: crates
+      
+      - name: Build frap-core-rpc
+        run: cd crates && cargo build --release -p frap-core --bin frap-core-rpc --target aarch64-apple-darwin
+      
+      - name: Rename binary
+        run: mv crates/target/release/aarch64-apple-darwin/release/frap-core-rpc crates/target/release/frap-core-rpc-macos-aarch64
+      
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: frap-core-rpc-macos-aarch64
+          path: crates/target/release/frap-core-rpc-macos-aarch64
+          retention-days: 30
