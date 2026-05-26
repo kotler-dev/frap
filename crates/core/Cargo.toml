@@ -1,17 +1,14 @@
 [package]
-name = "frap-sdk"
+name = "fletta-core"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
 repository.workspace = true
-description = "Frap SDK — deterministic DOM binding for stable selectors (signature, clustering, healing)"
-keywords = ["testing", "playwright", "selenium", "dom", "selectors", "self-healing"]
-categories = ["development-tools::testing", "web-programming"]
-readme = "README.md"
+description = "Fletta Core — public API aggregation (signature, clustering, healing)"
 
 [lib]
-name = "frap_sdk"
+name = "fletta_core"
 crate-type = ["rlib", "cdylib"]
 
 [features]
@@ -21,10 +18,10 @@ wasm = ["dep:wasm-bindgen", "dep:getrandom"]
 [dependencies]
 serde = { workspace = true }
 serde_json = { workspace = true }
-frap-signature = { path = "../signature", version = "0.1.0" }
-frap-clustering = { path = "../clustering", version = "0.1.0" }
-frap-healing = { path = "../healing", version = "0.1.0" }
-frap-rca = { path = "../rca", version = "0.1.0" }
+signature = { path = "../signature" }
+clustering = { path = "../clustering" }
+healing = { path = "../healing" }
+fletta-rca = { path = "../rca" }
 wasm-bindgen = { workspace = true, optional = true }
 getrandom = { version = "0.3", features = ["wasm_js"], optional = true }
 

@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frap — Демо</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --accent: #6366f1;
+            --accent-light: #818cf8;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 80px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+            transform: translateX(100px);
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+        }
+
+        .slide.prev {
+            transform: translateX(-100px);
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--text-primary);
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent-light);
+            margin-bottom: 1rem;
+        }
+
+        p {
+            font-size: 1.25rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            max-width: 800px;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            max-width: 1000px;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+
+        .card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .card p {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Code blocks */
+        .code-block {
+            background: var(--bg-secondary);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            padding: 24px 32px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            max-width: 700px;
+            margin: 20px 0;
+        }
+
+        .code-block .comment {
+            color: #6b7280;
+        }
+
+        .code-block .keyword {
+            color: #c084fc;
+        }
+
+        .code-block .string {
+            color: #86efac;
+        }
+
+        .code-block .number {
+            color: #fcd34d;
+        }
+
+        /* Visual diagrams */
+        .diagram {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 30px 0;
+        }
+
+        .node {
+            background: var(--bg-secondary);
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            padding: 16px 24px;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .node.small {
+            padding: 12px 16px;
+            font-size: 0.9rem;
+            min-width: auto;
+        }
+
+        .arrow {
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+
+        .arrow-down {
+            font-size: 1.5rem;
+            color: var(--accent);
+            transform: rotate(90deg);
+        }
+
+        /* Cluster visualization */
+        .cluster-demo {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+            margin-top: 30px;
+        }
+
+        .dom-tree {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 24px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+        }
+
+        .tree-node {
+            padding-left: 20px;
+            border-left: 2px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .tag { color: #f472b6; }
+        .attr { color: #60a5fa; }
+        .value { color: #a3e635; }
+
+        .clusters {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .cluster {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 16px 20px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .cluster-header {
+            font-weight: 600;
+            color: var(--accent-light);
+            margin-bottom: 8px;
+        }
+
+        .cluster-items {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Metrics */
+        .metric-row {
+            display: flex;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .metric-label {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Flow diagram */
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 30px;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px 30px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .flow-step.success { border-left-color: var(--success); }
+        .flow-step.warning { border-left-color: var(--warning); }
+
+        .step-num {
+            width: 36px;
+            height: 36px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .step-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(18, 18, 26, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 16px 32px;
+            border-radius: 50px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        .nav-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(148, 163, 184, 0.3);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .dot.active {
+            background: var(--accent);
+            transform: scale(1.2);
+        }
+
+        .slide-counter {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            min-width: 50px;
+            text-align: center;
+        }
+
+        /* Slide-specific styles */
+        .problem-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 30px;
+        }
+
+        .problem-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 1.3rem;
+        }
+
+        .problem-icon {
+            font-size: 1.5rem;
+        }
+
+        .highlight {
+            color: var(--accent-light);
+            font-weight: 600;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            max-width: 1100px;
+            align-items: center;
+        }
+
+        .levenshtein-demo {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 24px;
+            font-family: monospace;
+        }
+
+        .levenshtein-demo .str1 { color: #60a5fa; }
+        .levenshtein-demo .str2 { color: #f472b6; }
+        .levenshtein-demo .diff { color: #fbbf24; background: rgba(251, 191, 36, 0.2); }
+
+        .similarity-bar {
+            width: 300px;
+            height: 8px;
+            background: rgba(99, 102, 241, 0.2);
+            border-radius: 4px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+
+        .similarity-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-light));
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <!-- Slide 1: Title -->
+        <div class="slide active" data-slide="1">
+            <h1>Frap</h1>
+            <p class="subtitle">Deterministic engine для структурного анализа UI</p>
+            <div class="metric-row" style="margin-top: 40px;">
+                <div class="metric">
+                    <div class="metric-value">NO ML</div>
+                    <div class="metric-label">в core алгоритмах</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">WASM</div>
+                    <div class="metric-label">Rust → все платформы</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">MCP</div>
+                    <div class="metric-label">Ready для AI-агентов</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Problem -->
+        <div class="slide" data-slide="2">
+            <h2>Проблема: UI меняется быстрее тестов</h2>
+            <div class="problem-list">
+                <div class="problem-item">
+                    <span class="problem-icon">⏱️</span>
+                    <span>Часы на <span class="highlight">reverse engineering DOM</span> для каждой страницы</span>
+                </div>
+                <div class="problem-item">
+                    <span class="problem-icon">💥</span>
+                    <span>Один рефакторинг фронта → <span class="highlight">лавина падений</span> в CI</span>
+                </div>
+                <div class="problem-item">
+                    <span class="problem-icon">🤷</span>
+                    <span>Self-healing — <span class="highlight">чёрный ящик</span> без объяснений</span>
+                </div>
+                <div class="problem-item">
+                    <span class="problem-icon">☁️</span>
+                    <span>Облачные решения <span class="highlight">не проходят security</span> в банках</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Drain3 -->
+        <div class="slide" data-slide="3">
+            <h2>Алгоритм: Drain3</h2>
+            <p>Адаптация алгоритма кластеризации логов для DOM-дерева</p>
+            <div class="diagram" style="margin-top: 30px;">
+                <div class="node">DOM Tree</div>
+                <span class="arrow">→</span>
+                <div class="node">Signature</div>
+                <span class="arrow">→</span>
+                <div class="node">Drain3 Tree</div>
+                <span class="arrow">→</span>
+                <div class="node">Clusters</div>
+            </div>
+            <div class="code-block" style="margin-top: 30px;">
+                <span class="comment">// Префикс фиксированной глубины = ключ кластера</span>
+                <br>
+                <span class="string">"form:main:div:form:group"</span>
+                <br><br>
+                <span class="comment">// Все элементы с одинаковым префиксом → один кластер</span>
+            </div>
+        </div>
+
+        <!-- Slide 4: Levenshtein -->
+        <div class="slide" data-slide="4">
+            <h2>Сравнение: Levenshtein distance</h2>
+            <p>Измеряем "похожесть" путей при изменении UI</p>
+            <div class="two-column" style="margin-top: 30px;">
+                <div class="levenshtein-demo">
+                    <div style="margin-bottom: 20px;">
+                        <div class="str1">form:main:div:input</div>
+                        <div class="str2">form:main:<span class="diff">section</span>:input</div>
+                    </div>
+                    <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                        <div>Редактируем: <strong>1</strong> (div → section)</div>
+                        <div>Длина: 20 символов</div>
+                        <div style="margin-top: 10px;">Схожесть: <strong>85%</strong></div>
+                        <div class="similarity-bar">
+                            <div class="similarity-fill" style="width: 85%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="code-block">
+                        <span class="keyword">fn</span> <span class="string">levenshtein</span>(a, b) -> usize {
+                        <br>
+                        &nbsp;&nbsp;<span class="comment">// Динамическое программирование</span>
+                        <br>
+                        &nbsp;&nbsp;<span class="comment">// Сложность: O(n×m)</span>
+                        <br>
+                        &nbsp;&nbsp;matrix[i][j] = min(
+                        <br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;delete,
+                        <br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;insert,
+                        <br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;substitute
+                        <br>
+                        &nbsp;&nbsp;)
+                        <br>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Architecture -->
+        <div class="slide" data-slide="5">
+            <h2>Архитектура: как это работает</h2>
+            <div class="diagram" style="flex-direction: column; gap: 12px; margin-top: 20px;">
+                <div style="display: flex; gap: 16px;">
+                    <div class="node small">Playwright</div>
+                    <div class="node small">Selenium</div>
+                    <div class="node small">MCP</div>
+                </div>
+                <span class="arrow-down">↓</span>
+                <div class="node" style="min-width: 300px;">TypeScript / Java / Python SDK</div>
+                <span class="arrow-down">↓</span>
+                <div class="node" style="min-width: 300px; border-color: var(--success);">Rust Core (WASM)</div>
+                <div style="display: flex; gap: 16px; margin-top: 8px;">
+                    <div class="node small">Signature</div>
+                    <div class="node small">Clustering</div>
+                    <div class="node small">Healing</div>
+                    <div class="node small">Context</div>
+                </div>
+            </div>
+            <p style="margin-top: 30px; font-size: 1.1rem;">
+                <span class="highlight">Integration, not replacement</span> — Frap не заменяет Playwright, а даёт стабильный слой поверх
+            </p>
+        </div>
+
+        <!-- Slide 6: What is Clustering -->
+        <div class="slide" data-slide="6">
+            <h2>Что такое кластеризация?</h2>
+            <p>Группировка элементов по структурной схожести</p>
+            <div class="cluster-demo">
+                <div class="dom-tree">
+                    <div><span class="tag">&lt;form&gt;</span></div>
+                    <div class="tree-node">
+                        <div><span class="tag">&lt;div</span> <span class="attr">class=</span><span class="value">"group"</span><span class="tag">&gt;</span></div>
+                        <div class="tree-node">
+                            <div><span class="tag">&lt;input</span> <span class="attr">type=</span><span class="value">"email"</span><span class="tag">&gt;</span></div>
+                            <div><span class="tag">&lt;input</span> <span class="attr">type=</span><span class="value">"password"</span><span class="tag">&gt;</span></div>
+                            <div><span class="tag">&lt;button&gt;</span>Login<span class="tag">&lt;/button&gt;</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clusters">
+                    <div class="cluster">
+                        <div class="cluster-header">CLUSTER: INPUT</div>
+                        <div class="cluster-items">email field, password field</div>
+                    </div>
+                    <div class="cluster">
+                        <div class="cluster-header">CLUSTER: BUTTON</div>
+                        <div class="cluster-items">login button</div>
+                    </div>
+                    <div class="cluster">
+                        <div class="cluster-header">CLUSTER: FORM_GROUP</div>
+                        <div class="cluster-items">обёртка полей</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Clustering Example -->
+        <div class="slide" data-slide="7">
+            <h2>Пример: список товаров</h2>
+            <p>12 одинаковых карточек → один кластер</p>
+            <div class="two-column" style="margin-top: 20px;">
+                <div>
+                    <div class="dom-tree">
+                        <div><span class="tag">&lt;div</span> <span class="attr">class=</span><span class="value">"products"</span><span class="tag">&gt;</span></div>
+                        <div class="tree-node">
+                            <div><span class="tag">&lt;div</span> <span class="attr">class=</span><span class="value">"product-card"</span><span class="tag">&gt;</span> <span class="comment">/* ×12 */</span></div>
+                            <div class="tree-node">
+                                <div><span class="tag">&lt;img&gt;</span></div>
+                                <div><span class="tag">&lt;h3&gt;</span>Name<span class="tag">&lt;/h3&gt;</span></div>
+                                <div><span class="tag">&lt;p&gt;</span>$99<span class="tag">&lt;/p&gt;</span></div>
+                                <div><span class="tag">&lt;button&gt;</span>Buy<span class="tag">&lt;/button&gt;</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="cluster" style="max-width: 300px;">
+                    <div class="cluster-header">CLUSTER: product-card</div>
+                    <div class="cluster-items" style="line-height: 1.8;">
+                        card #1: iPhone 15<br>
+                        card #2: MacBook Pro<br>
+                        card #3: AirPods<br>
+                        ...<br>
+                        card #12: Charger
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <strong style="color: var(--success);">Signature match: 94%</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Self-Healing Flow -->
+        <div class="slide" data-slide="8">
+            <h2>Self-Healing: как находим элемент</h2>
+            <p>Когда primary селектор сломался — ищем по сигнатуре</p>
+            <div class="flow-container" style="max-width: 700px;">
+                <div class="flow-step warning">
+                    <div class="step-num">1</div>
+                    <div class="step-content">
+                        <div class="step-title">Primary selector не найден</div>
+                        <div class="step-desc">[data-testid="submit-btn"] → null</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-num">2</div>
+                    <div class="step-content">
+                        <div class="step-title">Извлекаем сигнатуру оригинала</div>
+                        <div class="step-desc">tag:button, role:submit, depth:5, children:1</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-num">3</div>
+                    <div class="step-content">
+                        <div class="step-title">Сканируем все кандидаты</div>
+                        <div class="step-desc">Levenshtein + структурная схожесть → score для каждого</div>
+                    </div>
+                </div>
+                <div class="flow-step success">
+                    <div class="step-num">4</div>
+                    <div class="step-content">
+                        <div class="step-title">Confidence ≥ threshold → HEALED</div>
+                        <div class="step-desc">Новый элемент найден, отчёт с diff сохранён</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Value Prop -->
+        <div class="slide" data-slide="9">
+            <h2>Ценность для команды</h2>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-icon">⚡</div>
+                    <h4>Structure Discovery</h4>
+                    <p>Element map за секунды вместо часов ручного DOM</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🛡️</div>
+                    <h4>Self-Healing</h4>
+                    <p>Deterministic resolution с explainable diff</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🏦</div>
+                    <h4>On-Prem</h4>
+                    <p>NO ML в core, работает без облака — bank-grade</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🤖</div>
+                    <h4>MCP Ready</h4>
+                    <p>Grounding layer для AI-агентов: надёжные руки и глаза</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📊</div>
+                    <h4>Observability</h4>
+                    <p>Audit trail healing events в CI артефакты</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🔌</div>
+                    <h4>Integration</h4>
+                    <p>Playwright / Selenium / JUnit — без миграции</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Summary -->
+        <div class="slide" data-slide="10">
+            <h2>Frap = Structure Engine</h2>
+            <p style="font-size: 1.4rem; margin-bottom: 40px;">
+                Не заменяем Playwright.<br>
+                Даём <span class="highlight">структуру, стабильность и explainability</span>.
+            </p>
+            <div class="diagram" style="flex-direction: column; gap: 16px;">
+                <div style="display: flex; gap: 24px; align-items: center;">
+                    <div class="node" style="border-color: var(--success);">Element Map</div>
+                    <span class="arrow">→</span>
+                    <div class="node" style="border-color: var(--success);">Stable IDs</div>
+                    <span class="arrow">→</span>
+                    <div class="node" style="border-color: var(--success);">Self-Healing</div>
+                    <span class="arrow">→</span>
+                    <div class="node" style="border-color: var(--success);">CI Audit</div>
+                </div>
+            </div>
+            <p style="margin-top: 50px; font-size: 1.1rem; color: var(--text-secondary);">
+                Rust Core (WASM) → TypeScript SDK → Playwright Adapter
+            </p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav">
+        <button class="nav-btn" id="prevBtn">←</button>
+        <div class="nav-dots" id="dots"></div>
+        <span class="slide-counter" id="counter">1 / 10</span>
+        <button class="nav-btn" id="nextBtn">→</button>
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        let currentSlide = 1;
+
+        // Create dots
+        const dotsContainer = document.getElementById('dots');
+        for (let i = 1; i <= totalSlides; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 1 ? ' active' : '');
+            dot.addEventListener('click', () => goToSlide(i));
+            dotsContainer.appendChild(dot);
+        }
+
+        function updateSlides() {
+            slides.forEach(slide => {
+                const slideNum = parseInt(slide.dataset.slide);
+                slide.classList.remove('active', 'prev');
+                if (slideNum === currentSlide) {
+                    slide.classList.add('active');
+                } else if (slideNum < currentSlide) {
+                    slide.classList.add('prev');
+                }
+            });
+
+            // Update dots
+            document.querySelectorAll('.dot').forEach((dot, idx) => {
+                dot.classList.toggle('active', idx + 1 === currentSlide);
+            });
+
+            // Update counter
+            document.getElementById('counter').textContent = `${currentSlide} / ${totalSlides}`;
+        }
+
+        function goToSlide(n) {
+            if (n < 1 || n > totalSlides) return;
+            currentSlide = n;
+            updateSlides();
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                currentSlide++;
+                updateSlides();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                currentSlide--;
+                updateSlides();
+            }
+        }
+
+        // Button events
+        document.getElementById('nextBtn').addEventListener('click', nextSlide);
+        document.getElementById('prevBtn').addEventListener('click', prevSlide);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                goToSlide(1);
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                goToSlide(totalSlides);
+            }
+        });
+
+        // Touch support
+        let touchStartX = 0;
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) nextSlide();
+                else prevSlide();
+            }
+        });
+    </script>
+</body>
+</html>

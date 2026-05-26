@@ -11,7 +11,7 @@ const path = require('path');
 const sdkPath = path.join(__dirname, '../sdk/typescript/dist/core.js');
 const { HealingEngine } = require(sdkPath);
 
-console.log('=== Frap Clustering Verification ===\n');
+console.log('=== fletta Clustering Verification ===\n');
 
 // Test CP002: Refactor Heal
 console.log('Test 1: CP002 - Refactor Heal');
@@ -19,7 +19,7 @@ console.log('==============================');
 
 const cp002Engine = new HealingEngine({
   minConfidence: 0.70,
-  reportDir: './frap-reports',
+  reportDir: './fletta-reports',
   enableHealing: true,
   enableReporting: false,
 });
@@ -72,7 +72,7 @@ console.log('=======================================');
 
 const cp003Engine = new HealingEngine({
   minConfidence: 0.85,
-  reportDir: './frap-reports',
+  reportDir: './fletta-reports',
   enableHealing: true,
   enableReporting: false,
 });

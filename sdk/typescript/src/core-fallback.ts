@@ -1,6 +1,6 @@
 /**
  * TypeScript fallback for healing (dev only). Production path uses Rust WASM via healJson.
- * Enable with FRAP_TS_FALLBACK=1.
+ * Enable with FLETTA_TS_FALLBACK=1.
  */
 
 import type {

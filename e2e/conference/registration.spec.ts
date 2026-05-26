@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { withFrap, getLastHealResult } from '@frap/frap-playwright';
-import { CONF_PATH, confFrap } from './helpers';
+import { withFletta, getLastHealResult } from '@fletta/playwright';
+import { CONF_PATH, confFletta } from './helpers';
 
 test.describe('Conference 2026 Spring', () => {
   test.describe('Registration', () => {
@@ -9,10 +9,10 @@ test.describe('Conference 2026 Spring', () => {
       await page.locator('[data-testid="register-name"]').fill('Demo User');
       await page.locator('[data-testid="register-email"]').fill('demo@fixtureconf.test');
 
-      const submit = await withFrap(
+      const submit = await withFletta(
         page.locator('[data-testid="register-submit"]'),
         page,
-        confFrap({ debug: true, testInfo })
+        confFletta({ debug: true, testInfo })
       );
 
       await submit.click();
@@ -27,10 +27,10 @@ test.describe('Conference 2026 Spring', () => {
       await page.locator('[data-testid="register-name"]').fill('Demo User');
       await page.locator('[data-testid="register-email"]').fill('demo@fixtureconf.test');
 
-      const submit = await withFrap(
+      const submit = await withFletta(
         page.locator('[data-testid="register-submit"]'),
         page,
-        confFrap({ healPolicy: 'deny', debug: true, testInfo })
+        confFletta({ healPolicy: 'deny', debug: true, testInfo })
       );
 
       await submit.click();
@@ -41,10 +41,10 @@ test.describe('Conference 2026 Spring', () => {
     test('CONF-SH-REG-FAIL: healing fails on missing selector', async ({ page }, testInfo) => {
       await page.goto(CONF_PATH.register);
 
-      const ghost = await withFrap(
+      const ghost = await withFletta(
         page.locator('[data-testid="register-pay-legacy"]'),
         page,
-        confFrap({ minConfidence: 0.95, debug: true, testInfo })
+        confFletta({ minConfidence: 0.95, debug: true, testInfo })
       );
 
       await expect(async () => {

@@ -1,14 +1,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import type { Reporter, TestCase, TestResult } from '@playwright/test/reporter';
-import { FrapPlaywrightConfig } from './config';
+import { FlettaPlaywrightConfig } from './config';
 import { generateAllDebugHtml } from './debug-viewer';
 import {
   clearHealingEventsFile,
-  FrapHealingEvent,
+  FlettaHealingEvent,
   loadAllHealingEvents,
 } from './healing-events';
-import { clearDebugReports } from '@frap/frap';
+import { clearDebugReports } from '@fletta/sdk';
 import {
   clearContextBuffers,
   recordContextUiEvent,
@@ -19,20 +19,18 @@ import {
 } from './context';
 import type { RcaReportV2 } from './context';
 
-export type { FrapHealingEvent };
-/** @deprecated Use FrapHealingEvent */
-export type HealingEvent = FrapHealingEvent;
+export type { FlettaHealingEvent };
+/** @deprecated Use FlettaHealingEvent */
+export type HealingEvent = FlettaHealingEvent;
 
-export interface FrapContextFailure {
+export interface FlettaContextFailure {
   playwrightTestId: string;
   message: string;
   timestamp: string;
   rca?: RcaReportV2;
 }
 
-/** @deprecated Use FrapContextFailure instead */
-
-export interface FrapContextTestResult {
+export interface FlettaContextTestResult {
   playwrightTestId: string;
   status: 'passed' | 'failed' | 'timedOut' | 'skipped' | 'interrupted';
   durationMs: number;
@@ -42,9 +40,7 @@ export interface FrapContextTestResult {
   rca?: RcaReportV2;
 }
 
-/** @deprecated Use FrapContextTestResult instead */
-
-export interface FrapReportSummary {
+export interface FlettaReportSummary {
   totalAttempts: number;
   totalHeals: number;
   expectedHeals: number;
@@ -53,14 +49,14 @@ export interface FrapReportSummary {
   averageConfidence: number;
 }
 
-export class FrapReporter implements Reporter {
-  private config: FrapPlaywrightConfig;
-  private healingEvents: FrapHealingEvent[] = [];
-  private contextFailures: FrapContextFailure[] = [];
-  private contextTests: FrapContextTestResult[] = [];
+export class FlettaReporter implements Reporter {
+  private config: FlettaPlaywrightConfig;
+  private healingEvents: FlettaHealingEvent[] = [];
+  private contextFailures: FlettaContextFailure[] = [];
+  private contextTests: FlettaContextTestResult[] = [];
   private startTime: number = Date.now();
 
-  constructor(config: FrapPlaywrightConfig) {
+  constructor(config: FlettaPlaywrightConfig) {
     this.config = config;
   }
 
@@ -68,9 +64,9 @@ export class FrapReporter implements Reporter {
     const testName = test.titlePath().join(' > ');
 
     // Legacy: Playwright annotations (optional, if tests attach them manually)
-    const annotations = test.annotations.filter(a => a.type.startsWith('frap.') || a.type.startsWith('frap.'));
+    const annotations = test.annotations.filter(a => a.type.startsWith('fletta.'));
     for (const annotation of annotations) {
-      if (annotation.type === 'frap.heal' || annotation.type === 'frap.heal') {
+      if (annotation.type === 'fletta.heal') {
         try {
           const healData = JSON.parse(annotation.description || '{}');
           this.healingEvents.push({
@@ -85,18 +81,18 @@ export class FrapReporter implements Reporter {
             timestamp: new Date().toISOString(),
           });
         } catch (e) {
-          console.error('Failed to parse frap heal annotation:', e);
+          console.error('Failed to parse fletta heal annotation:', e);
         }
       }
     }
 
     if (this.config.captureAll) {
       // Use test.title (just the test title) for traceId lookup compatibility
-      // Tests pass testInfo.title to attachFrapContext, not the full titlePath
+      // Tests pass testInfo.title to attachFlettaContext, not the full titlePath
       const traceIdKey = test.title;
       const traceId = getContextTraceId(this.config.reportDir, traceIdKey);
 
-      const testResult: FrapContextTestResult = {
+      const testResult: FlettaContextTestResult = {
         playwrightTestId: testName,
         status: result.status,
         durationMs: result.duration,
@@ -168,7 +164,7 @@ export class FrapReporter implements Reporter {
     if (this.config.captureAll) {
       const contextPath = writeContextReport(reportDir);
       if (contextPath) {
-        console.log(`[frap] Context report written to: ${contextPath}`);
+        console.log(`[fletta] Context report written to: ${contextPath}`);
       }
       // RCA (WASM) runs in e2e/context/generate-rca.mjs after Playwright — reporter loader cannot load .wasm.
     }
@@ -179,11 +175,11 @@ export class FrapReporter implements Reporter {
     try {
       generateAllDebugHtml(reportDir);
     } catch (e) {
-      console.error('[frap] Failed to generate debug HTML:', e);
+      console.error('[fletta] Failed to generate debug HTML:', e);
     }
   }
 
-  private buildSummary(): FrapReportSummary {
+  private buildSummary(): FlettaReportSummary {
     const healedEvents = this.healingEvents.filter(e => e.outcome === 'healed');
     const unexpected = this.healingEvents.filter(e => e.outcome === 'unexpected_heal');
     const rejected = this.healingEvents.filter(e => e.outcome === 'rejected');
@@ -234,11 +230,11 @@ export class FrapReporter implements Reporter {
       }
     }
 
-    const reportPath = path.join(reportDir, 'frap-report.json');
+    const reportPath = path.join(reportDir, 'fletta-report.json');
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
-    console.log(`[frap] JSON report written to: ${reportPath}`);
+    console.log(`[fletta] JSON report written to: ${reportPath}`);
     if (summary.unexpectedHeals > 0) {
-      console.warn(`[frap] Report: ${summary.unexpectedHeals} unexpected heal(s) (policy=deny)`);
+      console.warn(`[fletta] Report: ${summary.unexpectedHeals} unexpected heal(s) (policy=deny)`);
     }
   }
 
@@ -246,8 +242,8 @@ export class FrapReporter implements Reporter {
     const summary = this.buildSummary();
     const healingFailures = summary.rejectedHeals + summary.unexpectedHeals;
 
-    // Build frap healing suite (only if there are healing events)
-    let frapSuite = '';
+    // Build fletta healing suite (only if there are healing events)
+    let flettaSuite = '';
     if (this.healingEvents.length > 0) {
       const healingCases = this.healingEvents.map(event => {
         const attrs = [
@@ -266,13 +262,13 @@ ${healingXml}
     </testcase>`;
       }).join('\n');
 
-      frapSuite = `
-  <testsuite name="frap" tests="${this.healingEvents.length}" failures="${healingFailures}" timestamp="${new Date().toISOString()}">
+      flettaSuite = `
+  <testsuite name="fletta" tests="${this.healingEvents.length}" failures="${healingFailures}" timestamp="${new Date().toISOString()}">
 ${healingCases}
   </testsuite>`;
     }
 
-    // Build frap-context suite with all tests (if captureAll enabled)
+    // Build fletta-context suite with all tests (if captureAll enabled)
     let contextSuite = '';
     if (this.config.captureAll && this.contextTests.length > 0) {
       const contextSummary = this.buildContextSummary();
@@ -296,21 +292,21 @@ ${healingCases}
       }).join('\n');
 
       contextSuite = `
-  <testsuite name="frap-context" tests="${contextSummary.total}" failures="${contextSummary.failed}" timestamp="${new Date().toISOString()}">
+  <testsuite name="fletta-context" tests="${contextSummary.total}" failures="${contextSummary.failed}" timestamp="${new Date().toISOString()}">
 ${contextCases}
   </testsuite>`;
     }
 
     const junitXml = `<?xml version="1.0" encoding="UTF-8"?>
-<testsuites>${frapSuite}${contextSuite}
+<testsuites>${flettaSuite}${contextSuite}
 </testsuites>`;
 
     const junitPath = path.join(reportDir, 'junit.xml');
     fs.writeFileSync(junitPath, junitXml);
-    console.log(`[frap] JUnit report written to: ${junitPath}`);
+    console.log(`[fletta] JUnit report written to: ${junitPath}`);
   }
 
-  private calculateAverageConfidence(healed: FrapHealingEvent[]): number {
+  private calculateAverageConfidence(healed: FlettaHealingEvent[]): number {
     if (healed.length === 0) return 0;
     return healed.reduce((sum, e) => sum + e.confidence, 0) / healed.length;
   }
@@ -325,7 +321,7 @@ ${contextCases}
   }
 }
 
-export function generateJsonReport(events: FrapHealingEvent[], reportDir: string): void {
+export function generateJsonReport(events: FlettaHealingEvent[], reportDir: string): void {
   if (!fs.existsSync(reportDir)) {
     fs.mkdirSync(reportDir, { recursive: true });
   }
@@ -348,4 +344,4 @@ export function generateJsonReport(events: FrapHealingEvent[], reportDir: string
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
 }
 
-export default FrapReporter;
+export default FlettaReporter;

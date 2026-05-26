@@ -1,15 +1,15 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { debugReportJsonPath, writeDebugReport, type DebugReport } from '@frap/frap';
+import { debugReportJsonPath, writeDebugReport, type DebugReport } from '@fletta/sdk';
 import {
   classifyHealOutcome,
   type HealPolicy,
   type HealTrigger,
   type HealingSemantics,
   type HealOutcome,
-} from '@frap/frap';
+} from '@fletta/sdk';
 
-export interface FrapHealingEvent {
+export interface FlettaHealingEvent {
   playwrightTestId: string;
   healSessionName?: string;
   originalSelector: string;
@@ -22,7 +22,7 @@ export interface FrapHealingEvent {
   timestamp: string;
 }
 
-const eventsByTest = new Map<string, FrapHealingEvent[]>();
+const eventsByTest = new Map<string, FlettaHealingEvent[]>();
 
 function resolvePlaywrightTestId(testInfo?: { titlePath: string[] }, healSessionName?: string): string {
   if (testInfo?.titlePath?.length) {
@@ -53,26 +53,26 @@ export function getCurrentPlaywrightTestId(
 }
 
 function eventsFilePath(reportDir: string): string {
-  return path.join(reportDir, 'frap-events.jsonl');
+  return path.join(reportDir, 'fletta-events.jsonl');
 }
 
-function appendEventToDisk(reportDir: string, event: FrapHealingEvent): void {
+function appendEventToDisk(reportDir: string, event: FlettaHealingEvent): void {
   try {
     if (!fs.existsSync(reportDir)) {
       fs.mkdirSync(reportDir, { recursive: true });
     }
     fs.appendFileSync(eventsFilePath(reportDir), `${JSON.stringify(event)}\n`, 'utf-8');
   } catch (e) {
-    console.error('[frap] Failed to persist healing event:', e);
+    console.error('[fletta] Failed to persist healing event:', e);
   }
 }
 
 export function recordHealingEvent(
-  event: Omit<FrapHealingEvent, 'playwrightTestId' | 'timestamp'>,
+  event: Omit<FlettaHealingEvent, 'playwrightTestId' | 'timestamp'>,
   reportDir?: string,
   testInfo?: { titlePath: string[] }
-): FrapHealingEvent {
-  const full: FrapHealingEvent = {
+): FlettaHealingEvent {
+  const full: FlettaHealingEvent = {
     ...event,
     playwrightTestId: resolvePlaywrightTestId(testInfo, event.healSessionName),
     timestamp: new Date().toISOString(),
@@ -91,14 +91,14 @@ export function recordHealingEvent(
   return full;
 }
 
-export function loadAllHealingEvents(reportDir: string): FrapHealingEvent[] {
+export function loadAllHealingEvents(reportDir: string): FlettaHealingEvent[] {
   const filePath = eventsFilePath(reportDir);
   if (!fs.existsSync(filePath)) {
     return [];
   }
 
   const lines = fs.readFileSync(filePath, 'utf-8').trim().split('\n').filter(Boolean);
-  return lines.map(line => JSON.parse(line) as FrapHealingEvent);
+  return lines.map(line => JSON.parse(line) as FlettaHealingEvent);
 }
 
 export function clearHealingEventsFile(reportDir: string): void {
@@ -108,7 +108,7 @@ export function clearHealingEventsFile(reportDir: string): void {
   }
 }
 
-export function consumeHealingEvents(playwrightTestId: string): FrapHealingEvent[] {
+export function consumeHealingEvents(playwrightTestId: string): FlettaHealingEvent[] {
   const events = eventsByTest.get(playwrightTestId) ?? [];
   eventsByTest.delete(playwrightTestId);
   return events;
@@ -134,7 +134,7 @@ export function enrichDebugReport(
 ): void {
   const reportPath = debugReportJsonPath(reportDir, testName);
   if (!fs.existsSync(reportPath)) {
-    const legacyPath = path.join(reportDir, 'frap-debug.json');
+    const legacyPath = path.join(reportDir, 'fletta-debug.json');
     if (!fs.existsSync(legacyPath)) {
       return;
     }
@@ -143,7 +143,7 @@ export function enrichDebugReport(
       report.semantics = semantics;
       writeDebugReport(reportDir, report);
     } catch (e) {
-      console.error('[frap] Failed to enrich debug report with semantics:', e);
+      console.error('[fletta] Failed to enrich debug report with semantics:', e);
     }
     return;
   }
@@ -153,27 +153,27 @@ export function enrichDebugReport(
     report.semantics = semantics;
     writeDebugReport(reportDir, report);
   } catch (e) {
-    console.error('[frap] Failed to enrich debug report with semantics:', e);
+    console.error('[fletta] Failed to enrich debug report with semantics:', e);
   }
 }
 
 export function logHealSemantics(semantics: HealingSemantics, originalSelector: string, newSelector?: string): void {
   if (semantics.outcome === 'unexpected_heal') {
     console.warn(
-      `[frap] Unexpected heal (policy=${semantics.policy}, trigger=${semantics.trigger}): ` +
+      `[fletta] Unexpected heal (policy=${semantics.policy}, trigger=${semantics.trigger}): ` +
         `"${originalSelector}" → "${newSelector ?? 'n/a'}"`
     );
     return;
   }
   if (semantics.outcome === 'rejected') {
     console.log(
-      `[frap] Healing rejected (policy=${semantics.policy}, trigger=${semantics.trigger}): "${originalSelector}"`
+      `[fletta] Healing rejected (policy=${semantics.policy}, trigger=${semantics.trigger}): "${originalSelector}"`
     );
     return;
   }
   if (semantics.outcome === 'healed') {
     console.log(
-      `[frap] Healing event (policy=${semantics.policy}, trigger=${semantics.trigger}, outcome=healed)`
+      `[fletta] Healing event (policy=${semantics.policy}, trigger=${semantics.trigger}, outcome=healed)`
     );
   }
 }

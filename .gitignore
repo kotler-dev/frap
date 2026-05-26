@@ -39,16 +39,13 @@ coverage/
 e2e/test-results/
 e2e/results.json
 e2e/conference-results.json
-e2e/frap-reports/
+e2e/fletta-reports/
 
 # Runtime
 .server.pid
 
-# Cursor (local IDE / agent config)
-.cursor/
-
-# Internal planning & business docs
-internal/
+# Cursor (local plans only; rules/skills may be committed)
+.cursor/plans/
 
 # WASM
 pkg/

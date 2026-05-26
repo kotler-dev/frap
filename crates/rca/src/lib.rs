@@ -1,4 +1,4 @@
-//! Root cause analysis for Frap unified context timelines.
+//! Root cause analysis for fletta unified context timelines.
 
 pub mod aggregate;
 pub mod classifier;

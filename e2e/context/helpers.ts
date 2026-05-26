@@ -1,6 +1,6 @@
-import type { WithFrapOptions } from '@frap/frap-playwright';
+import type { WithFlettaOptions } from '@fletta/playwright';
 
-export const CONTEXT_REPORT_DIR = './frap-reports/context';
+export const CONTEXT_REPORT_DIR = './fletta-reports/context';
 
 export const CONTEXT_PATH = {
   checkoutSlow: '/context/checkout.html?mode=slow',
@@ -9,7 +9,7 @@ export const CONTEXT_PATH = {
   cartFast: '/context/cart.html?delay=100',
 };
 
-export function contextFrap(opts: Partial<WithFrapOptions> = {}): WithFrapOptions {
+export function contextFletta(opts: Partial<WithFlettaOptions> = {}): WithFlettaOptions {
   return {
     reportDir: CONTEXT_REPORT_DIR,
     enableHealing: false,
@@ -18,6 +18,3 @@ export function contextFrap(opts: Partial<WithFrapOptions> = {}): WithFrapOption
     ...opts,
   };
 }
-
-/** @deprecated Use contextFrap instead */
-export const contextFrap = contextFrap;

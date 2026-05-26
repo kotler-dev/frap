@@ -1,16 +1,16 @@
 import { test, expect } from '@playwright/test';
-import { withFrap } from '@frap/frap-playwright';
-import { CONF_PATH, confFrap } from './helpers';
+import { withFletta } from '@fletta/playwright';
+import { CONF_PATH, confFletta } from './helpers';
 
 test.describe('Conference 2026 Spring', () => {
   test.describe('Debug', () => {
     test('CONF-DBG-SINGLE-PASS: one debug trace on stable schedule', async ({ page }, testInfo) => {
       await page.goto(CONF_PATH.scheduleV1);
 
-      const openLink = await withFrap(
+      const openLink = await withFletta(
         page.locator('[data-testid="talk-open-opening"]'),
         page,
-        confFrap({ debug: true, testInfo })
+        confFletta({ debug: true, testInfo })
       );
 
       await openLink.click();

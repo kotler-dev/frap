@@ -1,19 +1,19 @@
 [package]
-name = "frap-rca"
+name = "fletta-rca"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
 repository.workspace = true
-description = "Frap root cause analysis — classify test failures from unified context timelines"
+description = "Fletta root cause analysis — classify test failures from unified context timelines"
 
 [lib]
-name = "frap_rca"
+name = "fletta_rca"
 
 [dependencies]
 serde = { workspace = true }
 serde_json = { workspace = true }
-frap-context = { path = "../context", version = "0.1.0" }
+fletta-context = { path = "../context" }
 
 [dev-dependencies]
 serde_json = { workspace = true }
