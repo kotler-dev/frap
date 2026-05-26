@@ -1,6 +1,6 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
-import { FlettaConfig } from '@frap/sdk';
-import { FlettaPlaywrightConfig, mergePlaywrightConfig } from './config';
+import { FrapConfig } from '@frap/frap';
+import { FrapPlaywrightConfig, mergePlaywrightConfig } from './config';
 import { createFlettaSelectorEngine, initFlettaEngine, recordSignature } from './selector-engine';
 import { withFletta, getLastHealResult } from './wrapper';
 import { FlettaReporter, generateJsonReport } from './reporter';
@@ -22,7 +22,7 @@ export {
   FlettaReporter,
   generateJsonReport,
 };
-export type { FlettaPlaywrightConfig, WithFlettaOptions } from './config';
+export type { FrapPlaywrightConfig, WithFrapOptions } from './config';
 export type { FlettaHealingEvent, HealingEvent, FlettaReportSummary } from './reporter';
 export {
   setCurrentPlaywrightTestId,
@@ -42,7 +42,7 @@ export {
 export type { ContextCaptureOptions } from './context';
 
 export function frapPlaywright(
-  userConfig?: Partial<FlettaPlaywrightConfig>
+  userConfig?: Partial<FrapPlaywrightConfig>
 ): Partial<PlaywrightTestConfig> {
   const config = mergePlaywrightConfig(userConfig);
   
@@ -73,8 +73,8 @@ export function frapPlaywright(
     reporter: reporters as any,
     build: {
       ...userBuild,
-      // Keep @frap/sdk (and WASM) on Node's native loader — Playwright must not babel-parse .wasm.
-      external: [...externalList, '@frap/sdk'],
+      // Keep @frap/frap (and WASM) on Node's native loader — Playwright must not babel-parse .wasm.
+      external: [...externalList, '@frap/frap'],
     },
   };
 
@@ -83,9 +83,9 @@ export function frapPlaywright(
 
 export async function registerFlettaSelector(
   selectors: any,
-  config?: Partial<FlettaConfig>
+  config?: Partial<FrapConfig>
 ): Promise<void> {
-  const fullConfig: FlettaConfig = {
+  const fullConfig: FrapConfig = {
     minConfidence: 0.85,
     reportDir: './frap-reports',
     enableHealing: true,
