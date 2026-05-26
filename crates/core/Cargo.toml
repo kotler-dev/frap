@@ -25,5 +25,9 @@ frap-rca = { path = "../rca" }
 wasm-bindgen = { workspace = true, optional = true }
 getrandom = { version = "0.3", features = ["wasm_js"], optional = true }
 
+[[bin]]
+name = "frap-core-rpc"
+path = "src/bin/rpc.rs"
+
 [dev-dependencies]
 serde_json = { workspace = true }

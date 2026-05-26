@@ -52,6 +52,7 @@ project/cases/
 | C007 | AI-Agent Audit | F011 | concept |
 | C008 | Multi-Agent A2A | F011 | concept |
 | C009 | CDP Recording & Playback | F001, F004, F008 | concept |
+| C010 | Structural Regression | F017 | [concept](./C006-structural-regression.md) |
 
 ## Статусы
 

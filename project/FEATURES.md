@@ -17,6 +17,8 @@
 | MCP | Model Context Protocol — JSON-RPC для LLM-агентов |
 | RCA | Root Cause Analysis — определение причины падения |
 | Self-healing | Автоматическое восстановление селектора при изменении UI |
+| Structural Contract | Структурный контракт — baseline + policy + drift gate |
+| Drift report | Отчёт об изменениях UI структуры (element/structural/cluster) |
 
 ---
 
@@ -79,6 +81,7 @@
 | [F006: Multi-Platform Core](./feature/F006-multi-platform.md) | ❌ | Medium | v2.0.0 | Web + Android + iOS |
 | [F007: Visual Fingerprint](./feature/F007-visual-fingerprint.md) | ❌ | Low | v2.0.0 | Визуальные признаки в сигнатуре |
 | [F010: Test Health Score](./feature/F010-test-health.md) | ❌ | Medium | v2.0.0 | Метрика стабильности теста |
+| [F017: Structural Contract](./feature/F017-structural-contract.md) | ❌ | High | v2.0.0 | Структурная регрессия UI; P07; partial v1.2 docs |
 
 ---
 
@@ -117,6 +120,13 @@
 
 ### v1.4.0 Java
 - [ ] F014: Java SDK & UI Adapters — JUnit 5 + WebDriver; Selenide P1
+
+### v2.0.0 Scale (Structural Contract F017)
+- [ ] F017.0: Documentation + availability matrix + case C006 — v1.2.0 docs
+- [ ] F017.1: Element-level contract — signatures baseline, `healStrategy: fail`, CI gate
+- [ ] F017.2: Page-level contract — `discover` element map, `drift-report.json`
+- [ ] F017.3: Policy DSL — `structural-contract.yaml`, scopes, invariants
+- [ ] F017.4: Geometry invariants — relative bounds (F007 integration)
 
 ### v1.1.0 Context
 - [x] F002: Unified Context — timeline (F002.0–F002.6)
@@ -163,13 +173,13 @@
 | v1.2.0 | 3 | 0 | 0 | 3 | 0% |
 | v1.4.0 | 1 | 0 | 0 | 1 | 0% |
 | backlog | 1 | 0 | 0 | 1 | 0% |
-| v2.0.0 | 3 | 0 | 0 | 3 | 0% |
+| v2.0.0 | 4 | 0 | 0 | 4 | 0% |
 | v3.0.0 | 1 | 0 | 0 | 1 | 0% |
-| **Всего** | **16** | **7** | **0** | **9** | **44%** |
+| **Всего** | **17** | **7** | **0** | **10** | **41%** |
 
 ---
 
-*Обновлено: 2026-05-24*
+*Обновлено: 2026-05-27*
 
 ---
 

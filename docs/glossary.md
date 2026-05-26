@@ -164,6 +164,30 @@ frap analyze --url https://shop.example.com \
 # Output: drift-report.json
 ```
 
+**Связанная фича:** [F017: Structural Contract](../project/feature/F017-structural-contract.md) — drift detection как CI gate с explainable diff.
+
+---
+
+### Structural Contract
+**Определение:** Подход к валидации UI через структурные инварианты: baseline element map + policy + drift gate. Не pixel diff, а проверка «страница устроена как в требованиях».
+
+**Компоненты:**
+| Component | Description | Phase |
+|-----------|-------------|-------|
+| **Baseline** | Фиксированная element map или signatures критичных зон | ✅ v1 (element-level) / ❌ v2 (page-level) |
+| **Policy** | Декларативные инварианты (cluster_exists, element_unique) | ❌ v2+ (F017.3) |
+| **Drift Engine** | Сравнение текущего UI с baseline | ❌ v2 (F017.2) |
+| **Gate** | CI assertion: fail при unexpected drift | ✅ v1.2 (F017.1) |
+
+**Отличие от visual regression:**
+| Aspect | Visual regression | Structural Contract |
+|--------|-------------------|---------------------|
+| Сравниваем | Пиксели, скриншоты | DOM-структура, кластеры |
+| Типичный fail | «Красный пиксель» | «Пропал блок payment-methods» |
+| Объяснимость | PNG diff | drift-report.json с severity |
+
+**См.:** [docs/structural-contract.md](./structural-contract.md) — матрица доступности и anti-pitch.
+
 ---
 
 ### Confidence Score

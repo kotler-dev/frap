@@ -37,6 +37,7 @@
 - `frap discover` даёт element map с confidence scores
 - Generated PageObject с stable signatures — рефакторинг UI не ломает тесты
 - Deterministic resolution — explainable diff при изменениях
+- **Structural regression gate в CI**: fail при неожиданном drift, не screenshot
 - Можно использовать standalone (через CDP) или как Playwright adapter
 
 ### S3: AI-native QA (LLM agents, MCP)
