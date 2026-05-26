@@ -5,7 +5,7 @@ import { CONF_REPORT_DIR } from './helpers';
 
 test.describe('Conference 2026 Spring', () => {
   test.describe('Reporting', () => {
-    test('CONF-RPT-RUN-PASS: Frap report artifacts exist after suite', async () => {
+    test('CONF-RPT-RUN-PASS: frap report artifacts exist after suite', async () => {
       test.info().annotations.push({
         type: 'note',
         description: 'Must run last: workers=1, fullyParallel=false, file zzz-*',

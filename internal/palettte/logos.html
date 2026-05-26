@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frap — Logo explorer</title>
+    <script>
+        (function () {
+            var stored = localStorage.getItem('Frap-theme');
+            if (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                stored = 'dark';
+            }
+            document.documentElement.setAttribute('data-theme', stored || 'light');
+        })();
+    </script>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/theme-light.css">
+    <link rel="stylesheet" href="css/theme-dark.css">
+    <link rel="stylesheet" href="css/logos.css">
+</head>
+<body>
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="display:none">
+        <symbol id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+        </symbol>
+        <symbol id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </symbol>
+    </svg>
+
+    <div class="container container--wide">
+        <header class="site-header">
+            <div class="site-header__brand">
+                <div>
+                    <h1>Frap</h1>
+                    <p class="subtitle">Logo explorer — minimal marks only</p>
+                </div>
+            </div>
+            <button class="theme-toggle" type="button" aria-label="Toggle theme">
+                <svg class="icon-sun" aria-hidden="true"><use href="#icon-sun"/></svg>
+                <svg class="icon-moon" aria-hidden="true"><use href="#icon-moon"/></svg>
+            </button>
+        </header>
+
+        <p class="logo-intro">
+            Rule: <strong>≤6 strokes</strong>, readable at 16×16. Six shortlisted + six new simplifications in the same family.
+            Click to select, copy SVG. <a href="palette.html">Color palette</a>.
+        </p>
+
+        <div class="logo-grid" id="logo-grid"></div>
+
+        <aside class="logo-panel" id="logo-panel">
+            <h2>Selected</h2>
+            <p class="logo-panel__empty" id="panel-empty">Click a card to export SVG.</p>
+            <div class="logo-panel__content" id="panel-content">
+                <div class="logo-panel__row">
+                    <div class="logo-panel__preview" id="panel-preview"></div>
+                    <div class="logo-panel__meta">
+                        <strong id="panel-name"></strong>
+                        <p id="panel-concept"></p>
+                        <p id="panel-id" class="logo-panel__id"></p>
+                    </div>
+                </div>
+                <div class="logo-panel__actions">
+                    <button type="button" class="logo-panel__btn logo-panel__btn--primary" id="btn-copy-svg">Copy SVG</button>
+                    <button type="button" class="logo-panel__btn" id="btn-copy-symbol">Copy as &lt;symbol&gt;</button>
+                </div>
+                <pre class="logo-panel__code" id="panel-code" aria-label="SVG source"></pre>
+            </div>
+        </aside>
+    </div>
+
+    <div class="logo-panel__toast" id="toast" role="status">Copied</div>
+
+    <script>
+        (function () {
+            var SVG_ATTRS = 'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"';
+
+            var LOGOS = [
+                {
+                    id: '01',
+                    name: 'Element tree',
+                    concept: 'Pyramid of UI nodes — maps to element maps & trees.',
+                    tags: ['shortlist', 'structure'],
+                    inner: '<circle cx="12" cy="5" r="2"/><circle cx="6" cy="14" r="2"/><circle cx="18" cy="14" r="2"/><circle cx="12" cy="20" r="2"/><path d="M12 7v4M12 11l-4 3M12 11l4 3M8 16l4 2M16 16l-4 2"/>'
+                },
+                {
+                    id: '03',
+                    name: 'Hub graph',
+                    concept: 'Root node + satellites — element map hub.',
+                    tags: ['shortlist', 'map'],
+                    inner: '<circle cx="12" cy="12" r="2.25"/><circle cx="12" cy="5" r="1.5"/><circle cx="18" cy="9" r="1.5"/><circle cx="18" cy="15" r="1.5"/><circle cx="12" cy="19" r="1.5"/><circle cx="6" cy="15" r="1.5"/><circle cx="6" cy="9" r="1.5"/><path d="M12 9.75V7.25M14.1 10.9l1.8-1M14.1 13.1l1.8 1M12 14.25v2.5M9.9 13.1l-1.8 1M9.9 10.9l-1.8-1"/>'
+                },
+                {
+                    id: '05',
+                    name: 'Layer stack',
+                    concept: 'Isometric planes — structure layers.',
+                    tags: ['shortlist', 'structure'],
+                    inner: '<path d="M4 14l8 4 8-4"/><path d="M4 10l8 4 8-4"/><path d="M12 6l8 4-8 4-8-4 8-4z"/>'
+                },
+                {
+                    id: '10',
+                    name: 'Component grid',
+                    concept: 'Four tiles + bridges — UI blocks.',
+                    tags: ['shortlist', 'blocks'],
+                    inner: '<rect x="5" y="5" width="6" height="6" rx="1.5"/><rect x="13" y="5" width="6" height="6" rx="1.5"/><rect x="5" y="13" width="6" height="6" rx="1.5"/><rect x="13" y="13" width="6" height="6" rx="1.5"/><path d="M11 8h2M8 11v2M16 11v2M11 16h2"/>'
+                },
+                {
+                    id: '11',
+                    name: 'F monogram',
+                    concept: 'Initial + graph — wordmark companion.',
+                    tags: ['shortlist', 'brand'],
+                    inner: '<circle cx="7" cy="6" r="1.75"/><circle cx="7" cy="12" r="1.75"/><circle cx="7" cy="18" r="1.75"/><circle cx="15" cy="6" r="1.75"/><circle cx="13" cy="12" r="1.75"/><path d="M7 7.75V10.25M7 13.75v2.5M9.25 6H13.25M9.25 12h2"/>'
+                },
+                {
+                    id: '14',
+                    name: 'Flow path',
+                    concept: 'Scenario trace — ordered steps through UI.',
+                    tags: ['shortlist', 'flow'],
+                    inner: '<path d="M5 18c3-5 6-7 10-9s6-3 9-7"/><circle cx="5" cy="18" r="1.5"/><circle cx="10.5" cy="10" r="1.5"/><circle cx="14.5" cy="7.5" r="1.5"/><circle cx="19" cy="5" r="1.5"/>'
+                },
+                {
+                    id: '15',
+                    name: 'Simple tree',
+                    concept: 'Three nodes only — lighter take on element tree.',
+                    tags: ['new', 'minimal'],
+                    inner: '<circle cx="12" cy="6" r="2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M12 8L7 15M12 8l5 7"/>'
+                },
+                {
+                    id: '16',
+                    name: 'Hub trio',
+                    concept: 'Hub with three satellites — same idea, fewer strokes.',
+                    tags: ['new', 'map'],
+                    inner: '<circle cx="12" cy="12" r="2.5"/><circle cx="12" cy="5" r="1.75"/><circle cx="18" cy="16" r="1.75"/><circle cx="6" cy="16" r="1.75"/><path d="M12 9.5V7M14.5 14.5l2 0M9.5 14.5l-2 0"/>'
+                },
+                {
+                    id: '17',
+                    name: 'Twin layers',
+                    concept: 'Two planes — layer stack without the top cap.',
+                    tags: ['new', 'minimal'],
+                    inner: '<path d="M4 15l8 4 8-4"/><path d="M4 10l8 4 8-4"/>'
+                },
+                {
+                    id: '18',
+                    name: 'Quad grid',
+                    concept: '2×2 dots — component grid without bridges.',
+                    tags: ['new', 'blocks'],
+                    inner: '<circle cx="8" cy="8" r="2"/><circle cx="16" cy="8" r="2"/><circle cx="8" cy="16" r="2"/><circle cx="16" cy="16" r="2"/>'
+                },
+                {
+                    id: '19',
+                    name: 'F stroke',
+                    concept: 'Letter F in three strokes — wordmark, no extra nodes.',
+                    tags: ['new', 'brand'],
+                    inner: '<path d="M8 6v12M8 6h7M8 12h5"/>'
+                },
+                {
+                    id: '20',
+                    name: 'Flow trio',
+                    concept: 'Three steps on one curve — lighter flow path.',
+                    tags: ['new', 'flow'],
+                    inner: '<path d="M6 17Q12 8 18 7"/><circle cx="6" cy="17" r="1.75"/><circle cx="12" cy="11" r="1.75"/><circle cx="18" cy="7" r="1.75"/>'
+                },
+                {
+                    id: '21',
+                    name: 'DOM spine',
+                    concept: 'Vertical parent chain — DOM depth in three nodes.',
+                    tags: ['new', 'structure'],
+                    inner: '<circle cx="12" cy="6" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="18" r="2"/><path d="M12 8v8"/>'
+                },
+                {
+                    id: '22',
+                    name: 'Single tile',
+                    concept: 'One component block — atomic UI element.',
+                    tags: ['new', 'blocks'],
+                    inner: '<rect x="6" y="6" width="12" height="12" rx="2"/><circle cx="12" cy="12" r="2"/>'
+                }
+            ];
+
+            function svg(className) {
+                return function (inner) {
+                    return '<svg class="' + className + '" ' + SVG_ATTRS + ' aria-hidden="true">' + inner + '</svg>';
+                };
+            }
+
+            function renderCards() {
+                var grid = document.getElementById('logo-grid');
+                var mk = svg('preview-lg');
+                var mkMd = svg('preview-md');
+                var mkSm = svg('preview-sm');
+                var mkAcc = svg('');
+
+                LOGOS.forEach(function (logo) {
+                    var tags = logo.tags.map(function (t) {
+                        var cls = 'logo-tag' + (t === 'shortlist' ? ' logo-tag--shortlist' : '');
+                        return '<span class="' + cls + '">' + t + '</span>';
+                    }).join('');
+
+                    var article = document.createElement('article');
+                    article.className = 'logo-card';
+                    article.setAttribute('data-logo-id', logo.id);
+                    article.setAttribute('data-logo-name', logo.name);
+                    article.setAttribute('data-logo-concept', logo.concept);
+                    article.innerHTML =
+                        '<div class="logo-card__previews">' +
+                            mk(logo.inner) + mkMd(logo.inner) + mkSm(logo.inner) +
+                            '<div class="preview-on-accent">' + mkAcc(logo.inner) + '</div>' +
+                        '</div>' +
+                        '<div class="logo-card__id">L' + logo.id + '</div>' +
+                        '<div class="logo-card__name">' + logo.name + '</div>' +
+                        '<p class="logo-card__concept">' + logo.concept + '</p>' +
+                        '<div class="logo-card__tags">' + tags + '</div>';
+                    grid.appendChild(article);
+                });
+            }
+
+            var root = document.documentElement;
+            var toggle = document.querySelector('.theme-toggle');
+            var panelEmpty = document.getElementById('panel-empty');
+            var panelContent = document.getElementById('panel-content');
+            var panelPreview = document.getElementById('panel-preview');
+            var panelName = document.getElementById('panel-name');
+            var panelConcept = document.getElementById('panel-concept');
+            var panelId = document.getElementById('panel-id');
+            var panelCode = document.getElementById('panel-code');
+            var toast = document.getElementById('toast');
+            var selectedCard = null;
+            var selectedSvg = '';
+
+            function applyTheme(theme) {
+                root.setAttribute('data-theme', theme);
+                localStorage.setItem('Frap-theme', theme);
+            }
+
+            renderCards();
+
+            applyTheme(root.getAttribute('data-theme') || 'light');
+
+            toggle.addEventListener('click', function () {
+                applyTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+            });
+
+            function getLogoSvg(card) {
+                var svgEl = card.querySelector('.preview-lg');
+                if (!svgEl) return '';
+                var clone = svgEl.cloneNode(true);
+                clone.removeAttribute('class');
+                clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+                clone.setAttribute('aria-hidden', 'true');
+                return clone.outerHTML;
+            }
+
+            function formatSvg(svgStr) {
+                return svgStr.replace(/></g, '>\n<');
+            }
+
+            function showToast() {
+                toast.classList.add('is-visible');
+                clearTimeout(showToast._t);
+                showToast._t = setTimeout(function () {
+                    toast.classList.remove('is-visible');
+                }, 1600);
+            }
+
+            function selectCard(card) {
+                if (selectedCard) selectedCard.classList.remove('is-selected');
+                selectedCard = card;
+                card.classList.add('is-selected');
+
+                var id = card.getAttribute('data-logo-id');
+                selectedSvg = getLogoSvg(card);
+                panelEmpty.hidden = true;
+                panelContent.classList.add('is-visible');
+                panelPreview.innerHTML = selectedSvg;
+                var previewSvg = panelPreview.querySelector('svg');
+                previewSvg.style.width = '4rem';
+                previewSvg.style.height = '4rem';
+                previewSvg.style.color = 'var(--primary-default)';
+                panelName.textContent = card.getAttribute('data-logo-name');
+                panelConcept.textContent = card.getAttribute('data-logo-concept');
+                panelId.textContent = 'ID: L' + id;
+                panelCode.textContent = formatSvg(selectedSvg);
+
+                if (location.hash !== '#l' + id) {
+                    history.replaceState(null, '', '#l' + id);
+                }
+            }
+
+            document.getElementById('logo-grid').addEventListener('click', function (e) {
+                var card = e.target.closest('.logo-card');
+                if (card) selectCard(card);
+            });
+
+            document.getElementById('btn-copy-svg').addEventListener('click', function () {
+                if (!selectedSvg) return;
+                navigator.clipboard.writeText(formatSvg(selectedSvg)).then(showToast);
+            });
+
+            document.getElementById('btn-copy-symbol').addEventListener('click', function () {
+                if (!selectedSvg) return;
+                var inner = selectedSvg.replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '');
+                var symbol = '<symbol id="icon-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">\n  ' +
+                    inner.trim() + '\n</symbol>';
+                navigator.clipboard.writeText(symbol).then(showToast);
+            });
+
+            var hash = location.hash.replace(/^#l?/, '');
+            if (hash) {
+                var match = document.querySelector('[data-logo-id="' + hash + '"]');
+                if (match) selectCard(match);
+            }
+        })();
+    </script>
+</body>
+</html>

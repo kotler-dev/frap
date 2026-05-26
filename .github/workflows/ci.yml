@@ -68,10 +68,10 @@ jobs:
           cd sdk/typescript
           npm install
           npm run build
-          test -f wasm/frapcode_core.js
-          test -f wasm/frapcode_core_bg.wasm
-          test -f wasm-node/frapcode_core.js
-          test -f wasm-node/frapcode_core_bg.wasm
+          test -f wasm/frap_core.js
+          test -f wasm/frap_core_bg.wasm
+          test -f wasm-node/frap_core.js
+          test -f wasm-node/frap_core_bg.wasm
 
   playwright-adapter:
     name: Playwright Adapter Build
@@ -145,7 +145,7 @@ jobs:
           cd e2e
           npx playwright test --config=playwright.conference.config.ts
         env:
-          FRAP_TS_FALLBACK: 1
+          FLETTA_TS_FALLBACK: 1
 
       - name: Verify CP005 report artifacts (CONF-RPT-RUN-PASS)
         run: node e2e/conference/verify-reports.mjs
@@ -215,13 +215,13 @@ jobs:
       - name: Run Context Layer E2E
         run: ./scripts/test.sh context
         env:
-          FRAP_TS_FALLBACK: 1
+          FLETTA_TS_FALLBACK: 1
 
       - name: Upload context reports
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: frapcode-context-reports
+          name: frap-context-reports
           path: |
             e2e/frap-reports/context/frap-context.json
             e2e/frap-reports/context/frap-context-events.jsonl

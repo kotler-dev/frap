@@ -1,11 +1,11 @@
-# frapcode-core
+# frap-core
 
 Public Rust API aggregating `signature`, `clustering`, and `healing`.
 
 ## Tests
 
 ```bash
-cd crates && cargo test -p frapcode-core
+cd crates && cargo test -p frap-core
 ```
 
 ## WASM (TypeScript SDK)

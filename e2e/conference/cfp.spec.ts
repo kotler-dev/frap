@@ -1,16 +1,16 @@
 import { test, expect } from '@playwright/test';
-import { withFrap, getLastHealResult } from '@frap/frap-playwright';
-import { CONF_PATH, confFrap } from './helpers';
+import { withFletta, getLastHealResult } from '@frap/playwright';
+import { CONF_PATH, confFletta } from './helpers';
 
 test.describe('Conference 2026 Spring', () => {
   test.describe('CFP', () => {
     test('CONF-SH-CFP-FAIL: ambiguous submit buttons refuse heal', async ({ page }, testInfo) => {
       await page.goto(CONF_PATH.cfp);
 
-      const submit = await withFrap(
+      const submit = await withFletta(
         page.locator('[data-testid="cfp-submit-missing"]'),
         page,
-        confFrap({ minConfidence: 0.85, debug: true, testInfo })
+        confFletta({ minConfidence: 0.85, debug: true, testInfo })
       );
 
       await expect(async () => {

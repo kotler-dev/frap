@@ -1,0 +1,28 @@
+/* Fletta — muted soft dark (slate surfaces + shared flamingo/cyan brand) */
+
+[data-theme="dark"] {
+    --bg-default: #2C2C38;
+    --bg-elevated: #383848;
+    --bg-overlay: #424252;
+    --bg-highlight: #343444;
+    --bg-hover: #484858;
+
+    --text-default: #ECECF2;
+    --text-muted: #A8A8B8;
+    --text-subtle: #787888;
+    --text-inverse: #2C2C38;
+    --text-on-primary: #FFFFFF;
+
+    --primary-bg: rgba(255, 64, 128, 0.12);
+    --secondary-bg: rgba(94, 200, 232, 0.12);
+
+    --accent-flamingo-bg: rgba(255, 64, 128, 0.12);
+    --accent-cyan-bg: rgba(94, 200, 232, 0.12);
+    --accent-mint-bg: rgba(110, 221, 184, 0.12);
+    --accent-lavender-bg: rgba(196, 184, 240, 0.12);
+    --accent-peach-bg: rgba(252, 165, 93, 0.12);
+    --accent-lemon-bg: rgba(232, 220, 144, 0.12);
+
+    --border-default: #505060;
+    --border-subtle: #404050;
+}

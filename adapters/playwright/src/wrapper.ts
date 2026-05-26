@@ -19,7 +19,7 @@ import {
   recordHealingEvent,
 } from './healing-events';
 
-interface FrapLocator extends Locator {
+interface FlettaLocator extends Locator {
   __frap?: {
     originalLocator: Locator;
     healingEngine: HealingEngine;
@@ -35,7 +35,7 @@ export async function withFrap<T extends Locator>(
   page: Page,
   config?: WithFrapOptions,
   testName?: string
-): Promise<FrapLocator> {
+): Promise<FlettaLocator> {
   const { testInfo, ...frapConfig } = config ?? {};
   const fullConfig: FrapConfig = {
     minConfidence: 0.85,
@@ -75,7 +75,7 @@ export async function withFrap<T extends Locator>(
     }
   }
 
-  const frapLocator: FrapLocator = new Proxy(locator, {
+  const frapLocator: FlettaLocator = new Proxy(locator, {
     get(target, prop, receiver) {
       const value = Reflect.get(target, prop, receiver);
       
@@ -193,7 +193,7 @@ export async function withFrap<T extends Locator>(
 
       return value;
     },
-  }) as FrapLocator;
+  }) as FlettaLocator;
 
   frapLocator.__frap = {
     originalLocator: locator,
@@ -316,11 +316,6 @@ async function extractSignatureFromPage(page: Page, selector: string): Promise<a
   }
 }
 
-/** @deprecated Use getLastHealResult instead (with frapLocator) */
-export function getLastHealResult(locator: FrapLocator): HealResult | undefined {
-  return locator.__frap?.lastHealResult;
-}
-
 /**
  * Construct a signature from a selector and DOM snapshot.
  * This allows healing to work even for never-before-seen selectors.
@@ -435,4 +430,8 @@ function constructSignatureFromSelector(selector: string, snapshot: DOMSnapshot)
     children_hash: 0,
     depth: 0,
   };
+}
+
+export function getLastHealResult(locator: FlettaLocator): HealResult | undefined {
+  return locator.__frap?.lastHealResult;
 }

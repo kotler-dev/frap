@@ -273,4 +273,3 @@ function shouldCaptureUrl(url: string): boolean {
     return true;
   }
 }
-

@@ -110,34 +110,34 @@ if (!Array.isArray(report.rca.by_test)) {
   fail('rca.by_test must be an array');
 }
 
-// Validate junit.xml has frapcode-context suite with 4 testcases (overhead runs via bench-context.sh)
+// Validate junit.xml has frap-context suite with 4 testcases (overhead runs via bench-context.sh)
 const junitPath = path.join(reportDir, 'junit.xml');
 const junit = fs.readFileSync(junitPath, 'utf-8');
 
-const suiteMatch = junit.match(/<testsuite name="frapcode-context" tests="(\d+)" failures="(\d+)"/);
+const suiteMatch = junit.match(/<testsuite name="frap-context" tests="(\d+)" failures="(\d+)"/);
 if (!suiteMatch) {
-  fail('junit.xml missing frapcode-context testsuite');
+  fail('junit.xml missing frap-context testsuite');
 }
 
 const suiteTests = parseInt(suiteMatch[1], 10);
 const suiteFailures = parseInt(suiteMatch[2], 10);
 
 if (suiteTests !== 4) {
-  fail(`Expected frapcode-context tests="4", got "${suiteTests}"`);
+  fail(`Expected frap-context tests="4", got "${suiteTests}"`);
 }
 
 if (suiteFailures !== 2) {
-  fail(`Expected frapcode-context failures="2", got "${suiteFailures}"`);
+  fail(`Expected frap-context failures="2", got "${suiteFailures}"`);
 }
 
-// Count actual testcase elements in frapcode-context suite
-const contextSuiteStart = junit.indexOf('name="frapcode-context"');
+// Count actual testcase elements in frap-context suite
+const contextSuiteStart = junit.indexOf('name="frap-context"');
 const contextSuiteEnd = junit.indexOf('</testsuite>', contextSuiteStart) + '</testsuite>'.length;
 const contextSuite = junit.slice(contextSuiteStart, contextSuiteEnd);
 const testCaseMatches = contextSuite.match(/<testcase /g) || [];
 
 if (testCaseMatches.length !== 4) {
-  fail(`Expected 4 testcases in frapcode-context suite, found ${testCaseMatches.length}`);
+  fail(`Expected 4 testcases in frap-context suite, found ${testCaseMatches.length}`);
 }
 
 console.log(

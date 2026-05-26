@@ -1,100 +1,165 @@
-# Frap
+# frap
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![npm @frap/sdk](https://img.shields.io/npm/v/@frap/sdk?label=%40frap%2Fsdk)](https://www.npmjs.com/package/@frap/sdk)
+[![npm @frap/playwright](https://img.shields.io/npm/v/@frap/playwright?label=%40frap%2Fplaywright)](https://www.npmjs.com/package/@frap/playwright)
 
-> Deterministic DOM binding for stable selectors. Frap binds your selectors to structure — automatic healing, LLM-ready grounding.
+> Deterministic engine for UI structure extraction: stable identifiers, self-healing selectors, explainable reports. No ML in core, on-prem first, AI-ready via MCP.
 
-**Frap** parses element trees (DOM, ViewTree, accessibility), clusters components with deterministic algorithms, and generates stable locators for tests. When a selector breaks, it heals by signature matching with confidence scores and diff reports.
+**frap** parses element trees (DOM, ViewTree, accessibility), clusters components with deterministic algorithms, and generates stable locators for Page Objects and tests. When a selector breaks, it heals by signature matching with confidence scores and diff reports.
 
 ## No ML in core, AI-ready
 
-Three layers:
+Three layers — not one product category:
 
-| Layer | What | ML in Frap? |
-|-------|------|-------------|
-| **Core** (OSS) | Signatures, Drain3 clustering, self-healing | **No** — same input → same output |
-| **Integration** | MCP tools: `discover`, `resolve`, `analyze` | **No** — JSON-RPC wire to agents |
-| **Enhancements** (optional) | Semantic naming, step generation | **Optional** — separate package |
+| Layer | What | ML in frap? |
+|-------|------|----------------|
+| **Core** (OSS) | Signatures, Drain3 clustering, self-healing, WASM | **No** — same input → same output |
+| **Integration** (roadmap) | MCP tools: `discover`, `resolve`, `analyze` | **No** — JSON-RPC wire to agents; LLM runs outside |
+| **Enhancements** (optional) | Semantic naming, step generation | **Optional** — separate package, BYO API key |
 
-**Frap is a grounding layer** — deterministic infrastructure for AI agents and tests.
+**frap is a grounding layer, not an AI testing tool.** It does not orchestrate LLMs or generate tests from prompts. An agent (Cursor, Claude, your stack) calls frap for structured element maps, stable execution, and explainable RCA — deterministic infrastructure the model can rely on.
 
----
+Details: [docs/positioning.md](docs/positioning.md) · [docs/monetization.md](docs/monetization.md)
 
-## Quick Start (Playwright)
+## Quick start (npm)
+
+Published packages: [@frap/sdk](https://www.npmjs.com/package/@frap/sdk) · [@frap/playwright](https://www.npmjs.com/package/@frap/playwright)
 
 ```bash
-npm install @frap/frap @frap/frap-playwright
+npm install @frap/playwright @frap/sdk
 ```
 
 ```typescript
 // playwright.config.ts
-import { frapPlaywright, registerFrapSelector } from '@frap/frap-playwright';
+import { defineConfig } from '@playwright/test';
+import { frapPlaywright, registerFlettaSelector } from '@frap/playwright';
 
 export default defineConfig({
-  ...frapPlaywright({ minConfidence: 0.85 }),
+  ...frapPlaywright({
+    minConfidence: 0.85,
+    reportDir: './frap-reports',
+    captureAll: true, // optional: unified context timeline (F002)
+  }),
   use: {
     async setup({ selectors }) {
-      await registerFrapSelector(selectors);
+      await registerFlettaSelector(selectors);
     },
   },
 });
 ```
 
 ```typescript
-// test.spec.ts
-await page.locator('frap:[data-testid="submit"]').click();
+// test.spec.ts — custom selector or withFletta() wrapper
+await page.locator('frap:[data-testid="pay-btn"]').click();
 ```
 
-See [docs/en/quickstart.md](docs/en/quickstart.md) for details.
+See [adapters/playwright/README.md](adapters/playwright/README.md) and [sdk/typescript/README.md](sdk/typescript/README.md).
 
----
+## Quick start (from source)
 
-## How It Works
+For Conference / Context E2E demos and core development:
 
-1. Primary selector is attempted first
-2. If not found, Frap extracts DOM signature
-3. Similar elements are found using clustering (Drain3)
-4. Confidence score is calculated for each candidate
-5. If best candidate >= threshold, element is "healed"
-6. Report includes original selector, new selector, and confidence
+```bash
+./scripts/setup.sh
+./scripts/build.sh
+./scripts/start.sh          # test server on http://localhost:3000
 
----
+./scripts/test.sh conference  # FixtureConf gates (CONF-*)
+./scripts/test.sh context     # Context layer C002–C004
+
+./scripts/stop.sh
+```
+
+Release verification (Rust + E2E + lint) runs on git tags `v*` in CI. See [docs/publishing-npm.md](docs/publishing-npm.md) and [docs/benchmark.md](docs/benchmark.md).
+
+## Playwright integration
+
+**Custom selector engine** (recommended) — see Quick start above.
+
+**Wrapper API** — wrap an existing locator with [`withFletta`](adapters/playwright/README.md).
+
+**Unified context** — `captureAll: true` writes `frap-context.json` (network, console, UI); RCA report via `frap-rca.json`. Demo: `./scripts/test.sh context`.
+
+## How it works
+
+When a primary selector fails, frap:
+
+1. Extracts the element signature (path, attributes, text)
+2. Clusters similar elements (Drain3)
+3. Scores each candidate
+4. Heals if confidence ≥ `minConfidence` (default: 0.85)
+5. Reports the attempt with diff and top candidates
+
+## Release highlights
+
+**v1.1.1** (npm)
+
+- Unified Context (F002): `frap-context.json`, C002–C004 E2E
+- RCA (F003): `frap-rca.json`, WASM + `generate-rca.mjs`
+- Public packages `@frap/sdk` and `@frap/playwright` on [npm](https://www.npmjs.com/settings/frap/packages)
+
+**v1.0.0**
+
+- Rust/WASM core (`frap-core`, `healJson`)
+- Playwright adapter — custom selector + `withFletta`, JUnit/JSON reports
+- Debug Trace Mode (F012) — Classic + Explorer HTML reports
+- Conference E2E gates CP001–CP005
 
 ## Documentation
 
-| Language | Quick Start | Integrations | Design |
-|----------|-------------|--------------|--------|
-| **English** | [docs/en/quickstart.md](docs/en/quickstart.md) | [docs/en/integrations.md](docs/en/integrations.md) | [Frap.en.md](Frap.en.md) |
-| **Русский** | [docs/ru/quickstart.md](docs/ru/quickstart.md) | [docs/ru/integrations.md](docs/ru/integrations.md) | [Frap.md](Frap.md) |
+| Topic | English | Русский |
+|-------|---------|---------|
+| Overview | [project/OVERVIEW.md](project/OVERVIEW.md) | [project/OVERVIEW.md](project/OVERVIEW.md) |
+| Features & roadmap | [project/FEATURES.md](project/FEATURES.md) | — |
+| PoC gates & benchmark | [docs/benchmark.md](docs/benchmark.md) | — |
+| npm publishing | [docs/publishing-npm.md](docs/publishing-npm.md) | — |
+| Positioning | [docs/positioning.md](docs/positioning.md) | [docs/positioning.md](docs/positioning.md) |
+| Playwright adapter | [adapters/playwright/README.md](adapters/playwright/README.md) | [docs/integrations.md](docs/integrations.md) |
+| TypeScript SDK | [sdk/typescript/README.md](sdk/typescript/README.md) | — |
+| Context E2E | [e2e/context/README.md](e2e/context/README.md) | — |
+| Architecture | [project/architecture/](project/architecture/) | — |
+| Knowledge base index | [docs/README.md](docs/README.md) | [docs/README.md](docs/README.md) |
 
-Adapter API: [adapters/playwright/README.md](adapters/playwright/README.md)
-
----
-
-## Project Structure
+## Project structure
 
 ```
 frap/
-├── crates/              # Rust core (signature, clustering, healing)
-├── sdk/typescript/      # TypeScript SDK + WASM bindings
-├── adapters/playwright/ # Playwright integration
-├── test-app/            # Demo pages
-├── e2e/                 # End-to-end tests
-└── docs/                # Documentation (en/ru)
+├── crates/                 # Rust core (signature, clustering, healing, context, rca)
+├── sdk/typescript/         # TypeScript SDK + WASM bindings
+├── adapters/playwright/    # Playwright integration
+├── test-app/conference/    # FixtureConf demo pages
+├── test-app/context/       # Context layer demo pages
+├── e2e/conference/         # PoC gates CP001–CP005 (CONF-*)
+├── e2e/context/            # Context gates C002–C004
+├── docs/                   # Positioning, benchmark, integrations
+├── project/                # Features, architecture, cases
+└── scripts/                # setup, build, test, dev
 ```
 
----
+## Scripts
+
+| Script | Description |
+|--------|-------------|
+| `./scripts/setup.sh` | Install dependencies |
+| `./scripts/build.sh` | Build SDK, adapter, Rust core + WASM |
+| `./scripts/start.sh [port]` | Start test server (default: 3000) |
+| `./scripts/test.sh conference` | Conference E2E (CONF-*) |
+| `./scripts/test.sh context` | Context layer E2E (C002–C004) |
+| `./scripts/test.sh [debug\|all]` | Other E2E targets |
+| `./scripts/bench-context.sh` | Context capture overhead gate |
+| `./scripts/stop.sh [port]` | Stop test server |
+| `./scripts/dev.sh` | Dev mode with auto-rebuild |
 
 ## Roadmap
 
-- **v0.1.0** — TypeScript SDK + Playwright adapter
-- **v0.2.0** — MCP integration + Page Object generator
-- **v0.4.0** — Java SDK (Selenium/Selenide)
-- **v1.0.0** — Multi-platform (Android/iOS)
+- **v1.1.1** — Context + RCA + npm packages — released ([CHANGELOG.md](CHANGELOG.md))
+- **v1.0.1** — Benchmark overhead gate (MVP-C)
+- **v1.2.0** — MCP + Page Object Generator
+- **v1.4.0** — Java SDK & UI adapters
+- **v2.0.0** — Multi-platform (Android/iOS)
 
-See [CHANGELOG.md](CHANGELOG.md) for release notes.
-
----
+See [project/FEATURES.md](project/FEATURES.md) for details.
 
 ## License
 

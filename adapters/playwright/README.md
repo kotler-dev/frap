@@ -1,11 +1,11 @@
-# frapcode-playwright
+# @frap/frap-playwright
 
-Playwright adapter for Frap deterministic selectors.
+Playwright adapter for frap self-healing selectors.
 
 ## Installation
 
 ```bash
-npm install frapcode-playwright
+npm install @frap/frap-playwright
 ```
 
 ## Quick Start
@@ -15,7 +15,7 @@ npm install frapcode-playwright
 ```typescript
 // playwright.config.ts
 import { defineConfig } from '@playwright/test';
-import { frapPlaywright, registerFrapSelector } from 'frapcode-playwright';
+import { frapPlaywright, registerFrapSelector } from '@frap/frap-playwright';
 
 export default defineConfig({
   ...frapPlaywright({
@@ -45,10 +45,10 @@ test('payment flow', async ({ page }) => {
 ```typescript
 // test.spec.ts
 import { test, expect } from '@playwright/test';
-import { withFrap } from 'frapcode-playwright';
+import { withFrap } from '@frap/frap-playwright';
 
 test('payment flow', async ({ page }) => {
-  // Wrap existing locator with Frap healing
+  // Wrap existing locator with frap healing
   const payButton = await withFrap(
     page.getByTestId('pay-btn'), 
     page
@@ -71,10 +71,10 @@ test('payment flow', async ({ page }) => {
 ## Unified context (F002)
 
 ```typescript
-import { attachFrapContext } from 'frapcode-playwright';
+import { attachFlettaContext } from '@frap/frap-playwright';
 
 test.beforeEach(async ({ page }) => {
-  attachFrapContext(page, { reportDir: './frap-reports', traceId: 'run-1' });
+  attachFlettaContext(page, { reportDir: './frap-reports', traceId: 'run-1' });
 });
 ```
 
@@ -88,7 +88,7 @@ After running tests, find reports in `frap-reports/`:
 - `frap-report.json` — events with `trigger`, `policy`, `outcome`; summary includes `unexpectedHeals`; with `captureAll`: `context_summary` and `context_tests[]`
 - `frap-context.json` — unified timeline (when `captureAll` is enabled)
 - `frap-rca.json` — Root Cause Analysis v2 with `suite` (merged) and `by_test[]` (per-failed-test)
-- `junit.xml` — JUnit XML with `frapcode-context` suite for all tests; `frap` suite only when healing events exist
+- `junit.xml` — JUnit XML with `frap-context` suite for all tests; `frap` suite only when healing events exist
 - `frap-debug.html` — Classic view (A): single test report, or grouped index when 2+ tests use `debug: true`
 - `frap-debug-explorer.html` — Explorer view (B): sidebar + search when 2+ debug reports; stub with link to A when only 1
 - `debug-reports/` — per-test JSON/HTML + `manifest.json`
@@ -142,9 +142,9 @@ When `captureAll: true`, the reporter tracks all Playwright tests (not just fail
 - **by_test**: Per-test RCA using `trace_id` correlation — isolated timeline for each failed test
 
 **junit.xml** with `captureAll`:
-- Single `frapcode-context` testsuite containing **all** test results
+- Single `frap-context` testsuite containing **all** test results
 - Passed tests have no `<failure>` element
-- Failed tests include RCA summary in `<failure message="[frapcode-rca] ...">`
+- Failed tests include RCA summary in `<failure message="[frap-rca] ...">`
 - `frap` suite (healing) only emitted when `enableHealing: true` produces events
 
 ## How It Works

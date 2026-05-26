@@ -11,7 +11,7 @@ const path = require('path');
 const sdkPath = path.join(__dirname, '../sdk/typescript/dist/core.js');
 const { HealingEngine } = require(sdkPath);
 
-console.log('=== Frap Clustering Verification ===\n');
+console.log('=== frap Clustering Verification ===\n');
 
 // Test CP002: Refactor Heal
 console.log('Test 1: CP002 - Refactor Heal');

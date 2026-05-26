@@ -1,0 +1,266 @@
+/* Logo explorer — extends base.css */
+
+.logo-intro {
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+    margin-bottom: 2rem;
+    max-width: 42rem;
+}
+
+.logo-intro a {
+    color: var(--primary-default);
+    text-decoration: none;
+}
+
+.logo-intro a:hover {
+    text-decoration: underline;
+}
+
+.container--wide {
+    max-width: 1100px;
+}
+
+.logo-tag--shortlist {
+    background: var(--accent-border-flamingo);
+    color: var(--primary-default);
+}
+
+.logo-panel__id {
+    font-size: 0.8125rem;
+    color: var(--text-subtle);
+    margin-top: 0.25rem;
+}
+
+.logo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.logo-card {
+    border: 2px solid var(--border-subtle);
+    border-radius: 12px;
+    background: var(--bg-elevated);
+    padding: 1rem;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.logo-card:hover {
+    border-color: var(--border-default);
+}
+
+.logo-card.is-selected {
+    border-color: var(--primary-default);
+    box-shadow: 0 0 0 1px var(--accent-border-flamingo);
+}
+
+.logo-card__previews {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    min-height: 5.5rem;
+    margin-bottom: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    background: var(--bg-default);
+}
+
+.logo-card__previews svg {
+    flex-shrink: 0;
+    color: var(--text-default);
+}
+
+.logo-card__previews .preview-lg {
+    width: 3.5rem;
+    height: 3.5rem;
+}
+
+.logo-card__previews .preview-md {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.logo-card__previews .preview-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+.logo-card__previews .preview-on-accent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--primary-default), var(--secondary-default));
+}
+
+.logo-card__previews .preview-on-accent svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #fff;
+}
+
+.logo-card__id {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    margin-bottom: 0.25rem;
+}
+
+.logo-card__name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-default);
+    margin-bottom: 0.25rem;
+}
+
+.logo-card__concept {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.logo-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.5rem;
+}
+
+.logo-tag {
+    font-size: 0.6875rem;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    background: var(--bg-overlay);
+    color: var(--text-subtle);
+}
+
+.logo-panel {
+    position: sticky;
+    bottom: 0;
+    margin-top: 2rem;
+    padding: 1.25rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-default);
+    background: var(--bg-elevated);
+}
+
+.logo-panel h2 {
+    margin-bottom: 0.5rem;
+}
+
+.logo-panel__empty {
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+}
+
+.logo-panel__content {
+    display: none;
+}
+
+.logo-panel__content.is-visible {
+    display: block;
+}
+
+.logo-panel__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem;
+    margin: 1rem 0;
+}
+
+.logo-panel__preview svg {
+    width: 4rem;
+    height: 4rem;
+    color: var(--primary-default);
+}
+
+.logo-panel__meta {
+    flex: 1;
+    min-width: 12rem;
+}
+
+.logo-panel__meta strong {
+    display: block;
+    font-size: 1.125rem;
+    margin-bottom: 0.25rem;
+}
+
+.logo-panel__meta p {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.logo-panel__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.logo-panel__btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 8px;
+    border: 1px solid var(--border-default);
+    background: var(--bg-default);
+    color: var(--text-default);
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.logo-panel__btn:hover {
+    background: var(--bg-hover);
+}
+
+.logo-panel__btn--primary {
+    background: var(--primary-default);
+    border-color: var(--primary-default);
+    color: #fff;
+}
+
+.logo-panel__btn--primary:hover {
+    background: var(--primary-hover);
+}
+
+.logo-panel__code {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    background: var(--bg-default);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-muted);
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-height: 8rem;
+}
+
+.logo-panel__toast {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    background: var(--text-default);
+    color: var(--bg-default);
+    font-size: 0.875rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+}
+
+.logo-panel__toast.is-visible {
+    opacity: 1;
+}

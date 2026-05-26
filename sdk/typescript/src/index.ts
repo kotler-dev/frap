@@ -62,5 +62,5 @@ export { formatRcaSummary } from './rca-summary';
 export const VERSION = '0.1.0';
 
 export function greet(name: string): string {
-  return `Hello, ${name}! Welcome to Frap v${VERSION}`;
+  return `Hello, ${name}! Welcome to frap v${VERSION}`;
 }

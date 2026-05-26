@@ -1,5 +1,5 @@
 {
-  "name": "frapcode-e2e-tests",
+  "name": "@frap/e2e-tests",
   "version": "0.1.0",
   "private": true,
   "scripts": {

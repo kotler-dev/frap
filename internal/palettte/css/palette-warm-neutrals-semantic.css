@@ -1,0 +1,23 @@
+/* Status UI uses brand accents from base.css (same as palette.html) — no custom semantic hex */
+
+[data-palette="warm-neutrals-semantic"] .status-map {
+    margin: 0 0 1rem;
+    padding: 0;
+    list-style: none;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+[data-palette="warm-neutrals-semantic"] .status-map li {
+    padding: 0.35rem 0;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+[data-palette="warm-neutrals-semantic"] .status-map li:last-child {
+    border-bottom: none;
+}
+
+[data-palette="warm-neutrals-semantic"] .status-map strong {
+    color: var(--text-default);
+    font-weight: 600;
+}

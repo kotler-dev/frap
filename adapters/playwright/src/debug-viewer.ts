@@ -57,7 +57,7 @@ export function generateDebugHtml(
   const multiReport = manifest && manifest.reportCount > 1;
   const entryId = opts.currentEntryId ?? debugReportSlug(report.testName);
 
-  const     header = multiReport
+  const header = multiReport
     ? renderReportHeader({
         title: 'Frap',
         subtitle: `Debug report · ${report.testName}`,

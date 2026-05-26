@@ -140,8 +140,8 @@ if (isV2) {
 const junitPath = path.join(reportDir, 'junit.xml');
 if (fs.existsSync(junitPath)) {
   const junit = fs.readFileSync(junitPath, 'utf-8');
-  if (!junit.includes('frapcode-rca') && !junit.includes('frapcode-context')) {
-    fail('JUnit report missing frapcode-rca or frapcode-context failure suite');
+  if (!junit.includes('frap-rca') && !junit.includes('frap-context')) {
+    fail('JUnit report missing frap-rca or frap-context failure suite');
   }
 }
 

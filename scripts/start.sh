@@ -17,7 +17,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}=== Frap Start ===${NC}"
+echo -e "${BLUE}=== frap Start ===${NC}"
 echo ""
 
 # Check if port is already in use

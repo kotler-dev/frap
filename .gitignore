@@ -44,11 +44,8 @@ e2e/frap-reports/
 # Runtime
 .server.pid
 
-# Cursor (local IDE / agent config)
-.cursor/
-
-# Internal planning & business docs
-internal/
+# Cursor (local plans only; rules/skills may be committed)
+.cursor/plans/
 
 # WASM
 pkg/
