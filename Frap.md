@@ -1,7 +1,9 @@
-# Frap — Design Document
+# Frap — проектная документация
 
-> Deterministic DOM binding for stable selectors.
-> *"When the DOM gets rough, Frap keeps your selectors tight."*
+> Детерминированная привязка селекторов к структуре DOM.
+> *«Когда DOM штормит — Frap держит селекторы в узде».*
+
+**Языки:** [English](Frap.en.md) · [Русский](Frap.md)
 
 ---
 
@@ -35,9 +37,9 @@ GitHub:          kotler-dev/frap
 | **PyPI** | `frap-sdk` | `frap-playwright` | — |
 | **Cargo** | `frap-sdk` | — | — |
 
-`groupId` Maven: **`io.github.kotlerdev`** (GitHub `kotler-dev` → без дефиса в Java).  
-Unscoped `npm i frap` занят чужим пакетом; используйте **`@frap/…`**.  
-На PyPI/crates.io имя **`frap`** занято — ядро публикуется как **`frap-sdk`**.
+`groupId` в Maven: **`io.github.kotlerdev`** (аккаунт GitHub `kotler-dev` → в Java без дефиса).  
+Команда `npm i frap` без scope ведёт на чужой пакет — ставьте **`@frap/…`**.  
+На PyPI и crates.io имя **`frap`** занято — ядро публикуется как **`frap-sdk`**.
 
 ### Сводка (одна строка на язык)
 
@@ -92,14 +94,14 @@ cargo add frap-sdk
 
 ### Концепция: единый DSL для всех адаптеров
 
-Каждый адаптер (Selenide, Selenium, Playwright) поддерживает **топ-набор** команд с семантически идентичным поведением.
+Каждый адаптер (Selenide, Selenium, Playwright) реализует **один и тот же набор** команд с одинаковой семантикой.
 
 | Команда | Семантика | Selenide | Selenium | Playwright |
 |---------|-----------|----------|----------|------------|
 | **bind** | Привязать селектор → извлечь сигнатуру | `Frap.bind($("#btn"))` | `Frap.bind(driver.findElement(By.id("btn")))` | `Frap.bind(page.locator("#btn"))` |
 | **getSignature** | Получить сигнатуру из привязки | `.getSignature()` | `.getSignature()` | `.getSignature()` |
 | **locate** | Разрешить сигнатуру в текущем DOM | `sig.locate()` | `sig.locate(driver)` | `sig.locate(page)` |
-| **rebind** | Обновить привязку (re-scan DOM) | `.rebind()` | `.rebind(driver)` | `.rebind(page)` |
+| **rebind** | Обновить привязку (повторное сканирование DOM) | `.rebind()` | `.rebind(driver)` | `.rebind(page)` |
 | **unbound** | Найти непривязанные элементы | `Frap.unbound($(".dynamic"))` | `Frap.unbound(driver, By.css(".dynamic"))` | `Frap.unbound(page, ".dynamic")` |
 | **serialize** | Сериализовать сигнатуру в JSON | `.serialize()` / `.serializeTo(file)` | `.serialize()` / `.serializeTo(file)` | `.serialize()` / `.serializeTo(file)` |
 | **deserialize** | Десериализовать сигнатуру | `Frap.deserialize(json)` | `Frap.deserialize(json)` | `Frap.deserialize(json)` |
@@ -108,15 +110,15 @@ cargo add frap-sdk
 
 | Ключ | Тип | По умолчанию | Описание |
 |------|-----|--------------|----------|
-| `confidence` | `float` | `0.85` | Минимальный score для healing |
-| `maxCandidates` | `int` | `5` | Макс. число кандидатов в отчёте |
-| `useVisual` | `boolean` | `false` | Использовать визуальные фичи |
-| `debug` | `boolean` | `false` | Включить debug-вывод |
+| `confidence` | `float` | `0.85` | Минимальная оценка для самовосстановления (healing) |
+| `maxCandidates` | `int` | `5` | Максимум кандидатов в отчёте |
+| `useVisual` | `boolean` | `false` | Учитывать визуальные признаки |
+| `debug` | `boolean` | `false` | Подробный отладочный вывод |
 | `healStrategy` | `string` | `"auto"` | Стратегия healing: `auto`, `fail`, `report` |
 
 ### Рекомендуемые настройки по сценариям
 
-| Параметр | Разработка | CI Strict | CI Permissive | Отладка |
+| Параметр | Разработка | CI (строго) | CI (мягко) | Отладка |
 |----------|------------|-----------|---------------|---------|
 | `confidence` | 0.85 | 0.95 | 0.80 | 0.70 |
 | `maxCandidates` | 5 | 3 | 10 | 10 |
@@ -133,7 +135,7 @@ Frap.config()
     .setHealStrategy(HealStrategy.FAIL)
     .setDebug(true);
 
-// Локальная конфигурация для одного вызова
+// Переопределение настроек для одного вызова
 Resolution res = sig.locate(driver, Frap.config()
     .setConfidence(0.95));
 ```
@@ -157,13 +159,13 @@ Signature signature = binding.getSignature();
 // Сохранить сигнатуру для версионирования
 String json = signature.serialize();  // или serializeTo("submit.signature.json")
 
-// Позже — разрешение (healing при необходимости)
+// Позже — разрешение (самовосстановление при необходимости)
 Signature loaded = Frap.deserialize(json);
 Resolution res = loaded.locate(driver);
 
 if (res.isHealed()) {
-    System.out.println("Selector healed: " + res.getHealedSelector());
-    System.out.println("Confidence: " + res.getConfidence());
+    System.out.println("Селектор восстановлен: " + res.getHealedSelector());
+    System.out.println("Уверенность: " + res.getConfidence());
 }
 
 WebElement element = res.getElement();
@@ -190,13 +192,13 @@ Signature signature = binding.getSignature();
 // Сохранить сигнатуру для версионирования
 String json = signature.serialize();  // или serializeTo("submit.signature.json")
 
-// Позже — разрешение (healing при необходимости)
+// Позже — разрешение (самовосстановление при необходимости)
 Signature loaded = Frap.deserialize(json);
 Resolution res = loaded.locate(page);
 
 if (res.isHealed()) {
-    System.out.println("Selector healed: " + res.getHealedSelector());
-    System.out.println("Confidence: " + res.getConfidence());
+    System.out.println("Селектор восстановлен: " + res.getHealedSelector());
+    System.out.println("Уверенность: " + res.getConfidence());
 }
 
 Locator element = res.getLocator();
@@ -216,7 +218,7 @@ import io.github.kotlerdev.frap.selenide.frap
 val element = $("[data-testid='submit']")
     .frap()                  // привязать
     .getSignature()          // получить сигнатуру
-    .locate()                // разрешить (healing при необходимости)
+    .locate()                // разрешить (самовосстановление при необходимости)
 
 // Или явно:
 val signature = $("#username").frap().getSignature()
@@ -228,7 +230,7 @@ signature.serializeTo("signatures/username.json")
 val loaded = Frap.deserialize(File("signatures/username.json"))
 val resolved = loaded.locate(driver)
 
-// Debug
+// Отладка
 println(resolved.debug.candidates)  // почему выбран этот элемент
 println(resolved.debug.diff)        // что изменилось в DOM
 
@@ -248,14 +250,14 @@ const signature = binding.getSignature();
 // Сериализация для CI
 await signature.serializeTo('signatures/submit.json');
 
-// Разрешение с healing
+// Разрешение с самовосстановлением
 const loaded = await frap.deserialize('signatures/submit.json');
 const resolved = await loaded.locate(page);
 
 if (resolved.healed) {
-  console.log(`Healed! New selector: ${resolved.healedSelector}`);
-  console.log(`Confidence: ${resolved.confidence}`);
-  console.log('Candidates:', resolved.debug.candidates);
+  console.log(`Восстановлено! Новый селектор: ${resolved.healedSelector}`);
+  console.log(`Уверенность: ${resolved.confidence}`);
+  console.log('Кандидаты:', resolved.debug.candidates);
 }
 
 await resolved.element.click();
@@ -277,21 +279,21 @@ signature = binding.get_signature()
 # Сериализация
 signature.serialize_to("signatures/submit.json")
 
-# Разрешение (возможен healing)
+# Разрешение (возможно самовосстановление)
 loaded = Frap.deserialize("signatures/submit.json")
 resolved = await loaded.locate(page)
 
 if resolved.healed:
-    print(f"Selector healed: {resolved.healed_selector}")
-    print(f"Confidence: {resolved.confidence}")
-    print(f"Candidates: {resolved.debug.candidates}")
+    print(f"Селектор восстановлен: {resolved.healed_selector}")
+    print(f"Уверенность: {resolved.confidence}")
+    print(f"Кандидаты: {resolved.debug.candidates}")
 
 await resolved.element.click()
 
 # Обновить привязку
 await binding.rebind(page)
 
-# Page Object интеграция
+# Интеграция с Page Object
 from frap.pytest import frap_fixture
 
 @frap_fixture
@@ -305,7 +307,7 @@ def login_page(page):
 
 ---
 
-## CLI Утилита
+## CLI-утилита
 
 ### Установка
 
@@ -334,7 +336,7 @@ frap bind --selector "[data-testid='submit']" --output submit.signature.json
 # 🔍 locate — разрешить сигнатуру, найти элемент
 frap locate --signature submit.signature.json --url https://app.example.com
 
-# 🔄 rebind — обновить привязку (re-scan)
+# 🔄 rebind — обновить привязку (повторное сканирование)
 frap rebind --signature submit.signature.json --output submit-v2.signature.json
 
 # 📊 scan — просканировать страницу, найти привязываемые элементы
@@ -346,7 +348,7 @@ frap unbound --url https://app.example.com --selector ".dynamic-class"
 # 📈 report — сгенерировать отчёт о стабильности
 frap report --signatures-dir ./signatures/ --output stability-report.html
 
-# 🧪 test — проверить разрешимость всех signatures
+# 🧪 test — проверить разрешимость всех сигнатур
 frap test --signatures-dir ./signatures/ --url https://app.example.com
 
 # 🗂️  diff — сравнить два DOM-состояния
@@ -383,9 +385,9 @@ frap scan --url http://localhost:3000 --format playwright-po \
 
 ---
 
-## Core Concepts
+## Основные концепции
 
-### Signature Structure
+### Структура сигнатуры
 
 ```json
 {
@@ -408,53 +410,53 @@ frap scan --url http://localhost:3000 --format playwright-po \
 }
 ```
 
-### Resolution Strategy
+### Стратегия разрешения
 
-1. **Exact Match** — anchor + path unchanged
-2. **Anchor Drift** — anchor moved, path valid
-3. **Structural Shift** — anchor stable, path changed
-4. **Healing Required** — fuzzy matching via feature similarity
-5. **Failure** — no candidates above confidence threshold
+1. **Точное совпадение** — якорь и путь без изменений
+2. **Сдвиг якоря** — якорь переместился, путь ещё валиден
+3. **Структурный сдвиг** — якорь стабилен, путь изменился
+4. **Нужно самовосстановление** — нечёткое сопоставление по похожести признаков
+5. **Сбой** — нет кандидатов выше порога `confidence`
 
 ---
 
-## Error Handling & Edge Cases
+## Ошибки и граничные случаи
 
-### Resolution Failures
+### Сбои при разрешении
 
 | Сценарий | Поведение | Рекомендация |
 |----------|-----------|--------------|
-| **Zero candidates** | `Resolution.failure()` — элемент не найден | Проверить selector, выполнить повторную привязку |
-| **Ambiguous match** | Несколько кандидатов с одинаковым score | Ручной выбор или ужесточение confidence threshold |
-| **Low confidence** | Score ниже threshold | Проверить через `debug.candidates`, обновить привязку |
-| **Stale signature** | Версия сигнатуры не совпадает | Миграция через `rebind` |
+| **Нет кандидатов** | `Resolution.failure()` — элемент не найден | Проверить селектор, выполнить `rebind` |
+| **Неоднозначное совпадение** | Несколько кандидатов с одинаковой оценкой | Выбрать вручную или поднять порог `confidence` |
+| **Низкая уверенность** | Оценка ниже порога | Смотреть `debug.candidates`, обновить привязку |
+| **Устаревшая сигнатура** | Версия сигнатуры не совпадает | Миграция через `rebind` |
 
-### Configuration Behavior
+### Поведение стратегий healing
 
 ```java
-// Строгий режим — fail при любом healing
+// Строгий режим — падать при любом самовосстановлении
 Frap.config().setHealStrategy(HealStrategy.FAIL);
 
-// Режим отчёта — продолжить, но зафиксировать
+// Режим отчёта — продолжить, но зафиксировать факт healing
 Frap.config().setHealStrategy(HealStrategy.REPORT);
 
-// Авто-режим (по умолчанию) — прозрачный healing
+// Авто (по умолчанию) — прозрачное самовосстановление
 Frap.config().setHealStrategy(HealStrategy.AUTO);
 ```
 
 ---
 
-## Workflow Patterns
+## Типовые сценарии
 
-### 1. Initial Binding (Development)
+### 1. Первичная привязка (разработка)
 
 ```java
-// Record stable selectors during development
+// Зафиксировать стабильные селекторы на этапе разработки
 Signature sig = Frap.bind(page.locator("#submit")).getSignature();
 sig.serializeTo("signatures/login-submit.json");
 ```
 
-### 2. CI Verification (Strict Mode)
+### 2. Проверка в CI (строгий режим)
 
 ```bash
 frap test --signatures-dir ./signatures/ \
@@ -463,44 +465,44 @@ frap test --signatures-dir ./signatures/ \
   --url https://staging.example.com
 ```
 
-### 3. Post-Refactor Update
+### 3. Обновление после рефакторинга
 
 ```bash
-# Preview changes
+# Предпросмотр изменений
 frap rebind --signatures-dir ./signatures/ \
   --url https://app.example.com \
   --dry-run
 
-# Apply with backup
+# Применить с резервной копией
 frap rebind --signatures-dir ./signatures/ \
   --url https://app.example.com \
   --backup-dir ./signatures/backup/
 ```
 
-### 4. Debugging Failed Resolutions
+### 4. Отладка неудачного разрешения
 
 ```typescript
 const resolved = await sig.locate(page);
 
 if (!resolved.success) {
-  console.log('Failed to locate element');
-  console.log('Candidates considered:', resolved.debug.candidates);
-  console.log('DOM changes since binding:', resolved.debug.diff);
-  console.log('Suggested action:', resolved.debug.recommendation);
+  console.log('Не удалось найти элемент');
+  console.log('Рассмотренные кандидаты:', resolved.debug.candidates);
+  console.log('Изменения DOM с момента привязки:', resolved.debug.diff);
+  console.log('Рекомендация:', resolved.debug.recommendation);
 }
 ```
 
 ---
 
-## Comparison: Traditional vs Frap
+## Сравнение: классика и Frap
 
-| Сценарий | Traditional | With Frap |
-|----------|-------------|-----------|
-| Simple click | `page.click("#btn")` | `Frap.bind("#btn").getSignature().locate(page).click()` |
-| Data-testid refactor | Broken tests | Auto-healing with report |
-| Dynamic class names | Flaky selectors | Structural signature matching |
-| Cross-version stability | Manual updates | `rebind` workflow |
-| Debugging failures | Console screenshots | Structured diff + candidates |
+| Сценарий | Без Frap | С Frap |
+|----------|----------|--------|
+| Простой клик | `page.click("#btn")` | `Frap.bind("#btn").getSignature().locate(page).click()` |
+| Рефакторинг `data-testid` | Падающие тесты | Самовосстановление с отчётом |
+| Динамические классы | Нестабильные селекторы | Сопоставление по структурной сигнатуре |
+| Стабильность между версиями | Ручные правки | Сценарий `rebind` |
+| Разбор падений | Скриншоты в консоли | Структурированный diff и кандидаты |
 
 ---
 
@@ -511,22 +513,22 @@ if (!resolved.success) {
 | **Frap** | Бренд/название инструмента |
 | **frap** | CLI, селектор `frap:[…]`, префикс артефактов (`frap-sdk`, `frap-core`, …) |
 | **github.com/kotler-dev/frap** | Основной репозиторий и документация |
-| **@frap/** | npm scope (org `frap` на npmjs.com) |
-| **bind** | Операция привязки селектора к DOM-структуре |
+| **@frap/** | npm-scope (организация `frap` на npmjs.com) |
+| **bind** | Привязка селектора к структуре DOM |
 | **signature** | Сигнатура элемента — структурные признаки для идентификации |
-| **anchor** | Стабильный родительский элемент для сигнатуры |
-| **rebind** | Обновить привязку (re-scan DOM) при изменениях |
-| **locate** | Разрешить сигнатуру в элемент в текущем DOM |
-| **resolution** | Процесс разрешения сигнатуры в элемент |
-| **serialize** | Сериализовать сигнатуру в JSON |
-| **deserialize** | Десериализовать сигнатуру из JSON |
+| **anchor** (якорь) | Стабильный родительский узел, от которого строится путь |
+| **rebind** | Обновить привязку (повторное сканирование DOM) |
+| **locate** | Найти элемент в текущем DOM по сигнатуре |
+| **resolution** | Результат разрешения сигнатуры в элемент |
+| **serialize** | Сохранить сигнатуру в JSON |
+| **deserialize** | Загрузить сигнатуру из JSON |
 | **unbound** | Элемент без привязки (потенциально нестабильный) |
 | **healed** | Элемент найден через кластеризацию при неточном совпадении |
-| **confidence** | Score уверенности при healing (0.0–1.0) |
+| **confidence** | Оценка уверенности при healing (0.0–1.0) |
 
 ---
 
-## API Summary
+## Сводка API
 
 ```
 Frap.bind(selector) → Binding → getSignature() → Signature
@@ -539,12 +541,12 @@ Frap.bind(selector) → Binding → getSignature() → Signature
                                       ↓
                          ┌────────────┼────────────┐
                          ↓            ↓            ↓
-                      success      healed       failure
+                      успех      healed       сбой
                          ↓            ↓            ↓
-                      element   candidates    debug info
+                    элемент    кандидаты    отладка
                                 + diff
                               + confidence
 ```
 
-**One-liner:**
-> *"Frap binds your selectors to structure — deterministic binding, automatic healing, LLM-ready grounding."*
+**В двух словах:**
+> *Frap привязывает селекторы к структуре — детерминированная привязка, автоматическое самовосстановление, готовность к LLM.*

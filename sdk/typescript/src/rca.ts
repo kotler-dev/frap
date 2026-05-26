@@ -51,7 +51,7 @@ async function loadWasmModule(): Promise<WasmRcaModule | null> {
       const distDir = dirname(fileURLToPath(import.meta.url));
       let wasmNodeJs = join(distDir, '../wasm-node/frapcode_core.js');
       try {
-        const sdkRoot = dirname(require.resolve('frapcode/package.json'));
+        const sdkRoot = dirname(require.resolve('@frap/frap/package.json'));
         wasmNodeJs = join(sdkRoot, 'wasm-node/frapcode_core.js');
       } catch {
         // Monorepo — path next to dist/rca.js

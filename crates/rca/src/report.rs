@@ -1,6 +1,6 @@
 use crate::classifier::{classify, failure_timestamp};
 use crate::rules::PrimaryCause;
-use frapcode_context::timeline::{Event, Timeline};
+use frap_context::timeline::{Event, Timeline};
 use serde::{Deserialize, Serialize};
 
 pub const RCA_REPORT_VERSION: u32 = 1;
@@ -67,8 +67,8 @@ pub fn analyze_timeline_json(
 mod tests {
     use super::*;
     use crate::rules::PrimaryCause;
-    use frapcode_context::network::{NetworkEvent, NetworkPhase, NetworkProtocol};
-    use frapcode_context::timeline::Event;
+    use frap_context::network::{NetworkEvent, NetworkPhase, NetworkProtocol};
+    use frap_context::timeline::Event;
 
     #[test]
     fn report_json_roundtrip() {

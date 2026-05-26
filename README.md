@@ -62,12 +62,11 @@ See [docs/en/quickstart.md](docs/en/quickstart.md) for details.
 
 ## Documentation
 
-| Language | Quick Start | Integrations |
-|----------|-------------|--------------|
-| **English** | [docs/en/quickstart.md](docs/en/quickstart.md) | [docs/en/integrations.md](docs/en/integrations.md) |
-| **Русский** | [docs/ru/quickstart.md](docs/ru/quickstart.md) | [docs/ru/integrations.md](docs/ru/integrations.md) |
+| Language | Quick Start | Integrations | Design |
+|----------|-------------|--------------|--------|
+| **English** | [docs/en/quickstart.md](docs/en/quickstart.md) | [docs/en/integrations.md](docs/en/integrations.md) | [Frap.en.md](Frap.en.md) |
+| **Русский** | [docs/ru/quickstart.md](docs/ru/quickstart.md) | [docs/ru/integrations.md](docs/ru/integrations.md) | [Frap.md](Frap.md) |
 
-Full design: [Frap.md](Frap.md)  
 Adapter API: [adapters/playwright/README.md](adapters/playwright/README.md)
 
 ---

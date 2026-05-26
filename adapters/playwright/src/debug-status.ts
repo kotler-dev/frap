@@ -1,4 +1,4 @@
-import type { DebugReport, DebugStep } from 'frapcode';
+import type { DebugReport, DebugStep } from '@frap/frap';
 
 export type DebugStatusType = 'success' | 'warning' | 'failure';
 

@@ -1,5 +1,5 @@
 {
-  "name": "frapcode",
+  "name": "@frap/frap",
   "version": "0.1.0",
   "description": "Frap — deterministic DOM binding for stable selectors",
   "main": "dist/index.js",
