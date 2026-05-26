@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { attachFlettaContext, recordContextUiEvent } from '@fletta/playwright';
+import { attachFlettaContext, recordContextUiEvent } from '@frap/playwright';
 import { CONTEXT_PATH, CONTEXT_REPORT_DIR } from './helpers';
 
 test.describe('C003 Flaky Cart Diagnosis', () => {

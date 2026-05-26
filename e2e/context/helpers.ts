@@ -1,6 +1,6 @@
-import type { WithFlettaOptions } from '@fletta/playwright';
+import type { WithFlettaOptions } from '@frap/playwright';
 
-export const CONTEXT_REPORT_DIR = './fletta-reports/context';
+export const CONTEXT_REPORT_DIR = './frap-reports/context';
 
 export const CONTEXT_PATH = {
   checkoutSlow: '/context/checkout.html?mode=slow',

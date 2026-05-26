@@ -1,4 +1,4 @@
-name: fletta CI
+name: frap CI
 
 # Full Rust + E2E gates run on release tags only (not on every PR/push to main).
 # Docs-only PRs stay fast; verify locally or via workflow_dispatch before tagging.
@@ -68,10 +68,10 @@ jobs:
           cd sdk/typescript
           npm install
           npm run build
-          test -f wasm/fletta_core.js
-          test -f wasm/fletta_core_bg.wasm
-          test -f wasm-node/fletta_core.js
-          test -f wasm-node/fletta_core_bg.wasm
+          test -f wasm/frap_core.js
+          test -f wasm/frap_core_bg.wasm
+          test -f wasm-node/frap_core.js
+          test -f wasm-node/frap_core_bg.wasm
 
   playwright-adapter:
     name: Playwright Adapter Build
@@ -150,16 +150,16 @@ jobs:
       - name: Verify CP005 report artifacts (CONF-RPT-RUN-PASS)
         run: node e2e/conference/verify-reports.mjs
 
-      - name: Upload fletta reports (JUnit + JSON)
+      - name: Upload frap reports (JUnit + JSON)
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: fletta-conference-reports
+          name: frap-conference-reports
           path: |
-            e2e/fletta-reports/conference/junit.xml
-            e2e/fletta-reports/conference/fletta-report.json
-            e2e/fletta-reports/conference/fletta-events.jsonl
-            e2e/fletta-reports/conference/fletta-debug.html
+            e2e/frap-reports/conference/junit.xml
+            e2e/frap-reports/conference/frap-report.json
+            e2e/frap-reports/conference/frap-events.jsonl
+            e2e/frap-reports/conference/frap-debug.html
           retention-days: 30
 
       - name: Upload Playwright test results
@@ -221,10 +221,10 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: fletta-context-reports
+          name: frap-context-reports
           path: |
-            e2e/fletta-reports/context/fletta-context.json
-            e2e/fletta-reports/context/fletta-context-events.jsonl
-            e2e/fletta-reports/context/fletta-rca.json
-            e2e/fletta-reports/context/junit.xml
+            e2e/frap-reports/context/frap-context.json
+            e2e/frap-reports/context/frap-context-events.jsonl
+            e2e/frap-reports/context/frap-rca.json
+            e2e/frap-reports/context/junit.xml
           retention-days: 30

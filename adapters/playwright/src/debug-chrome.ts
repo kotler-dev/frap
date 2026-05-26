@@ -65,7 +65,7 @@ export function renderReportNav(opts: ReportHeaderOptions): string {
   const prev = currentIdx > 0 ? entries[currentIdx - 1] : null;
   const next = currentIdx >= 0 && currentIdx < entries.length - 1 ? entries[currentIdx + 1] : null;
 
-  const backHref = opts.indexHref ?? '../fletta-debug.html';
+  const backHref = opts.indexHref ?? '../frap-debug.html';
   // Detail pages live in debug-reports/ — use basename only (not htmlHref from report root)
   const siblingHref = (entry: DebugManifestEntry) => `${entry.id}.html`;
   const prevHtml = prev

@@ -1,5 +1,5 @@
 use crate::rules::{endpoint_path, latency_hint, CauseDetails, PrimaryCause, RootCause};
-use fletta_context::timeline::{event_timestamp_ms, Event, Timeline};
+use frap_context::timeline::{event_timestamp_ms, Event, Timeline};
 
 const FLAKY_SPREAD_MS: u64 = 400;
 
@@ -12,8 +12,8 @@ pub fn detect_flaky_pattern(timeline: &Timeline) -> Option<RootCause> {
         if let Event::Network { request, .. } = event {
             let latency = latency_hint(&request.url, request.duration_ms);
             if let Some(latency_ms) = latency {
-                if request.phase == fletta_context::network::NetworkPhase::Response
-                    || request.phase == fletta_context::network::NetworkPhase::Request
+                if request.phase == frap_context::network::NetworkPhase::Response
+                    || request.phase == frap_context::network::NetworkPhase::Request
                 {
                     let path = endpoint_path(&request.url);
                     if path.contains("/api/cart") || request.duration_ms.is_some() {
@@ -80,7 +80,7 @@ pub fn asymmetric_window(timeline: &Timeline, failure_at_ms: i64, window_ms: i64
 #[cfg(test)]
 mod tests {
     use super::*;
-    use fletta_context::network::{NetworkEvent, NetworkPhase, NetworkProtocol};
+    use frap_context::network::{NetworkEvent, NetworkPhase, NetworkProtocol};
 
     fn cart_timeline(fast_ms: u64, slow_delay: u64) -> Timeline {
         let mut t = Timeline::new();
