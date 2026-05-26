@@ -1,5 +1,5 @@
-use frap_signature::Signature;
 use serde::{Deserialize, Serialize};
+use signature::Signature;
 use std::collections::HashMap;
 
 pub const MAX_DEPTH: usize = 5;
@@ -178,7 +178,7 @@ impl ParseTree {
     }
 
     fn calculate_cluster_similarity(template: &Signature, signature: &Signature) -> f64 {
-        use frap_signature::{
+        use signature::{
             calculate_path_similarity, calculate_structural_similarity, calculate_token_similarity,
         };
 
@@ -239,7 +239,7 @@ impl ParseTree {
     }
 
     fn calculate_cluster_similarity_readonly(template: &Signature, signature: &Signature) -> f64 {
-        use frap_signature::{
+        use signature::{
             calculate_path_similarity, calculate_structural_similarity, calculate_token_similarity,
         };
 
@@ -303,12 +303,12 @@ impl Default for DOMElementClusterer {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use frap_signature::Signature;
+    use signature::Signature;
     use std::collections::HashMap;
 
     fn create_test_signature(tag: &str, role: Option<&str>) -> Signature {
         Signature {
-            path: vec![frap_signature::DOMToken {
+            path: vec![signature::DOMToken {
                 tag: tag.to_string(),
                 role: role.map(|s| s.to_string()),
                 semantic_type: None,

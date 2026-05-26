@@ -75,7 +75,7 @@ export function writeDebugReport(reportDir: string, report: DebugReport): void {
   const content = JSON.stringify(report, null, 2);
   const perTestPath = path.join(dir, `${debugReportSlug(report.testName)}.json`);
   fs.writeFileSync(perTestPath, content);
-  fs.writeFileSync(path.join(reportDir, 'frap-debug.json'), content);
+  fs.writeFileSync(path.join(reportDir, 'fletta-debug.json'), content);
 }
 
 export function clearDebugReports(reportDir: string): void {
@@ -83,9 +83,9 @@ export function clearDebugReports(reportDir: string): void {
   if (fs.existsSync(dir)) {
     fs.rmSync(dir, { recursive: true, force: true });
   }
-  const legacyJson = path.join(reportDir, 'frap-debug.json');
-  const legacyHtml = path.join(reportDir, 'frap-debug.html');
-  const explorerHtml = path.join(reportDir, 'frap-debug-explorer.html');
+  const legacyJson = path.join(reportDir, 'fletta-debug.json');
+  const legacyHtml = path.join(reportDir, 'fletta-debug.html');
+  const explorerHtml = path.join(reportDir, 'fletta-debug-explorer.html');
   if (fs.existsSync(legacyJson)) fs.unlinkSync(legacyJson);
   if (fs.existsSync(legacyHtml)) fs.unlinkSync(legacyHtml);
   if (fs.existsSync(explorerHtml)) fs.unlinkSync(explorerHtml);

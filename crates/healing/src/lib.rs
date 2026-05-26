@@ -1,8 +1,6 @@
-use frap_clustering::DOMElementClusterer;
-use frap_signature::{
-    calculate_confidence, Candidate, HealResult, Signature, DEFAULT_MIN_CONFIDENCE,
-};
+use clustering::DOMElementClusterer;
 use serde::{Deserialize, Serialize};
+use signature::{calculate_confidence, Candidate, HealResult, Signature, DEFAULT_MIN_CONFIDENCE};
 use std::collections::HashMap;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -115,7 +113,7 @@ impl HealingEngine {
     }
 
     fn extract_signature_from_element(&self, element: &DOMElementInfo) -> Signature {
-        use frap_signature::{extract_stable_attrs, DOMToken};
+        use signature::{extract_stable_attrs, DOMToken};
 
         let mut tokens = Vec::new();
         for (i, path_token) in element.path.iter().enumerate() {
@@ -221,7 +219,7 @@ impl Default for HealingOrchestrator {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use frap_signature::{DOMToken, Signature};
+    use signature::{DOMToken, Signature};
 
     fn create_test_signature() -> Signature {
         Signature {

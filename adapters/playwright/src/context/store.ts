@@ -1,5 +1,5 @@
-import type { ContextEvent, ContextTimeline } from '@frap/frap';
-import { sortTimelineEvents } from '@frap/frap';
+import type { ContextEvent, ContextTimeline } from '@fletta/sdk';
+import { sortTimelineEvents } from '@fletta/sdk';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -7,11 +7,11 @@ const traceIds = new Map<string, string>();
 const testStarts = new Map<string, number>();
 
 function contextEventsPath(reportDir: string): string {
-  return path.join(reportDir, 'frap-context-events.jsonl');
+  return path.join(reportDir, 'fletta-context-events.jsonl');
 }
 
 function traceIdMapPath(reportDir: string): string {
-  return path.join(reportDir, 'frap-context-traceIds.json');
+  return path.join(reportDir, 'fletta-context-traceIds.json');
 }
 
 export function getContextBufferKey(reportDir: string, testId?: string): string {
@@ -52,7 +52,7 @@ function persistTraceIdMap(reportDir: string): void {
     }
     fs.writeFileSync(traceIdMapPath(reportDir), JSON.stringify(map, null, 2));
   } catch (e) {
-    console.error('[frap] Failed to persist traceId map:', e);
+    console.error('[fletta] Failed to persist traceId map:', e);
   }
 }
 
@@ -63,7 +63,7 @@ function loadTraceIdMap(reportDir: string): Record<string, string> {
       return JSON.parse(fs.readFileSync(path_, 'utf-8'));
     }
   } catch (e) {
-    console.error('[frap] Failed to load traceId map:', e);
+    console.error('[fletta] Failed to load traceId map:', e);
   }
   return {};
 }
@@ -83,7 +83,7 @@ function appendEventToDisk(reportDir: string, event: ContextEvent): void {
     }
     fs.appendFileSync(contextEventsPath(reportDir), `${JSON.stringify(event)}\n`, 'utf-8');
   } catch (e) {
-    console.error('[frap] Failed to persist context event:', e);
+    console.error('[fletta] Failed to persist context event:', e);
   }
 }
 
@@ -174,7 +174,7 @@ export function writeContextReport(reportDir: string): string | null {
     timeline,
   };
 
-  const reportPath = path.join(reportDir, 'frap-context.json');
+  const reportPath = path.join(reportDir, 'fletta-context.json');
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
   return reportPath;
 }

@@ -3,19 +3,19 @@ type SelectorEngine = {
   query(root: Element | Document, selector: string): Element | null | Promise<Element | null>;
   queryAll?(root: Element | Document, selector: string): Element[] | Promise<Element[]>;
 };
-import { HealingEngine, FrapConfig, createHealingEngine, DOMSnapshot, DOMElementInfo } from '@frap/frap';
+import { HealingEngine, FlettaConfig, createHealingEngine, DOMSnapshot, DOMElementInfo } from '@fletta/sdk';
 
-interface FrapSelectorEngine extends SelectorEngine {
+interface FlettaSelectorEngine extends SelectorEngine {
   _healingEngine?: HealingEngine;
-  _config: FrapConfig;
+  _config: FlettaConfig;
   _signatures: Map<string, any>;
 }
 
 let globalEngine: HealingEngine | null = null;
-let globalConfig: FrapConfig | null = null;
+let globalConfig: FlettaConfig | null = null;
 let recordedSignatures: Map<string, any> = new Map();
 
-export async function initFrapEngine(config: FrapConfig): Promise<void> {
+export async function initFlettaEngine(config: FlettaConfig): Promise<void> {
   globalEngine = await createHealingEngine(config);
   globalConfig = config;
 }
@@ -24,14 +24,14 @@ export function recordSignature(selector: string, signature: any): void {
   recordedSignatures.set(selector, signature);
 }
 
-export function createFrapSelectorEngine(config: FrapConfig): FrapSelectorEngine {
-  const engine: FrapSelectorEngine = {
+export function createFlettaSelectorEngine(config: FlettaConfig): FlettaSelectorEngine {
+  const engine: FlettaSelectorEngine = {
     _config: config,
     _signatures: recordedSignatures,
 
     async query(root: Element | Document, selector: string): Promise<Element | null> {
       if (!globalEngine) {
-        await initFrapEngine(config);
+        await initFlettaEngine(config);
       }
 
       const doc = root instanceof Document ? root : root.ownerDocument;
@@ -60,9 +60,9 @@ export function createFrapSelectorEngine(config: FrapConfig): FrapSelectorEngine
         const healedElement = doc.querySelector(result.selector);
         
         if (healedElement && typeof window !== 'undefined') {
-          (healedElement as any).__frapHealed = true;
-          (healedElement as any).__frapConfidence = result.confidence;
-          (healedElement as any).__frapOriginalSelector = selector;
+          (healedElement as any).__flettaHealed = true;
+          (healedElement as any).__flettaConfidence = result.confidence;
+          (healedElement as any).__flettaOriginalSelector = selector;
         }
         
         return healedElement;

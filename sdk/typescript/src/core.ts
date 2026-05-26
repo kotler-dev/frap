@@ -1,4 +1,4 @@
-import { FrapConfig } from './config';
+import { FlettaConfig } from './config';
 import { DebugTracer, DebugReport, ClusterView, writeDebugReport } from './debug';
 import { fallbackExtractSignature, fallbackHeal } from './core-fallback';
 import type {
@@ -19,30 +19,30 @@ export type {
 } from './core-types';
 
 export class HealingEngine {
-  private config: FrapConfig;
+  private config: FlettaConfig;
   private wasmModule: WasmHealModule | null = null;
   private wasmLoadAttempted = false;
 
-  constructor(config: FrapConfig) {
+  constructor(config: FlettaConfig) {
     this.config = config;
   }
 
   async init(): Promise<void> {
-    if (process.env.FRAP_TS_FALLBACK === '1') {
-      console.warn('[frap] FRAP_TS_FALLBACK=1 — using TypeScript healing (dev only)');
+    if (process.env.FLETTA_TS_FALLBACK === '1') {
+      console.warn('[fletta] FLETTA_TS_FALLBACK=1 — using TypeScript healing (dev only)');
       this.wasmLoadAttempted = true;
       return;
     }
 
     try {
-      const wasm = (await import('../wasm/frapcode_core.js')) as WasmHealModule;
+      const wasm = (await import('../wasm/fletta_core.js')) as WasmHealModule;
       if (typeof wasm.healJson !== 'function') {
-        throw new Error('healJson export missing from frapcode_core wasm');
+        throw new Error('healJson export missing from fletta_core wasm');
       }
       this.wasmModule = wasm;
     } catch (err) {
       console.warn(
-        '[frap] WASM module not loaded; run `npm run build:wasm` in sdk/typescript or set FRAP_TS_FALLBACK=1',
+        '[fletta] WASM module not loaded; run `npm run build:wasm` in sdk/typescript or set FLETTA_TS_FALLBACK=1',
         err
       );
     } finally {
@@ -112,8 +112,8 @@ export class HealingEngine {
       return result;
     }
 
-    if (process.env.FRAP_TS_FALLBACK !== '1') {
-      console.warn('[frap] WASM unavailable — using TS fallback for this heal() call');
+    if (process.env.FLETTA_TS_FALLBACK !== '1') {
+      console.warn('[fletta] WASM unavailable — using TS fallback for this heal() call');
     }
 
     return this.healWithFallback(primarySelector, originalSignature, domSnapshot, tracer);
@@ -150,7 +150,7 @@ export class HealingEngine {
 
   private saveDebugReport(report: DebugReport): void {
     writeDebugReport(this.config.reportDir, report);
-    console.log(`[frap:debug] Report saved for "${report.testName}"`);
+    console.log(`[fletta:debug] Report saved for "${report.testName}"`);
   }
 
   private buildClusterViews(candidates: Candidate[], snapshot: DOMSnapshot): ClusterView[] {
@@ -181,7 +181,7 @@ export class HealingEngine {
   }
 }
 
-export async function createHealingEngine(config: FrapConfig): Promise<HealingEngine> {
+export async function createHealingEngine(config: FlettaConfig): Promise<HealingEngine> {
   const engine = new HealingEngine(config);
   await engine.init();
   return engine;

@@ -8,19 +8,19 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const reportDir = path.resolve(__dirname, '..', 'frap-reports', 'context');
+const reportDir = path.resolve(__dirname, '..', 'fletta-reports', 'context');
 
 function fail(msg) {
   console.error(`[RCA-VERIFY] ${msg}`);
   process.exit(1);
 }
 
-const rcaPath = path.join(reportDir, 'frap-rca.json');
+const rcaPath = path.join(reportDir, 'fletta-rca.json');
 if (!fs.existsSync(rcaPath)) {
   fail(`Missing ${rcaPath}`);
 }
 
-const contextPath = path.join(reportDir, 'frap-context.json');
+const contextPath = path.join(reportDir, 'fletta-context.json');
 if (!fs.existsSync(contextPath)) {
   fail(`Missing ${contextPath}`);
 }
@@ -140,8 +140,8 @@ if (isV2) {
 const junitPath = path.join(reportDir, 'junit.xml');
 if (fs.existsSync(junitPath)) {
   const junit = fs.readFileSync(junitPath, 'utf-8');
-  if (!junit.includes('frapcode-rca') && !junit.includes('frapcode-context')) {
-    fail('JUnit report missing frapcode-rca or frapcode-context failure suite');
+  if (!junit.includes('fletta-rca') && !junit.includes('fletta-context')) {
+    fail('JUnit report missing fletta-rca or fletta-context failure suite');
   }
 }
 

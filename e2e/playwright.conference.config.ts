@@ -1,10 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
-import { frapPlaywright } from '@frap/frap-playwright';
+import { flettaPlaywright } from '@fletta/playwright';
 
 export default defineConfig({
-  ...frapPlaywright({
+  ...flettaPlaywright({
     minConfidence: 0.85,
-    reportDir: './frap-reports/conference',
+    reportDir: './fletta-reports/conference',
     enableHealing: true,
     enableReporting: true,
     playwrightConfig: {

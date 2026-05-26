@@ -208,7 +208,7 @@ server.on('upgrade', (req, socket) => {
 server.listen(PORT, () => {
     console.log(`
 ========================================
-  Frap Test Server running
+  fletta Test Server running
 ========================================
   Port: ${PORT}
 

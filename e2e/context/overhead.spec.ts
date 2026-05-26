@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { attachFrapContext } from '@frap/frap-playwright';
+import { attachFlettaContext } from '@fletta/playwright';
 import { CONTEXT_PATH, CONTEXT_REPORT_DIR } from './helpers';
 
 const WARMUP = 1;
@@ -15,7 +15,7 @@ async function measureCartLoad(
   for (let i = 0; i < totalRuns; i++) {
     const page = await browser.newPage();
     if (withCapture) {
-      attachFrapContext(page, {
+      attachFlettaContext(page, {
         reportDir: CONTEXT_REPORT_DIR,
         testId: `overhead-${withCapture ? 'capture' : 'base'}-${i}`,
       });

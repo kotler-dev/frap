@@ -1,7 +1,7 @@
-import type { WithFrapOptions } from '@frap/frap-playwright';
+import type { WithFlettaOptions } from '@fletta/playwright';
 
-/** Frap artifacts for the Conference Playwright project */
-export const CONF_REPORT_DIR = './frap-reports/conference';
+/** Fletta artifacts for the Conference Playwright project */
+export const CONF_REPORT_DIR = './fletta-reports/conference';
 
 export const CONF_PATH = {
   index: '/conference/index.html',
@@ -15,7 +15,7 @@ export const CONF_PATH = {
   talk: (id: string) => `/conference/talk.html?id=${id}`,
 };
 
-export function confFrap(opts: Partial<WithFrapOptions> = {}): WithFrapOptions {
+export function confFletta(opts: Partial<WithFlettaOptions> = {}): WithFlettaOptions {
   return {
     reportDir: CONF_REPORT_DIR,
     enableHealing: true,
@@ -24,6 +24,3 @@ export function confFrap(opts: Partial<WithFrapOptions> = {}): WithFrapOptions {
     ...opts,
   };
 }
-
-/** @deprecated Use confFrap instead */
-export const confFrap = confFrap;

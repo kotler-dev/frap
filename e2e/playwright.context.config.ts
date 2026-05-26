@@ -1,9 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
-import { frapPlaywright } from '@frap/frap-playwright';
+import { flettaPlaywright } from '@fletta/playwright';
 import { CONTEXT_REPORT_DIR } from './context/helpers';
 
 export default defineConfig({
-  ...frapPlaywright({
+  ...flettaPlaywright({
     minConfidence: 0.85,
     reportDir: CONTEXT_REPORT_DIR,
     enableHealing: false,
@@ -11,7 +11,7 @@ export default defineConfig({
     captureAll: true,
     playwrightConfig: {
       testDir: './context',
-      testIgnore: process.env.FRAP_BENCH_OVERHEAD ? [] : ['**/overhead.spec.ts'],
+      testIgnore: process.env.FLETTA_BENCH_OVERHEAD ? [] : ['**/overhead.spec.ts'],
       timeout: 30_000,
       expect: { timeout: 5000 },
       fullyParallel: false,
