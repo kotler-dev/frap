@@ -12,7 +12,7 @@ const reportDir = path.resolve(__dirname, '..', 'frap-reports', 'context');
 const sdkRoot = path.resolve(__dirname, '../../sdk/typescript');
 
 function fail(msg) {
-  console.error(`[frapcode-rca] ${msg}`);
+  console.error(`[frap-rca] ${msg}`);
   process.exit(1);
 }
 
@@ -69,7 +69,7 @@ for (const test of contextTests) {
       rca: testRca,
     });
   } catch (err) {
-    console.error(`[frapcode-rca] Per-test RCA failed for ${test.playwrightTestId}:`, err);
+    console.error(`[frap-rca] Per-test RCA failed for ${test.playwrightTestId}:`, err);
   }
 }
 

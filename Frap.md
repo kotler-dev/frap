@@ -548,5 +548,141 @@ Frap.bind(selector) → Binding → getSignature() → Signature
                               + confidence
 ```
 
-**В двух словах:**
-> *Frap привязывает селекторы к структуре — детерминированная привязка, автоматическое самовосстановление, готовность к LLM.*
+---
+
+## Артефакты v1.1
+
+### Файлы отчётов
+
+| Файл | Содержание | Когда генерируется |
+|------|------------|-------------------|
+| `frap-report.json` | Общий отчёт о тестировании | Всегда при `enableReporting` |
+| `frap-events.jsonl` | Healing-события (построчно) | При heal попытках |
+| `frap-context.json` | Timeline: UI + network + console | При `captureAll: true` |
+| `frap-rca.json` | Root Cause Analysis | При `captureAll: true` и падениях |
+| `frap-debug.html` | Debug Classic отчёт | При `enableReporting` |
+| `frap-debug-explorer.html` | Debug Explorer отчёт | При `enableReporting` |
+| `junit.xml` | JUnit-совместимый XML | Всегда при `enableReporting` |
+
+### Пример структуры отчётов
+
+```
+frap-reports/
+├── frap-report.json           # JSON сводка
+├── frap-events.jsonl          # Healing events (JSON Lines)
+├── frap-context.json          # Unified Context timeline (v1.1)
+├── frap-rca.json              # RCA анализ (v1.1)
+├── frap-debug.html            # Debug Classic
+├── frap-debug-explorer.html   # Debug Explorer
+└── junit.xml                  # JUnit для CI
+```
+
+---
+
+## Context Layer (F002) v1.1
+
+Unified Context объединяет три источника данных в timeline:
+
+| Источник | Что захватывается | Корреляция |
+|----------|------------------|------------|
+| **UI** | DOM-события, клики, heal-попытки | `trace_id` |
+| **Network** | HTTP запросы/ответы, WebSocket | `trace_id` + timestamp |
+| **Console** | `console.*`, `pageerror` | `trace_id` + timestamp |
+
+### Когда Context помогает
+
+- **C002** — API timeout: timeline показывает `requestfailed` перед UI failure
+- **C003** — Flaky тест: сравнение timeline между прохождениями
+- **C004** — WebSocket: отслеживание сообщений до падения
+
+### Включение в Playwright
+
+```typescript
+// playwright.config.ts
+import { frapPlaywright } from '@frap/frap-playwright';
+
+export default defineConfig({
+  ...frapPlaywright({
+    captureAll: true,        // Включает context + RCA
+    reportDir: './frap-reports',
+    minConfidence: 0.85,
+  }),
+});
+```
+
+---
+
+## Root Cause Analysis (F003) v1.1
+
+RCA автоматически классифицирует причину падения:
+
+| Классификация | Признаки | Пример |
+|---------------|----------|--------|
+| **UI-change** | DOM изменился, healed найден | Переименован `data-testid` |
+| **API-error** | 4xx/5xx или timeout в network | C002: `payment/timeout` |
+| **Infrastructure** | Connection refused, DNS error | Сервер недоступен |
+| **Flaky** | Разные результаты при одних входных | Race condition |
+| **Unknown** | Недостаточно данных | Требуется ручной анализ |
+
+### Per-test RCA
+
+RCA теперь привязан к конкретному тесту через `trace_id`:
+
+```typescript
+// В отчёте frap-rca.json
+{
+  "test_id": "payment-flow-001",
+  "trace_id": "abc-123-def",
+  "classification": "api_error",
+  "confidence": 0.95,
+  "timeline_excerpt": [ /* события ±5 сек */ ],
+  "recommendation": "Проверьте эндпоинт /api/payment — timeout 30s"
+}
+```
+
+---
+
+## Конфигурация Playwright (v1.1)
+
+### Полный пример
+
+```typescript
+import { frapPlaywright, registerFrapSelector } from '@frap/frap-playwright';
+
+export default defineConfig({
+  ...frapPlaywright({
+    // Core
+    minConfidence: 0.85,       // Порог для healing (0.0–1.0)
+    maxCandidates: 5,          // Макс. кандидатов в отчёте
+
+    // Reporting
+    enableReporting: true,     // JSON + JUnit отчёты
+    reportDir: './frap-reports',
+
+    // Context (v1.1)
+    captureAll: true,          // UI + network + console + WebSocket
+
+    // Debug
+    debug: false,              // Подробные логи
+  }),
+  use: {
+    async setup({ selectors }) {
+      await registerFrapSelector(selectors);
+    },
+  },
+});
+```
+
+### Рекомендуемые настройки
+
+| Сценарий | `minConfidence` | `captureAll` | `maxCandidates` |
+|----------|-----------------|--------------|-----------------|
+| Разработка | 0.85 | false | 5 |
+| CI (строгий) | 0.95 | true | 3 |
+| CI (мягкий) | 0.80 | true | 10 |
+| Отладка | 0.70 | true | 10 |
+
+---
+
+## В двух словах:
+> *Frap привязывает селекторы к структуре — детерминированная привязка, автоматическое самовосстановление, контекст для RCA, готовность к LLM.*

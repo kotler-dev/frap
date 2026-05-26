@@ -49,16 +49,16 @@ async function loadWasmModule(): Promise<WasmRcaModule | null> {
       const require = createRequire(import.meta.url);
       // nodejs wasm-pack target: sync fs + WebAssembly (no ESM .wasm import).
       const distDir = dirname(fileURLToPath(import.meta.url));
-      let wasmNodeJs = join(distDir, '../wasm-node/frapcode_core.js');
+      let wasmNodeJs = join(distDir, '../wasm-node/frap_core.js');
       try {
-        const sdkRoot = dirname(require.resolve('@frap/frap/package.json'));
-        wasmNodeJs = join(sdkRoot, 'wasm-node/frapcode_core.js');
+        const sdkRoot = dirname(require.resolve('@frap/sdk/package.json'));
+        wasmNodeJs = join(sdkRoot, 'wasm-node/frap_core.js');
       } catch {
         // Monorepo — path next to dist/rca.js
       }
       const wasm = require(wasmNodeJs) as WasmRcaModule;
       if (typeof wasm.analyzeRcaJson !== 'function') {
-        console.warn('[frap] analyzeRcaJson export missing from frapcode_core wasm');
+        console.warn('[frap] analyzeRcaJson export missing from frap_core wasm');
         return null;
       }
       wasmModule = wasm;

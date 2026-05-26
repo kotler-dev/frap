@@ -38,7 +38,7 @@ function writeExplorerStubHtml(reportDir: string, manifest: DebugManifest): stri
 <body>
   ${REPORT_ICONS_SVG}
   <div class="container">
-      <header class="site-header">
+    <header class="site-header">
       <div class="site-header__brand">
         <h1>Frap Explorer</h1>
         <p class="subtitle">Not available for this run</p>
@@ -90,7 +90,7 @@ function writeFullExplorerHtml(reportDir: string, manifest: DebugManifest): stri
 <body class="explorer-layout">
   ${REPORT_ICONS_SVG}
   <div class="explorer-shell">
-      <header class="explorer-topbar">
+    <header class="explorer-topbar">
       <div>
         <h1>Frap Explorer</h1>
         <p class="subtitle">${manifest.reportCount} tests with debug enabled · run ${escapeHtml(generatedAt)}</p>

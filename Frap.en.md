@@ -548,5 +548,141 @@ Frap.bind(selector) → Binding → getSignature() → Signature
                               + confidence
 ```
 
-**One-liner:**
-> *"Frap binds your selectors to structure — deterministic binding, automatic healing, LLM-ready grounding."*
+---
+
+## v1.1 Artifacts
+
+### Report Files
+
+| File | Contents | Generated When |
+|------|----------|----------------|
+| `frap-report.json` | Test execution summary | Always with `enableReporting` |
+| `frap-events.jsonl` | Healing events (line-by-line) | On healing attempts |
+| `frap-context.json` | Timeline: UI + network + console | With `captureAll: true` |
+| `frap-rca.json` | Root Cause Analysis | With `captureAll: true` on failures |
+| `frap-debug.html` | Debug Classic report | With `enableReporting` |
+| `frap-debug-explorer.html` | Debug Explorer report | With `enableReporting` |
+| `junit.xml` | JUnit-compatible XML | Always with `enableReporting` |
+
+### Report Structure Example
+
+```
+frap-reports/
+├── frap-report.json           # JSON summary
+├── frap-events.jsonl          # Healing events (JSON Lines)
+├── frap-context.json          # Unified Context timeline (v1.1)
+├── frap-rca.json              # RCA analysis (v1.1)
+├── frap-debug.html            # Debug Classic
+├── frap-debug-explorer.html   # Debug Explorer
+└── junit.xml                  # JUnit for CI
+```
+
+---
+
+## Context Layer (F002) v1.1
+
+Unified Context combines three data sources into a timeline:
+
+| Source | Captured Data | Correlation |
+|--------|--------------|-------------|
+| **UI** | DOM events, clicks, healing attempts | `trace_id` |
+| **Network** | HTTP requests/responses, WebSocket | `trace_id` + timestamp |
+| **Console** | `console.*`, `pageerror` | `trace_id` + timestamp |
+
+### When Context Helps
+
+- **C002** — API timeout: timeline shows `requestfailed` before UI failure
+- **C003** — Flaky test: compare timelines between runs
+- **C004** — WebSocket: track messages before failure
+
+### Enabling in Playwright
+
+```typescript
+// playwright.config.ts
+import { frapPlaywright } from '@frap/frap-playwright';
+
+export default defineConfig({
+  ...frapPlaywright({
+    captureAll: true,        // Enables context + RCA
+    reportDir: './frap-reports',
+    minConfidence: 0.85,
+  }),
+});
+```
+
+---
+
+## Root Cause Analysis (F003) v1.1
+
+RCA automatically classifies failure causes:
+
+| Classification | Indicators | Example |
+|----------------|------------|---------|
+| **UI-change** | DOM changed, healed found | Renamed `data-testid` |
+| **API-error** | 4xx/5xx or timeout in network | C002: `payment/timeout` |
+| **Infrastructure** | Connection refused, DNS error | Server unavailable |
+| **Flaky** | Different results with same input | Race condition |
+| **Unknown** | Insufficient data | Requires manual analysis |
+
+### Per-test RCA
+
+RCA is now tied to specific tests via `trace_id`:
+
+```typescript
+// In frap-rca.json report
+{
+  "test_id": "payment-flow-001",
+  "trace_id": "abc-123-def",
+  "classification": "api_error",
+  "confidence": 0.95,
+  "timeline_excerpt": [ /* events ±5 sec */ ],
+  "recommendation": "Check endpoint /api/payment — timeout 30s"
+}
+```
+
+---
+
+## Playwright Configuration (v1.1)
+
+### Full Example
+
+```typescript
+import { frapPlaywright, registerFrapSelector } from '@frap/frap-playwright';
+
+export default defineConfig({
+  ...frapPlaywright({
+    // Core
+    minConfidence: 0.85,       // Healing threshold (0.0–1.0)
+    maxCandidates: 5,          // Max candidates in report
+
+    // Reporting
+    enableReporting: true,     // JSON + JUnit reports
+    reportDir: './frap-reports',
+
+    // Context (v1.1)
+    captureAll: true,          // UI + network + console + WebSocket
+
+    // Debug
+    debug: false,              // Verbose logging
+  }),
+  use: {
+    async setup({ selectors }) {
+      await registerFrapSelector(selectors);
+    },
+  },
+});
+```
+
+### Recommended Settings
+
+| Scenario | `minConfidence` | `captureAll` | `maxCandidates` |
+|----------|-----------------|--------------|-----------------|
+| Development | 0.85 | false | 5 |
+| CI (strict) | 0.95 | true | 3 |
+| CI (lenient) | 0.80 | true | 10 |
+| Debugging | 0.70 | true | 10 |
+
+---
+
+## One-liner:
+> *"Frap binds your selectors to structure — deterministic binding, automatic healing, context for RCA, LLM-ready grounding."*

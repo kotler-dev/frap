@@ -7,7 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-/** Mirrors frapcode context helpers (avoid ESM subpath resolution in post-run script). */
+/** Mirrors @frap/sdk context helpers (avoid ESM subpath resolution in post-run script). */
 function eventsByTraceId(timeline, traceId) {
   return timeline.events.filter((e) => e.trace_id === traceId);
 }

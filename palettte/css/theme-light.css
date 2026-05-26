@@ -1,0 +1,28 @@
+/* Fletta — light theme (warm surfaces + shared flamingo/cyan brand) */
+
+[data-theme="light"] {
+    --bg-default: #FFFFFF;
+    --bg-elevated: #F7F6F3;
+    --bg-overlay: #F1F1EF;
+    --bg-highlight: #F7F6F3;
+    --bg-hover: #EFEFEC;
+
+    --text-default: #37352F;
+    --text-muted: #6B6B67;
+    --text-subtle: #9F9E99;
+    --text-inverse: #FFFFFF;
+    --text-on-primary: #FFFFFF;
+
+    --primary-bg: rgba(255, 64, 128, 0.08);
+    --secondary-bg: rgba(94, 200, 232, 0.08);
+
+    --accent-flamingo-bg: rgba(255, 64, 128, 0.08);
+    --accent-cyan-bg: rgba(94, 200, 232, 0.08);
+    --accent-mint-bg: rgba(110, 221, 184, 0.1);
+    --accent-lavender-bg: rgba(196, 184, 240, 0.12);
+    --accent-peach-bg: rgba(252, 165, 93, 0.1);
+    --accent-lemon-bg: rgba(232, 220, 144, 0.15);
+
+    --border-default: #E3E2DE;
+    --border-subtle: #EFEFEC;
+}

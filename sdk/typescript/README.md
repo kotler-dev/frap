@@ -1,11 +1,11 @@
-# frapcode
+# @frap/sdk
 
-TypeScript SDK for Frap deterministic DOM binding. Healing algorithms run in **Rust Core via WASM** (`healJson`).
+TypeScript SDK for frap self-healing. Healing algorithms run in **Rust Core via WASM** (`healJson`).
 
 ## Installation
 
 ```bash
-npm install frapcode
+npm install @frap/sdk
 ```
 
 No Rust or WASM build required — the WASM binary is bundled with the package.
@@ -13,7 +13,7 @@ No Rust or WASM build required — the WASM binary is bundled with the package.
 ## Quick Start
 
 ```typescript
-import { createHealingEngine, type HealResult, type DOMSnapshot } from 'frapcode';
+import { createHealingEngine, type HealResult, type DOMSnapshot } from '@frap/sdk';
 
 const engine = await createHealingEngine({ minConfidence: 0.85 });
 
@@ -32,13 +32,13 @@ if (result.healed) {
 ## API
 
 ```typescript
-import { createHealingEngine, type HealResult, type DOMSnapshot } from 'frapcode';
+import { createHealingEngine, type HealResult, type DOMSnapshot } from '@frap/sdk';
 
 const engine = await createHealingEngine({ minConfidence: 0.85, reportDir: './frap-reports' });
 const result: HealResult = engine.heal(primarySelector, signature, domSnapshot);
 ```
 
-- `HealingEngine.heal()` — calls `frapcode_core` WASM (`HealRequest` / `HealResult` JSON contract)
+- `HealingEngine.heal()` — calls `frap_core` WASM (`HealRequest` / `HealResult` JSON contract)
 - `HealingEngine.extractSignature()` — snapshot helper (TypeScript; DOM capture stays in adapter)
 
 ## Development Build
@@ -58,7 +58,7 @@ WASM output: `wasm/` (gitignored; built in CI).
 If WASM is missing during development:
 
 ```bash
-export FRAP_TS_FALLBACK=1
+export FLETTA_TS_FALLBACK=1
 ```
 
 Uses legacy TypeScript healing (`core-fallback.ts`). **Not for production.**

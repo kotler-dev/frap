@@ -1,7 +1,7 @@
 {
   "name": "@frap/frap",
-  "version": "0.1.0",
-  "description": "Frap — deterministic DOM binding for stable selectors",
+  "version": "1.1.1",
+  "description": "frap SDK for self-healing test selectors",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
@@ -28,7 +28,7 @@
     "url": "git+https://github.com/kotler-dev/frap.git",
     "directory": "sdk/typescript"
   },
-  "homepage": "https://github.com/kotler-dev/frap#readme",
+  "homepage": "https://frap.dev",
   "bugs": {
     "url": "https://github.com/kotler-dev/frap/issues"
   },

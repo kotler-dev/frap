@@ -1,0 +1,75 @@
+---
+description: Правила для Rust кода — ядро frap
+globs: "**/*.rs"
+alwaysApply: false
+---
+
+# frap Rust правила
+
+## Архитектура
+- Ядро разбито на crates: `signature`, `clustering`, `healing`, `context`, `rca`, и т.д.
+- Каждый crate — отдельная библиотека с чётким API
+- WASM сборка для Node.js через `wasm-bindgen`
+
+## Соглашения по коду
+
+### Именование
+- `snake_case` для функций и переменных
+- `PascalCase` для типов и трейтов
+- `SCREAMING_SNAKE_CASE` для констант
+
+### Структура модуля
+```rust
+// Публичный API
+pub struct Signature { ... }
+pub fn compare(a: &Signature, b: &Signature) -> f64 { ... }
+
+// Внутренние детали
+mod internal { ... }
+```
+
+### Обработка ошибок
+- Использовать `thiserror` для кастомных ошибок
+- Никаких `unwrap()` в production коде
+- Возвращать `Result<T, Error>` от публичных функций
+
+```rust
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum SignatureError {
+    #[error("invalid path: {0}")]
+    InvalidPath(String),
+    #[error("element not found")]
+    NotFound,
+}
+
+pub fn extract_signature(dom: &str, selector: &str) -> Result<Signature, SignatureError> {
+    // ...
+}
+```
+
+### Тесты
+- Юнит-тесты рядом с кодом: `#[cfg(test)] mod tests`
+- Интеграционные в `tests/` директории
+- Использовать `insta` для snapshot тестов
+
+### Производительность
+- Алгоритмы должны работать на DOM 10k+ элементов
+- Профилировать критические пути (`cargo flamegraph`)
+- WASM: минимизировать размер бандла
+
+### Безопасность
+- Никаких `unsafe` без явного комментария почему
+- Проверка bounds для всех индексов
+- Sanitization входных данных (DOM может быть вредоносным)
+
+## FFI (для мобильных SDK)
+- Использовать `cbindgen` для генерации C headers
+- JNI для Android, Swift bridging header для iOS
+- Документировать ownership и lifetime
+
+## Зависимости
+- Предпочитать стандартную библиотеку
+- Проверять лицензии новых зависимостей (Apache/MIT предпочтительно)
+- Минимизировать количество зависимостей для WASM

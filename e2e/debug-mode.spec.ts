@@ -19,7 +19,6 @@ test.describe('F012: Debug Trace Mode', () => {
       enableReporting: false,
       debug: true,
     });
-    await engine.init();
 
     const snapshot: DOMSnapshot = {
       html: '<button data-testid="checkout-pay">Оплатить</button>',
@@ -93,7 +92,6 @@ test.describe('F012: Debug Trace Mode', () => {
       enableReporting: false,
       debug: true,
     });
-    await engine.init();
 
     const snapshot: DOMSnapshot = {
       html: '<div>unrelated element</div>',
@@ -151,7 +149,6 @@ test.describe('F012: Debug Trace Mode', () => {
       enableReporting: false,
       debug: false, // Disabled
     });
-    await engine.init();
 
     const snapshot: DOMSnapshot = {
       html: '<button data-testid="checkout-pay">Оплатить</button>',
