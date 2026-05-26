@@ -9,7 +9,7 @@ import {
   type HealOutcome,
 } from '@frap/frap';
 
-export interface FlettaHealingEvent {
+export interface FrapHealingEvent {
   playwrightTestId: string;
   healSessionName?: string;
   originalSelector: string;
@@ -22,7 +22,7 @@ export interface FlettaHealingEvent {
   timestamp: string;
 }
 
-const eventsByTest = new Map<string, FlettaHealingEvent[]>();
+const eventsByTest = new Map<string, FrapHealingEvent[]>();
 
 function resolvePlaywrightTestId(testInfo?: { titlePath: string[] }, healSessionName?: string): string {
   if (testInfo?.titlePath?.length) {
@@ -56,7 +56,7 @@ function eventsFilePath(reportDir: string): string {
   return path.join(reportDir, 'frap-events.jsonl');
 }
 
-function appendEventToDisk(reportDir: string, event: FlettaHealingEvent): void {
+function appendEventToDisk(reportDir: string, event: FrapHealingEvent): void {
   try {
     if (!fs.existsSync(reportDir)) {
       fs.mkdirSync(reportDir, { recursive: true });
@@ -68,11 +68,11 @@ function appendEventToDisk(reportDir: string, event: FlettaHealingEvent): void {
 }
 
 export function recordHealingEvent(
-  event: Omit<FlettaHealingEvent, 'playwrightTestId' | 'timestamp'>,
+  event: Omit<FrapHealingEvent, 'playwrightTestId' | 'timestamp'>,
   reportDir?: string,
   testInfo?: { titlePath: string[] }
-): FlettaHealingEvent {
-  const full: FlettaHealingEvent = {
+): FrapHealingEvent {
+  const full: FrapHealingEvent = {
     ...event,
     playwrightTestId: resolvePlaywrightTestId(testInfo, event.healSessionName),
     timestamp: new Date().toISOString(),
@@ -91,14 +91,14 @@ export function recordHealingEvent(
   return full;
 }
 
-export function loadAllHealingEvents(reportDir: string): FlettaHealingEvent[] {
+export function loadAllHealingEvents(reportDir: string): FrapHealingEvent[] {
   const filePath = eventsFilePath(reportDir);
   if (!fs.existsSync(filePath)) {
     return [];
   }
 
   const lines = fs.readFileSync(filePath, 'utf-8').trim().split('\n').filter(Boolean);
-  return lines.map(line => JSON.parse(line) as FlettaHealingEvent);
+  return lines.map(line => JSON.parse(line) as FrapHealingEvent);
 }
 
 export function clearHealingEventsFile(reportDir: string): void {
@@ -108,7 +108,7 @@ export function clearHealingEventsFile(reportDir: string): void {
   }
 }
 
-export function consumeHealingEvents(playwrightTestId: string): FlettaHealingEvent[] {
+export function consumeHealingEvents(playwrightTestId: string): FrapHealingEvent[] {
   const events = eventsByTest.get(playwrightTestId) ?? [];
   eventsByTest.delete(playwrightTestId);
   return events;

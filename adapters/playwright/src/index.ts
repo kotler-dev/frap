@@ -1,11 +1,11 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
 import { FrapConfig } from '@frap/frap';
 import { FrapPlaywrightConfig, mergePlaywrightConfig } from './config';
-import { createFlettaSelectorEngine, initFlettaEngine, recordSignature } from './selector-engine';
-import { withFletta, getLastHealResult } from './wrapper';
-import { FlettaReporter, generateJsonReport } from './reporter';
+import { createFrapSelectorEngine, initFrapEngine, recordSignature } from './selector-engine';
+import { withFrap, getLastHealResult } from './wrapper';
+import { FrapReporter, generateJsonReport } from './reporter';
 import {
-  attachFlettaContext,
+  attachFrapContext,
   recordContextUiEvent,
   writeContextReport,
   getContextTimeline,
@@ -13,17 +13,17 @@ import {
   loadAllContextEvents,
 } from './context';
 
-export { 
-  withFletta, 
+export {
+  withFrap,
   getLastHealResult,
-  createFlettaSelectorEngine,
-  initFlettaEngine,
+  createFrapSelectorEngine,
+  initFrapEngine,
   recordSignature,
-  FlettaReporter,
+  FrapReporter,
   generateJsonReport,
 };
 export type { FrapPlaywrightConfig, WithFrapOptions } from './config';
-export type { FlettaHealingEvent, HealingEvent, FlettaReportSummary } from './reporter';
+export type { FrapHealingEvent, HealingEvent, FrapReportSummary } from './reporter';
 export {
   setCurrentPlaywrightTestId,
   getCurrentPlaywrightTestId,
@@ -32,7 +32,7 @@ export {
 } from './healing-events';
 
 export {
-  attachFlettaContext,
+  attachFrapContext,
   recordContextUiEvent,
   writeContextReport,
   getContextTimeline,
