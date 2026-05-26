@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import type { DebugReport, DebugStep } from '@fletta/sdk';
-import { debugReportSlug } from '@fletta/sdk';
+import type { DebugReport, DebugStep } from '@frap/sdk';
+import { debugReportSlug } from '@frap/sdk';
 import {
   escapeHtml,
   renderGroupedIndexList,
@@ -44,14 +44,14 @@ html.embed-mode body { padding: 1rem 1.25rem; }
 export function generateDebugHtml(
   report: DebugReport,
   outputDir: string,
-  htmlFileNameOrOpts: string | GenerateDebugHtmlOptions = 'fletta-debug.html'
+  htmlFileNameOrOpts: string | GenerateDebugHtmlOptions = 'frap-debug.html'
 ): string {
   const opts: GenerateDebugHtmlOptions =
     typeof htmlFileNameOrOpts === 'string'
       ? { htmlFileName: htmlFileNameOrOpts }
       : htmlFileNameOrOpts;
 
-  const htmlFileName = opts.htmlFileName ?? 'fletta-debug.html';
+  const htmlFileName = opts.htmlFileName ?? 'frap-debug.html';
   const status = getOverallStatus(report);
   const manifest = opts.manifest;
   const multiReport = manifest && manifest.reportCount > 1;
@@ -63,8 +63,8 @@ export function generateDebugHtml(
         subtitle: `Debug report · ${report.testName}`,
         manifest,
         currentEntryId: entryId,
-        indexHref: '../fletta-debug.html',
-        explorerHref: '../fletta-debug-explorer.html',
+        indexHref: '../frap-debug.html',
+        explorerHref: '../frap-debug-explorer.html',
         showExplorerLink: true,
       })
     : renderReportHeader({
@@ -169,7 +169,7 @@ export function generateDebugHtml(
 
   const htmlPath = path.join(outputDir, htmlFileName);
   fs.writeFileSync(htmlPath, html);
-  console.log(`[fletta:debug] HTML report: ${htmlPath}`);
+  console.log(`[frap:debug] HTML report: ${htmlPath}`);
   return htmlPath;
 }
 
@@ -192,7 +192,7 @@ export function generateClassicIndexHtml(reportDir: string, manifest: DebugManif
     ${renderReportHeader({
       title: 'Fletta',
       subtitle: `${manifest.reportCount} tests with debug enabled · run ${formatRunTimestamp(manifest.generatedAt)}`,
-      explorerHref: 'fletta-debug-explorer.html',
+      explorerHref: 'frap-debug-explorer.html',
       showExplorerLink: true,
     })}
     <section class="section">
@@ -200,7 +200,7 @@ export function generateClassicIndexHtml(reportDir: string, manifest: DebugManif
         <h2>Debug reports</h2>
         ${summary}
       </div>
-      <p class="index-hint">Only tests with <code>debug: true</code> appear here. Open <a class="nav-view-link" href="fletta-debug-explorer.html">Explorer view (B)</a> for sidebar navigation.</p>
+      <p class="index-hint">Only tests with <code>debug: true</code> appear here. Open <a class="nav-view-link" href="frap-debug-explorer.html">Explorer view (B)</a> for sidebar navigation.</p>
       <div class="panel">${grouped}</div>
     </section>
   </div>
@@ -208,10 +208,10 @@ export function generateClassicIndexHtml(reportDir: string, manifest: DebugManif
 </body>
 </html>`;
 
-  const indexPath = path.join(reportDir, 'fletta-debug.html');
+  const indexPath = path.join(reportDir, 'frap-debug.html');
   fs.writeFileSync(indexPath, html);
   console.log(
-    `[fletta:debug] Classic index: ${indexPath} (${manifest.reportCount} reports)`
+    `[frap:debug] Classic index: ${indexPath} (${manifest.reportCount} reports)`
   );
 }
 
@@ -229,7 +229,7 @@ export function generateAllDebugHtml(reportDir: string): DebugManifest | null {
     }
   }
 
-  const legacyJson = path.join(reportDir, 'fletta-debug.json');
+  const legacyJson = path.join(reportDir, 'frap-debug.json');
   if (items.length === 0 && fs.existsSync(legacyJson)) {
     const report = JSON.parse(fs.readFileSync(legacyJson, 'utf-8')) as DebugReport;
     generateDebugHtml(report, reportDir);
@@ -256,7 +256,7 @@ export function generateAllDebugHtml(reportDir: string): DebugManifest | null {
   if (items.length === 1) {
     fs.copyFileSync(
       path.join(subDir, items[0].htmlName),
-      path.join(reportDir, 'fletta-debug.html')
+      path.join(reportDir, 'frap-debug.html')
     );
     generateDebugExplorerPage(reportDir, manifest);
     return manifest;

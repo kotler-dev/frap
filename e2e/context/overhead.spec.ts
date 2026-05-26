@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { attachFlettaContext } from '@fletta/playwright';
+import { attachFlettaContext } from '@frap/playwright';
 import { CONTEXT_PATH, CONTEXT_REPORT_DIR } from './helpers';
 
 const WARMUP = 1;

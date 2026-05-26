@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
  * Post-run verification for Context Layer E2E (C002–C004).
- * Run from scripts/test.sh context after Playwright exits (reporter writes fletta-context.json in onEnd).
+ * Run from scripts/test.sh context after Playwright exits (reporter writes frap-context.json in onEnd).
  */
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-/** Mirrors @fletta/sdk context helpers (avoid ESM subpath resolution in post-run script). */
+/** Mirrors @frap/sdk context helpers (avoid ESM subpath resolution in post-run script). */
 function eventsByTraceId(timeline, traceId) {
   return timeline.events.filter((e) => e.trace_id === traceId);
 }
@@ -43,14 +43,14 @@ function networkBeforeUiFailure(timeline, failureAtMs, windowMs = 5000) {
 }
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const reportDir = path.resolve(__dirname, '..', 'fletta-reports', 'context');
+const reportDir = path.resolve(__dirname, '..', 'frap-reports', 'context');
 
 function fail(msg) {
   console.error(`[CTX-VERIFY] ${msg}`);
   process.exit(1);
 }
 
-const contextPath = path.join(reportDir, 'fletta-context.json');
+const contextPath = path.join(reportDir, 'frap-context.json');
 if (!fs.existsSync(contextPath)) {
   fail(`Missing ${contextPath}`);
 }

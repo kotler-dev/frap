@@ -39,7 +39,7 @@ coverage/
 e2e/test-results/
 e2e/results.json
 e2e/conference-results.json
-e2e/fletta-reports/
+e2e/frap-reports/
 
 # Runtime
 .server.pid

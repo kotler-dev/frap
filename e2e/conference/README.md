@@ -2,7 +2,7 @@
 
 Локальный demo-проект **FixtureConf 2026 Spring** (статические страницы в `test-app/conference/`). Вымышленные спикеры и программа, не связаны с реальными конференциями.
 
-Один Playwright-проект → один каталог отчётов: `e2e/fletta-reports/conference/`.
+Один Playwright-проект → один каталог отчётов: `e2e/frap-reports/conference/`.
 
 ## Предусловия
 
@@ -32,22 +32,22 @@ npx playwright test --config=playwright.conference.config.ts --grep 'CONF-SH-SCH
 
 | Файл | Описание |
 |------|----------|
-| `fletta-reports/conference/fletta-debug.html` | Classic view (A): индекс или один отчёт |
-| `fletta-reports/conference/fletta-debug-explorer.html` | Explorer (B): sidebar при 2+ debug-тестах; stub при одном |
-| `fletta-reports/conference/debug-reports/*.html` | Детальные debug-отчёты |
-| `fletta-reports/conference/fletta-report.json` | Сводка healing events |
-| `fletta-reports/conference/junit.xml` | JUnit с `<healing>` |
-| `fletta-reports/conference/fletta-events.jsonl` | Поток healing events (проверяется в `zzz-reporting.spec.ts`) |
+| `frap-reports/conference/frap-debug.html` | Classic view (A): индекс или один отчёт |
+| `frap-reports/conference/frap-debug-explorer.html` | Explorer (B): sidebar при 2+ debug-тестах; stub при одном |
+| `frap-reports/conference/debug-reports/*.html` | Детальные debug-отчёты |
+| `frap-reports/conference/frap-report.json` | Сводка healing events |
+| `frap-reports/conference/junit.xml` | JUnit с `<healing>` |
+| `frap-reports/conference/frap-events.jsonl` | Поток healing events (проверяется в `zzz-reporting.spec.ts`) |
 
-`fletta-report.json` / `junit.xml` пишутся в `reporter.onEnd` **после** завершения Playwright — полная проверка CONF-RPT-RUN-PASS в `conference/verify-reports.mjs` (вызывается из `./scripts/test.sh conference`).
+`frap-report.json` / `junit.xml` пишутся в `reporter.onEnd` **после** завершения Playwright — полная проверка CONF-RPT-RUN-PASS в `conference/verify-reports.mjs` (вызывается из `./scripts/test.sh conference`).
 
 Время в заголовке debug HTML — через системную команду `date` (локальная TZ, как в терминале); в JSON-артефактах — ISO UTC (`Z`).
 
 Открыть после прогона:
 
 ```bash
-open e2e/fletta-reports/conference/fletta-debug.html
-open e2e/fletta-reports/conference/fletta-debug-explorer.html
+open e2e/frap-reports/conference/frap-debug.html
+open e2e/frap-reports/conference/frap-debug-explorer.html
 ```
 
 ## ID кейсов

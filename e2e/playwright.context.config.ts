@@ -1,9 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
-import { flettaPlaywright } from '@fletta/playwright';
+import { frapPlaywright } from '@frap/playwright';
 import { CONTEXT_REPORT_DIR } from './context/helpers';
 
 export default defineConfig({
-  ...flettaPlaywright({
+  ...frapPlaywright({
     minConfidence: 0.85,
     reportDir: CONTEXT_REPORT_DIR,
     enableHealing: false,

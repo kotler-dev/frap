@@ -1,7 +1,7 @@
-/** Self-contained styles for fletta-debug.html (warm neutrals + status accents). */
+/** Self-contained styles for frap-debug.html (warm neutrals + status accents). */
 
 export const REPORT_THEME_INIT = `(function () {
-  var stored = localStorage.getItem('fletta-theme');
+  var stored = localStorage.getItem('frap-theme');
   if (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches) {
     stored = 'dark';
   }
@@ -14,7 +14,7 @@ export const REPORT_THEME_TOGGLE = `(function () {
   if (!toggle) return;
   function applyTheme(theme) {
     root.setAttribute('data-theme', theme);
-    localStorage.setItem('fletta-theme', theme);
+    localStorage.setItem('frap-theme', theme);
   }
   toggle.addEventListener('click', function () {
     applyTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
@@ -28,10 +28,10 @@ export const REPORT_THEME_TOGGLE_EXPLORER = `(function () {
   if (!toggle) return;
   function applyTheme(theme) {
     root.setAttribute('data-theme', theme);
-    localStorage.setItem('fletta-theme', theme);
+    localStorage.setItem('frap-theme', theme);
     if (frame && frame.contentWindow) {
       try {
-        frame.contentWindow.postMessage({ type: 'fletta-theme', theme: theme }, '*');
+        frame.contentWindow.postMessage({ type: 'frap-theme', theme: theme }, '*');
       } catch (e) {}
       var src = frame.getAttribute('src');
       if (src) {
@@ -52,9 +52,9 @@ export const REPORT_EMBED_DETECT = `(function () {
 
 export const REPORT_EMBED_THEME_LISTENER = `(function () {
   window.addEventListener('message', function (ev) {
-    if (!ev.data || ev.data.type !== 'fletta-theme') return;
+    if (!ev.data || ev.data.type !== 'frap-theme') return;
     document.documentElement.setAttribute('data-theme', ev.data.theme);
-    localStorage.setItem('fletta-theme', ev.data.theme);
+    localStorage.setItem('frap-theme', ev.data.theme);
   });
 })();`;
 

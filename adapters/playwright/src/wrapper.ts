@@ -9,7 +9,7 @@ import {
   buildElementFoundDebugReport,
   writeDebugReport,
   type HealPolicy,
-} from '@fletta/sdk';
+} from '@frap/sdk';
 import type { WithFlettaOptions } from './config';
 import {
   buildSemantics,
@@ -20,7 +20,7 @@ import {
 } from './healing-events';
 
 interface FlettaLocator extends Locator {
-  __fletta?: {
+  __frap?: {
     originalLocator: Locator;
     healingEngine: HealingEngine;
     config: FlettaConfig;
@@ -36,14 +36,14 @@ export async function withFletta<T extends Locator>(
   config?: WithFlettaOptions,
   testName?: string
 ): Promise<FlettaLocator> {
-  const { testInfo, ...flettaConfig } = config ?? {};
+  const { testInfo, ...frapConfig } = config ?? {};
   const fullConfig: FlettaConfig = {
     minConfidence: 0.85,
-    reportDir: './fletta-reports',
+    reportDir: './frap-reports',
     enableHealing: true,
     enableReporting: true,
     healPolicy: 'allow',
-    ...flettaConfig,
+    ...frapConfig,
   };
   const healPolicy: HealPolicy = fullConfig.healPolicy ?? 'allow';
   const resolvedTestName = testName ?? getCurrentPlaywrightTestId(testInfo);
@@ -67,7 +67,7 @@ export async function withFletta<T extends Locator>(
         const sig = await extractSignatureFromPage(page, cleanSelector);
         if (sig) {
           recordedSignatures.set(selectorStr, sig);
-          console.log(`[fletta] Pre-recorded signature for ${cleanSelector}`);
+          console.log(`[frap] Pre-recorded signature for ${cleanSelector}`);
         }
       }
     } catch (e) {
@@ -75,7 +75,7 @@ export async function withFletta<T extends Locator>(
     }
   }
 
-  const flettaLocator: FlettaLocator = new Proxy(locator, {
+  const frapLocator: FlettaLocator = new Proxy(locator, {
     get(target, prop, receiver) {
       const value = Reflect.get(target, prop, receiver);
       
@@ -92,20 +92,20 @@ export async function withFletta<T extends Locator>(
           }, cleanSelector);
 
           if (!elementExists) {
-            console.log(`[fletta] Element not found (quick check): ${cleanSelector}`);
+            console.log(`[frap] Element not found (quick check): ${cleanSelector}`);
 
             if (!fullConfig.enableHealing) {
               throw new Error(`Element not found: ${cleanSelector}`);
             }
 
-            console.log('[fletta] Attempting healing...');
+            console.log('[frap] Attempting healing...');
             const snapshot = await buildSnapshotFromPage(page);
-            console.log(`[fletta] DOM snapshot built: ${snapshot.elements.length} elements`);
+            console.log(`[frap] DOM snapshot built: ${snapshot.elements.length} elements`);
 
             let originalSig = recordedSignatures.get(selectorKey);
             if (!originalSig) {
               // No pre-recorded signature - construct one from the selector and snapshot for healing
-              console.log('[fletta] No pre-recorded signature, constructing from selector...');
+              console.log('[frap] No pre-recorded signature, constructing from selector...');
               originalSig = constructSignatureFromSelector(cleanSelector, snapshot);
             }
 
@@ -117,7 +117,7 @@ export async function withFletta<T extends Locator>(
               'selector_missing'
             );
             const enrichedResult: HealResult = { ...healResult, semantics };
-            flettaLocator.__fletta!.lastHealResult = enrichedResult;
+            frapLocator.__frap!.lastHealResult = enrichedResult;
 
             recordHealingEvent(
               {
@@ -138,10 +138,10 @@ export async function withFletta<T extends Locator>(
               enrichDebugReport(fullConfig.reportDir, semantics, resolvedTestName);
             }
 
-            console.log(`[fletta] Healing result: healed=${healResult.healed}, confidence=${healResult.confidence.toFixed(2)}, selector="${healResult.selector}"`);
-            console.log(`[fletta] Top candidates: ${healResult.top_candidates.length}`);
+            console.log(`[frap] Healing result: healed=${healResult.healed}, confidence=${healResult.confidence.toFixed(2)}, selector="${healResult.selector}"`);
+            console.log(`[frap] Top candidates: ${healResult.top_candidates.length}`);
             healResult.top_candidates.forEach((c, i) => {
-              console.log(`[fletta]   Candidate ${i}: "${c.selector}" confidence=${c.confidence.toFixed(2)}`);
+              console.log(`[frap]   Candidate ${i}: "${c.selector}" confidence=${c.confidence.toFixed(2)}`);
             });
 
             if (healResult.healed && healResult.selector) {
@@ -167,7 +167,7 @@ export async function withFletta<T extends Locator>(
             }
             return result;
           } catch (error: any) {
-            console.log(`[fletta] Primary action failed: ${error.message}`);
+            console.log(`[frap] Primary action failed: ${error.message}`);
             const semantics = buildSemantics(healPolicy, false, true, 'action_failed');
             recordHealingEvent(
               {
@@ -195,17 +195,17 @@ export async function withFletta<T extends Locator>(
     },
   }) as FlettaLocator;
 
-  flettaLocator.__fletta = {
+  frapLocator.__frap = {
     originalLocator: locator,
     healingEngine,
     config: fullConfig,
   };
 
-  return flettaLocator;
+  return frapLocator;
 }
 
 async function buildSnapshotFromPage(page: Page): Promise<DOMSnapshot> {
-  console.log('[fletta] Building DOM snapshot (optimized)...');
+  console.log('[frap] Building DOM snapshot (optimized)...');
 
   try {
     return await page.evaluate(() => {
@@ -255,7 +255,7 @@ async function buildSnapshotFromPage(page: Page): Promise<DOMSnapshot> {
       };
     });
   } catch (e) {
-    console.error('[fletta] Failed to build DOM snapshot:', e);
+    console.error('[frap] Failed to build DOM snapshot:', e);
     // Return empty snapshot as fallback
     return {
       html: '',
@@ -311,7 +311,7 @@ async function extractSignatureFromPage(page: Page, selector: string): Promise<a
       };
     }, selector);
   } catch (e) {
-    console.error('[fletta] Failed to extract signature:', e);
+    console.error('[frap] Failed to extract signature:', e);
     return null;
   }
 }
@@ -433,5 +433,5 @@ function constructSignatureFromSelector(selector: string, snapshot: DOMSnapshot)
 }
 
 export function getLastHealResult(locator: FlettaLocator): HealResult | undefined {
-  return locator.__fletta?.lastHealResult;
+  return locator.__frap?.lastHealResult;
 }

@@ -3,7 +3,7 @@ type SelectorEngine = {
   query(root: Element | Document, selector: string): Element | null | Promise<Element | null>;
   queryAll?(root: Element | Document, selector: string): Element[] | Promise<Element[]>;
 };
-import { HealingEngine, FlettaConfig, createHealingEngine, DOMSnapshot, DOMElementInfo } from '@fletta/sdk';
+import { HealingEngine, FlettaConfig, createHealingEngine, DOMSnapshot, DOMElementInfo } from '@frap/sdk';
 
 interface FlettaSelectorEngine extends SelectorEngine {
   _healingEngine?: HealingEngine;
@@ -60,9 +60,9 @@ export function createFlettaSelectorEngine(config: FlettaConfig): FlettaSelector
         const healedElement = doc.querySelector(result.selector);
         
         if (healedElement && typeof window !== 'undefined') {
-          (healedElement as any).__flettaHealed = true;
-          (healedElement as any).__flettaConfidence = result.confidence;
-          (healedElement as any).__flettaOriginalSelector = selector;
+          (healedElement as any).__frapHealed = true;
+          (healedElement as any).__frapConfidence = result.confidence;
+          (healedElement as any).__frapOriginalSelector = selector;
         }
         
         return healedElement;

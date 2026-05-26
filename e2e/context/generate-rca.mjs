@@ -8,15 +8,15 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const reportDir = path.resolve(__dirname, '..', 'fletta-reports', 'context');
+const reportDir = path.resolve(__dirname, '..', 'frap-reports', 'context');
 const sdkRoot = path.resolve(__dirname, '../../sdk/typescript');
 
 function fail(msg) {
-  console.error(`[fletta-rca] ${msg}`);
+  console.error(`[frap-rca] ${msg}`);
   process.exit(1);
 }
 
-const contextPath = path.join(reportDir, 'fletta-context.json');
+const contextPath = path.join(reportDir, 'frap-context.json');
 if (!fs.existsSync(contextPath)) {
   fail(`Missing ${contextPath}`);
 }
@@ -29,7 +29,7 @@ const { formatRcaSummary } = await import(
 const contextReport = JSON.parse(fs.readFileSync(contextPath, 'utf-8'));
 const timeline = contextReport.timeline;
 if (!timeline?.events?.length) {
-  fail('fletta-context.json has no timeline events');
+  fail('frap-context.json has no timeline events');
 }
 
 function timelineForTraceId(traceId) {
@@ -45,11 +45,11 @@ try {
   fail(`RCA analysis failed: ${err}`);
 }
 
-const reportPath = path.join(reportDir, 'fletta-report.json');
+const reportPath = path.join(reportDir, 'frap-report.json');
 let contextTests = [];
 if (fs.existsSync(reportPath)) {
-  const flettaReport = JSON.parse(fs.readFileSync(reportPath, 'utf-8'));
-  contextTests = flettaReport.context_tests ?? [];
+  const frapReport = JSON.parse(fs.readFileSync(reportPath, 'utf-8'));
+  contextTests = frapReport.context_tests ?? [];
 }
 
 const byTest = [];
@@ -69,7 +69,7 @@ for (const test of contextTests) {
       rca: testRca,
     });
   } catch (err) {
-    console.error(`[fletta-rca] Per-test RCA failed for ${test.playwrightTestId}:`, err);
+    console.error(`[frap-rca] Per-test RCA failed for ${test.playwrightTestId}:`, err);
   }
 }
 
@@ -80,14 +80,14 @@ const rcaV2 = {
   by_test: byTest,
 };
 
-const rcaPath = path.join(reportDir, 'fletta-rca.json');
+const rcaPath = path.join(reportDir, 'frap-rca.json');
 fs.writeFileSync(rcaPath, JSON.stringify(rcaV2, null, 2));
-console.log(`[fletta] RCA report written to: ${rcaPath} (${formatRcaSummary(suiteRca)})`);
+console.log(`[frap] RCA report written to: ${rcaPath} (${formatRcaSummary(suiteRca)})`);
 
 if (fs.existsSync(reportPath)) {
-  const flettaReport = JSON.parse(fs.readFileSync(reportPath, 'utf-8'));
-  flettaReport.rca = rcaV2;
-  fs.writeFileSync(reportPath, JSON.stringify(flettaReport, null, 2));
+  const frapReport = JSON.parse(fs.readFileSync(reportPath, 'utf-8'));
+  frapReport.rca = rcaV2;
+  fs.writeFileSync(reportPath, JSON.stringify(frapReport, null, 2));
 }
 
 const junitPath = path.join(reportDir, 'junit.xml');

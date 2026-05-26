@@ -14,7 +14,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}=== fletta Dev Mode ===${NC}"
+echo -e "${BLUE}=== frap Dev Mode ===${NC}"
 echo ""
 echo "Starting development mode with file watching..."
 echo ""

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { HealingEngine, DOMSnapshot } from '@fletta/sdk';
+import { HealingEngine, DOMSnapshot } from '@frap/sdk';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -51,7 +51,7 @@ test.describe('F012: Debug Trace Mode', () => {
     expect(result.healed).toBe(true);
 
     // Verify debug report was created
-    const debugReportPath = path.join(reportDir, 'fletta-debug.json');
+    const debugReportPath = path.join(reportDir, 'frap-debug.json');
     expect(fs.existsSync(debugReportPath)).toBe(true);
 
     const debugReport = JSON.parse(fs.readFileSync(debugReportPath, 'utf-8'));
@@ -122,7 +122,7 @@ test.describe('F012: Debug Trace Mode', () => {
     expect(result.healed).toBe(false);
 
     // Verify debug report was still created even for failure
-    const debugReportPath = path.join(reportDir, 'fletta-debug.json');
+    const debugReportPath = path.join(reportDir, 'frap-debug.json');
     expect(fs.existsSync(debugReportPath)).toBe(true);
 
     const debugReport = JSON.parse(fs.readFileSync(debugReportPath, 'utf-8'));
@@ -181,7 +181,7 @@ test.describe('F012: Debug Trace Mode', () => {
     expect(result.healed).toBe(true);
 
     // Verify debug report was NOT created
-    const debugReportPath = path.join(reportDir, 'fletta-debug.json');
+    const debugReportPath = path.join(reportDir, 'frap-debug.json');
     expect(fs.existsSync(debugReportPath)).toBe(false);
 
     // Cleanup

@@ -14,7 +14,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}=== fletta Clean Build ===${NC}"
+echo -e "${BLUE}=== frap Clean Build ===${NC}"
 echo ""
 
 # Function to clean directory
@@ -54,7 +54,7 @@ if command -v cargo &> /dev/null; then
 fi
 
 # Clean reports
-rm -rf "$PROJECT_ROOT/e2e/fletta-reports" 2>/dev/null || true
+rm -rf "$PROJECT_ROOT/e2e/frap-reports" 2>/dev/null || true
 rm -rf "$PROJECT_ROOT/e2e/test-results" 2>/dev/null || true
 
 echo ""

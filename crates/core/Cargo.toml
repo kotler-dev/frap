@@ -1,5 +1,5 @@
 [package]
-name = "fletta-core"
+name = "frap-core"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
@@ -8,7 +8,7 @@ repository.workspace = true
 description = "Fletta Core — public API aggregation (signature, clustering, healing)"
 
 [lib]
-name = "fletta_core"
+name = "frap_core"
 crate-type = ["rlib", "cdylib"]
 
 [features]
@@ -21,7 +21,7 @@ serde_json = { workspace = true }
 signature = { path = "../signature" }
 clustering = { path = "../clustering" }
 healing = { path = "../healing" }
-fletta-rca = { path = "../rca" }
+frap-rca = { path = "../rca" }
 wasm-bindgen = { workspace = true, optional = true }
 getrandom = { version = "0.3", features = ["wasm_js"], optional = true }
 

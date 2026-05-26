@@ -2,7 +2,7 @@ use crate::report::RcaReport;
 use crate::rules::PrimaryCause;
 use serde::{Deserialize, Serialize};
 
-/// MCP-shaped `fletta/analyze` result (stub for F005).
+/// MCP-shaped `frap/analyze` result (stub for F005).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct McpAnalyzeResult {
     pub primary_cause: PrimaryCause,
@@ -33,7 +33,7 @@ mod tests {
     use super::*;
     use crate::report::RcaReport;
     use crate::rules::CauseDetails;
-    use fletta_context::timeline::Timeline;
+    use frap_context::timeline::Timeline;
 
     #[test]
     fn mcp_result_matches_fixture_shape() {

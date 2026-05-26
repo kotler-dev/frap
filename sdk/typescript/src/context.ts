@@ -1,4 +1,4 @@
-/** JSON schema aligned with `crates/context` (fletta-context). */
+/** JSON schema aligned with `crates/context` (frap-context). */
 
 export type LogLevel = 'log' | 'info' | 'warn' | 'error' | 'debug';
 

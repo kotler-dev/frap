@@ -1,44 +1,44 @@
-# fletta
+# frap
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![npm @fletta/sdk](https://img.shields.io/npm/v/@fletta/sdk?label=%40fletta%2Fsdk)](https://www.npmjs.com/package/@fletta/sdk)
-[![npm @fletta/playwright](https://img.shields.io/npm/v/@fletta/playwright?label=%40fletta%2Fplaywright)](https://www.npmjs.com/package/@fletta/playwright)
+[![npm @frap/sdk](https://img.shields.io/npm/v/@frap/sdk?label=%40frap%2Fsdk)](https://www.npmjs.com/package/@frap/sdk)
+[![npm @frap/playwright](https://img.shields.io/npm/v/@frap/playwright?label=%40frap%2Fplaywright)](https://www.npmjs.com/package/@frap/playwright)
 
 > Deterministic engine for UI structure extraction: stable identifiers, self-healing selectors, explainable reports. No ML in core, on-prem first, AI-ready via MCP.
 
-**fletta** parses element trees (DOM, ViewTree, accessibility), clusters components with deterministic algorithms, and generates stable locators for Page Objects and tests. When a selector breaks, it heals by signature matching with confidence scores and diff reports.
+**frap** parses element trees (DOM, ViewTree, accessibility), clusters components with deterministic algorithms, and generates stable locators for Page Objects and tests. When a selector breaks, it heals by signature matching with confidence scores and diff reports.
 
 ## No ML in core, AI-ready
 
 Three layers — not one product category:
 
-| Layer | What | ML in fletta? |
+| Layer | What | ML in frap? |
 |-------|------|----------------|
 | **Core** (OSS) | Signatures, Drain3 clustering, self-healing, WASM | **No** — same input → same output |
 | **Integration** (roadmap) | MCP tools: `discover`, `resolve`, `analyze` | **No** — JSON-RPC wire to agents; LLM runs outside |
 | **Enhancements** (optional) | Semantic naming, step generation | **Optional** — separate package, BYO API key |
 
-**fletta is a grounding layer, not an AI testing tool.** It does not orchestrate LLMs or generate tests from prompts. An agent (Cursor, Claude, your stack) calls fletta for structured element maps, stable execution, and explainable RCA — deterministic infrastructure the model can rely on.
+**frap is a grounding layer, not an AI testing tool.** It does not orchestrate LLMs or generate tests from prompts. An agent (Cursor, Claude, your stack) calls frap for structured element maps, stable execution, and explainable RCA — deterministic infrastructure the model can rely on.
 
 Details: [docs/positioning.md](docs/positioning.md) · [docs/monetization.md](docs/monetization.md)
 
 ## Quick start (npm)
 
-Published packages: [@fletta/sdk](https://www.npmjs.com/package/@fletta/sdk) · [@fletta/playwright](https://www.npmjs.com/package/@fletta/playwright)
+Published packages: [@frap/sdk](https://www.npmjs.com/package/@frap/sdk) · [@frap/playwright](https://www.npmjs.com/package/@frap/playwright)
 
 ```bash
-npm install @fletta/playwright @fletta/sdk
+npm install @frap/playwright @frap/sdk
 ```
 
 ```typescript
 // playwright.config.ts
 import { defineConfig } from '@playwright/test';
-import { flettaPlaywright, registerFlettaSelector } from '@fletta/playwright';
+import { frapPlaywright, registerFlettaSelector } from '@frap/playwright';
 
 export default defineConfig({
-  ...flettaPlaywright({
+  ...frapPlaywright({
     minConfidence: 0.85,
-    reportDir: './fletta-reports',
+    reportDir: './frap-reports',
     captureAll: true, // optional: unified context timeline (F002)
   }),
   use: {
@@ -51,7 +51,7 @@ export default defineConfig({
 
 ```typescript
 // test.spec.ts — custom selector or withFletta() wrapper
-await page.locator('fletta:[data-testid="pay-btn"]').click();
+await page.locator('frap:[data-testid="pay-btn"]').click();
 ```
 
 See [adapters/playwright/README.md](adapters/playwright/README.md) and [sdk/typescript/README.md](sdk/typescript/README.md).
@@ -79,11 +79,11 @@ Release verification (Rust + E2E + lint) runs on git tags `v*` in CI. See [docs/
 
 **Wrapper API** — wrap an existing locator with [`withFletta`](adapters/playwright/README.md).
 
-**Unified context** — `captureAll: true` writes `fletta-context.json` (network, console, UI); RCA report via `fletta-rca.json`. Demo: `./scripts/test.sh context`.
+**Unified context** — `captureAll: true` writes `frap-context.json` (network, console, UI); RCA report via `frap-rca.json`. Demo: `./scripts/test.sh context`.
 
 ## How it works
 
-When a primary selector fails, fletta:
+When a primary selector fails, frap:
 
 1. Extracts the element signature (path, attributes, text)
 2. Clusters similar elements (Drain3)
@@ -95,13 +95,13 @@ When a primary selector fails, fletta:
 
 **v1.1.1** (npm)
 
-- Unified Context (F002): `fletta-context.json`, C002–C004 E2E
-- RCA (F003): `fletta-rca.json`, WASM + `generate-rca.mjs`
-- Public packages `@fletta/sdk` and `@fletta/playwright` on [npm](https://www.npmjs.com/settings/fletta/packages)
+- Unified Context (F002): `frap-context.json`, C002–C004 E2E
+- RCA (F003): `frap-rca.json`, WASM + `generate-rca.mjs`
+- Public packages `@frap/sdk` and `@frap/playwright` on [npm](https://www.npmjs.com/settings/frap/packages)
 
 **v1.0.0**
 
-- Rust/WASM core (`fletta-core`, `healJson`)
+- Rust/WASM core (`frap-core`, `healJson`)
 - Playwright adapter — custom selector + `withFletta`, JUnit/JSON reports
 - Debug Trace Mode (F012) — Classic + Explorer HTML reports
 - Conference E2E gates CP001–CP005
@@ -124,7 +124,7 @@ When a primary selector fails, fletta:
 ## Project structure
 
 ```
-fletta/
+frap/
 ├── crates/                 # Rust core (signature, clustering, healing, context, rca)
 ├── sdk/typescript/         # TypeScript SDK + WASM bindings
 ├── adapters/playwright/    # Playwright integration

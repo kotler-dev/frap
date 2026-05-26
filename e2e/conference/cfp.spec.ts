@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { withFletta, getLastHealResult } from '@fletta/playwright';
+import { withFletta, getLastHealResult } from '@frap/playwright';
 import { CONF_PATH, confFletta } from './helpers';
 
 test.describe('Conference 2026 Spring', () => {

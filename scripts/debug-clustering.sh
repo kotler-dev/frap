@@ -15,7 +15,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}=== fletta Debug Mode (headed) ===${NC}"
+echo -e "${BLUE}=== frap Debug Mode (headed) ===${NC}"
 echo ""
 
 # Ensure server is running

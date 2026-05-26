@@ -1,7 +1,7 @@
-import type { WithFlettaOptions } from '@fletta/playwright';
+import type { WithFlettaOptions } from '@frap/playwright';
 
 /** Fletta artifacts for the Conference Playwright project */
-export const CONF_REPORT_DIR = './fletta-reports/conference';
+export const CONF_REPORT_DIR = './frap-reports/conference';
 
 export const CONF_PATH = {
   index: '/conference/index.html',

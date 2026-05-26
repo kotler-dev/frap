@@ -5,7 +5,7 @@ import type {
   MessageDirection,
   NetworkPhase,
   NetworkProtocol,
-} from '@fletta/sdk';
+} from '@frap/sdk';
 import { randomUUID } from 'crypto';
 import {
   getContextTraceId,

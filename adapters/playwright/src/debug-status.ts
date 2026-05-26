@@ -1,4 +1,4 @@
-import type { DebugReport, DebugStep } from '@fletta/sdk';
+import type { DebugReport, DebugStep } from '@frap/sdk';
 
 export type DebugStatusType = 'success' | 'warning' | 'failure';
 

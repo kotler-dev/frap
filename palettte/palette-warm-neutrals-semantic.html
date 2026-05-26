@@ -6,7 +6,7 @@
     <title>Fletta — Warm neutrals + status accents</title>
     <script>
         (function () {
-            var stored = localStorage.getItem('fletta-theme');
+            var stored = localStorage.getItem('frap-theme');
             if (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 stored = 'dark';
             }
@@ -81,8 +81,8 @@
                 <p>Discover UI structure, generate signatures, explain every resolution — on-prem, no ML.</p>
                 <div class="hero-actions">
                     <div class="hero-input-wrap">
-                        <input class="hero-input" type="text" value="npm i @fletta/playwright" readonly aria-label="Install command">
-                        <button class="hero-copy-btn" type="button" aria-label="Copy" data-copy="npm i @fletta/playwright">
+                        <input class="hero-input" type="text" value="npm i @frap/playwright" readonly aria-label="Install command">
+                        <button class="hero-copy-btn" type="button" aria-label="Copy" data-copy="npm i @frap/playwright">
                             <svg class="icon icon--md" aria-hidden="true"><use href="#icon-copy"/></svg>
                         </button>
                     </div>
@@ -141,7 +141,7 @@
                         <h3>Code block</h3>
                         <div class="code-block">
                             <span class="comment">// Discover UI structure</span><br>
-                            <span class="keyword">await</span> <span class="function">fletta.discover</span>({<br>
+                            <span class="keyword">await</span> <span class="function">frap.discover</span>({<br>
                             &nbsp;&nbsp;url: <span class="string">'https://app.example.com'</span><br>
                             });
                         </div>
@@ -213,7 +213,7 @@
 
             function applyTheme(theme) {
                 root.setAttribute('data-theme', theme);
-                localStorage.setItem('fletta-theme', theme);
+                localStorage.setItem('frap-theme', theme);
                 document.querySelectorAll('.theme-hex').forEach(function (el) {
                     el.textContent = el.getAttribute(theme === 'dark' ? 'data-dark' : 'data-light');
                 });

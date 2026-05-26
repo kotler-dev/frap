@@ -1,7 +1,7 @@
 {
-  "name": "@fletta/sdk",
+  "name": "@frap/frap",
   "version": "1.1.1",
-  "description": "fletta SDK for self-healing test selectors",
+  "description": "frap SDK for self-healing test selectors",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
@@ -25,12 +25,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kotler-dev/fletta.git",
+    "url": "git+https://github.com/kotler-dev/frap.git",
     "directory": "sdk/typescript"
   },
-  "homepage": "https://fletta.dev",
+  "homepage": "https://frap.dev",
   "bugs": {
-    "url": "https://github.com/kotler-dev/fletta/issues"
+    "url": "https://github.com/kotler-dev/frap/issues"
   },
   "scripts": {
     "build:wasm:bundler": "cd ../../crates/core && wasm-pack build --target bundler --out-dir ../../sdk/typescript/wasm --features wasm",
@@ -49,7 +49,7 @@
     "selectors",
     "e2e"
   ],
-  "author": "fletta team",
+  "author": "frap team",
   "license": "Apache-2.0",
   "publishConfig": {
     "access": "public"

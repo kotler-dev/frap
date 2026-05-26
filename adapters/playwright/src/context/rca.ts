@@ -1,5 +1,5 @@
-import type { RcaReport } from '@fletta/sdk';
-import { formatRcaSummary } from '@fletta/sdk';
+import type { RcaReport } from '@frap/sdk';
+import { formatRcaSummary } from '@frap/sdk';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -17,7 +17,7 @@ export interface RcaReportV2 {
 }
 
 export function loadRcaReport(reportDir: string): RcaReportV2 | null {
-  const reportPath = path.join(reportDir, 'fletta-rca.json');
+  const reportPath = path.join(reportDir, 'frap-rca.json');
   if (!fs.existsSync(reportPath)) {
     return null;
   }

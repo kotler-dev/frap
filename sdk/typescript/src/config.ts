@@ -8,13 +8,13 @@ export interface FlettaConfig {
   debug?: boolean | 'verbose';
   /** Default: allow. Use deny for stable-selector gates (CP001). */
   healPolicy?: HealPolicy;
-  /** Capture network, console, and UI events into `fletta-context.json` (F002). */
+  /** Capture network, console, and UI events into `frap-context.json` (F002). */
   captureAll?: boolean;
 }
 
 export const DEFAULT_CONFIG: FlettaConfig = {
   minConfidence: 0.85,
-  reportDir: './fletta-reports',
+  reportDir: './frap-reports',
   enableHealing: true,
   enableReporting: true,
   debug: true,

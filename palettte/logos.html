@@ -6,7 +6,7 @@
     <title>Fletta — Logo explorer</title>
     <script>
         (function () {
-            var stored = localStorage.getItem('fletta-theme');
+            var stored = localStorage.getItem('frap-theme');
             if (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 stored = 'dark';
             }
@@ -229,7 +229,7 @@
 
             function applyTheme(theme) {
                 root.setAttribute('data-theme', theme);
-                localStorage.setItem('fletta-theme', theme);
+                localStorage.setItem('frap-theme', theme);
             }
 
             renderCards();
