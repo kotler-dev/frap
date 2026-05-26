@@ -1,4 +1,4 @@
-import { FlettaConfig } from './config';
+import { FrapConfig } from './config';
 import { DebugTracer, DebugReport, ClusterView, writeDebugReport } from './debug';
 import { fallbackExtractSignature, fallbackHeal } from './core-fallback';
 import type {
@@ -19,11 +19,11 @@ export type {
 } from './core-types';
 
 export class HealingEngine {
-  private config: FlettaConfig;
+  private config: FrapConfig;
   private wasmModule: WasmHealModule | null = null;
   private wasmLoadAttempted = false;
 
-  constructor(config: FlettaConfig) {
+  constructor(config: FrapConfig) {
     this.config = config;
   }
 
@@ -181,7 +181,7 @@ export class HealingEngine {
   }
 }
 
-export async function createHealingEngine(config: FlettaConfig): Promise<HealingEngine> {
+export async function createHealingEngine(config: FrapConfig): Promise<HealingEngine> {
   const engine = new HealingEngine(config);
   await engine.init();
   return engine;

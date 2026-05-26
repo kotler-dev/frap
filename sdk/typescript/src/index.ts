@@ -1,5 +1,5 @@
 export {
-  FlettaConfig,
+  FrapConfig,
   DEFAULT_CONFIG,
   mergeConfig,
   HealingReport,

@@ -3,19 +3,19 @@ type SelectorEngine = {
   query(root: Element | Document, selector: string): Element | null | Promise<Element | null>;
   queryAll?(root: Element | Document, selector: string): Element[] | Promise<Element[]>;
 };
-import { HealingEngine, FlettaConfig, createHealingEngine, DOMSnapshot, DOMElementInfo } from '@frap/sdk';
+import { HealingEngine, FrapConfig, createHealingEngine, DOMSnapshot, DOMElementInfo } from '@frap/frap';
 
-interface FlettaSelectorEngine extends SelectorEngine {
+interface FrapSelectorEngine extends SelectorEngine {
   _healingEngine?: HealingEngine;
-  _config: FlettaConfig;
+  _config: FrapConfig;
   _signatures: Map<string, any>;
 }
 
 let globalEngine: HealingEngine | null = null;
-let globalConfig: FlettaConfig | null = null;
+let globalConfig: FrapConfig | null = null;
 let recordedSignatures: Map<string, any> = new Map();
 
-export async function initFlettaEngine(config: FlettaConfig): Promise<void> {
+export async function initFrapEngine(config: FrapConfig): Promise<void> {
   globalEngine = await createHealingEngine(config);
   globalConfig = config;
 }
@@ -24,14 +24,14 @@ export function recordSignature(selector: string, signature: any): void {
   recordedSignatures.set(selector, signature);
 }
 
-export function createFlettaSelectorEngine(config: FlettaConfig): FlettaSelectorEngine {
-  const engine: FlettaSelectorEngine = {
+export function createFrapSelectorEngine(config: FrapConfig): FrapSelectorEngine {
+  const engine: FrapSelectorEngine = {
     _config: config,
     _signatures: recordedSignatures,
 
     async query(root: Element | Document, selector: string): Promise<Element | null> {
       if (!globalEngine) {
-        await initFlettaEngine(config);
+        await initFrapEngine(config);
       }
 
       const doc = root instanceof Document ? root : root.ownerDocument;

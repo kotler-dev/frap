@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 import {
   HealingEngine,
-  FlettaConfig,
+  FrapConfig,
   createHealingEngine,
   DOMSnapshot,
   DOMElementInfo,
@@ -9,8 +9,8 @@ import {
   buildElementFoundDebugReport,
   writeDebugReport,
   type HealPolicy,
-} from '@frap/sdk';
-import type { WithFlettaOptions } from './config';
+} from '@frap/frap';
+import type { WithFrapOptions } from './config';
 import {
   buildSemantics,
   enrichDebugReport,
@@ -23,7 +23,7 @@ interface FlettaLocator extends Locator {
   __frap?: {
     originalLocator: Locator;
     healingEngine: HealingEngine;
-    config: FlettaConfig;
+    config: FrapConfig;
     lastHealResult?: HealResult;
   };
 }
@@ -33,11 +33,11 @@ const recordedSignatures = new Map<string, any>();
 export async function withFletta<T extends Locator>(
   locator: T,
   page: Page,
-  config?: WithFlettaOptions,
+  config?: WithFrapOptions,
   testName?: string
 ): Promise<FlettaLocator> {
   const { testInfo, ...frapConfig } = config ?? {};
-  const fullConfig: FlettaConfig = {
+  const fullConfig: FrapConfig = {
     minConfidence: 0.85,
     reportDir: './frap-reports',
     enableHealing: true,

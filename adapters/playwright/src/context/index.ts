@@ -1,4 +1,4 @@
-export { attachFlettaContext, recordContextUiEvent } from './capture';
+export { attachFrapContext, recordContextUiEvent } from './capture';
 export type { ContextCaptureOptions } from './capture';
 export {
   clearContextBuffers,

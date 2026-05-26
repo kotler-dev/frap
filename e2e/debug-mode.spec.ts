@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { HealingEngine, DOMSnapshot } from '@frap/sdk';
+import { HealingEngine, DOMSnapshot } from '@frap/frap';
 import * as fs from 'fs';
 import * as path from 'path';
 
