@@ -30,7 +30,7 @@ interface FlettaLocator extends Locator {
 
 const recordedSignatures = new Map<string, any>();
 
-export async function withFletta<T extends Locator>(
+export async function withFrap<T extends Locator>(
   locator: T,
   page: Page,
   config?: WithFrapOptions,
