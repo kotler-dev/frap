@@ -18,7 +18,7 @@
     "typescript": "^5.4.0"
   },
   "dependencies": {
-    "frapcode-playwright": "file:../adapters/playwright",
-    "frapcode": "file:../sdk/typescript"
+    "@frap/frap-playwright": "file:../adapters/playwright",
+    "@frap/frap": "file:../sdk/typescript"
   }
 }

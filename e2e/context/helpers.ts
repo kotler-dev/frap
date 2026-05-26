@@ -1,4 +1,4 @@
-import type { WithFrapOptions } from 'frapcode-playwright';
+import type { WithFrapOptions } from '@frap/frap-playwright';
 
 export const CONTEXT_REPORT_DIR = './frap-reports/context';
 

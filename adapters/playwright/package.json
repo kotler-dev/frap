@@ -1,5 +1,5 @@
 {
-  "name": "frapcode-playwright",
+  "name": "@frap/frap-playwright",
   "version": "0.1.0",
   "description": "Playwright adapter for Frap deterministic selectors",
   "main": "dist/index.js",
@@ -35,7 +35,7 @@
     "@playwright/test": ">=1.40.0"
   },
   "devDependencies": {
-    "frapcode": "file:../../sdk/typescript",
+    "@frap/frap": "file:../../sdk/typescript",
     "@playwright/test": "^1.44.0",
     "@types/node": "^20.0.0",
     "typescript": "^5.4.0",
@@ -44,6 +44,6 @@
     "@typescript-eslint/parser": "^7.0.0"
   },
   "dependencies": {
-    "frapcode": "0.1.0"
+    "@frap/frap": "0.1.0"
   }
 }
