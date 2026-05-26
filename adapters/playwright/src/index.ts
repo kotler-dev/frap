@@ -93,9 +93,9 @@ export async function registerFlettaSelector(
     ...config,
   };
 
-  await initFlettaEngine(fullConfig);
-  
-  const engine = createFlettaSelectorEngine(fullConfig);
+  await initFrapEngine(fullConfig);
+
+  const engine = createFrapSelectorEngine(fullConfig);
   await selectors.register('frap', engine);
 }
 
