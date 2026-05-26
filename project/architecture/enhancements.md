@@ -18,7 +18,7 @@ These must be:
 
 ## Decision
 
-Enhancements live in separate packages (`fletta-enhancements`), implement trait interfaces, and are dynamically loaded by core.
+Enhancements live in separate packages (`frap-enhancements`), implement trait interfaces, and are dynamically loaded by core.
 
 ## Architecture
 
@@ -53,9 +53,9 @@ Enhancements live in separate packages (`fletta-enhancements`), implement trait 
 ### 1. Semantic Naming
 
 ```rust
-// fletta-enhancements/semantic-naming/src/lib.rs
+// frap-enhancements/semantic-naming/src/lib.rs
 
-use fletta_core::extensions::SemanticNamer;
+use frap_core::extensions::SemanticNamer;
 
 pub struct LLMSemanticNamer {
     client: Box<dyn LLMClient>,
@@ -101,9 +101,9 @@ impl SemanticNamer for LLMSemanticNamer {
 ### 2. Visual Matching
 
 ```rust
-// fletta-enhancements/visual-matching/src/lib.rs
+// frap-enhancements/visual-matching/src/lib.rs
 
-use fletta_core::extensions::VisualMatcher;
+use frap_core::extensions::VisualMatcher;
 
 pub struct OpenCVVisualMatcher {
     feature_detector: Arc<dyn FeatureDetector>,
@@ -131,9 +131,9 @@ impl VisualMatcher for OpenCVVisualMatcher {
 ### 3. Step Generation
 
 ```rust
-// fletta-enhancements/step-generation/src/lib.rs
+// frap-enhancements/step-generation/src/lib.rs
 
-use fletta_core::extensions::StepGenerator;
+use frap_core::extensions::StepGenerator;
 
 pub struct LLMStepGenerator {
     client: Box<dyn LLMClient>,
@@ -172,7 +172,7 @@ impl StepGenerator for LLMStepGenerator {
 Users provide their own API keys. Core never stores or manages keys.
 
 ```yaml
-# fletta.yml (user configuration)
+# frap.yml (user configuration)
 enhancements:
   semantic_naming:
     enabled: true
@@ -192,7 +192,7 @@ enhancements:
 ```
 
 ```rust
-// fletta-enhancements/src/providers/mod.rs
+// frap-enhancements/src/providers/mod.rs
 
 pub fn create_llm_client(config: &LLMConfig) -> Box<dyn LLMClient> {
     match config.provider {
@@ -209,11 +209,11 @@ pub fn create_llm_client(config: &LLMConfig) -> Box<dyn LLMClient> {
 Enterprise customers can use Fletta-managed LLM access:
 
 ```yaml
-# fletta.enterprise.yml (managed tier)
+# frap.enterprise.yml (managed tier)
 enhancements:
   semantic_naming:
     enabled: true
-    provider: fletta_managed
+    provider: frap_managed
     api_key: null  # Managed by Fletta
     
     # Enterprise features
@@ -302,7 +302,7 @@ fn test_page_object_generation_with_naming() {
 Enhancements have their own test suite, separate from core:
 
 ```
-fletta-enhancements/
+frap-enhancements/
 ├── semantic-naming/
 │   ├── src/
 │   └── tests/

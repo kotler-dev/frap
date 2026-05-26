@@ -297,7 +297,7 @@ impl FlettaEngine {
 ## Enterprise Configuration
 
 ```yaml
-# fletta.enterprise.yml (Enterprise tier)
+# frap.enterprise.yml (Enterprise tier)
 extensions:
   policy:
     type: "production_safety"
@@ -320,7 +320,7 @@ extensions:
     config:
       provider: "openai"
       api_key: "${OPENAI_API_KEY}"  # From env
-      cache_dir: "/var/cache/fletta"
+      cache_dir: "/var/cache/frap"
 ```
 
 ## Related Documents

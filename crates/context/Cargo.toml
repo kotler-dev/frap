@@ -1,5 +1,5 @@
 [package]
-name = "fletta-context"
+name = "frap-context"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
@@ -8,7 +8,7 @@ repository.workspace = true
 description = "Fletta unified context — timeline of UI, network, and log events"
 
 [lib]
-name = "fletta_context"
+name = "frap_context"
 
 [dependencies]
 serde = { workspace = true }

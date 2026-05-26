@@ -32,7 +32,7 @@
 ## Сценарии использования
 
 ### Для QA-автоматизации
-- **Быстрое создание Page Object** для новых страниц — `fletta discover` даёт готовую структуру
+- **Быстрое создание Page Object** для новых страниц — `frap discover` даёт готовую структуру
 - **Стабилизация flaky тестов** — resolution находит элементы даже после рефакторинга
 - **Drift detection в CI** — узнать об изменении UI до падения теста
 
@@ -75,9 +75,9 @@
 - Экспорт в JUnit XML, Allure, и другие форматы
 
 ### AI-ready через MCP
-- `fletta/discover` — element map для grounding
-- `fletta/analyze` — RCA для decision support
-- `fletta/resolve` — стабильное выполнение действий
+- `frap/discover` — element map для grounding
+- `frap/analyze` — RCA для decision support
+- `frap/resolve` — стабильное выполнение действий
 
 ---
 
@@ -111,14 +111,14 @@
 
 ```bash
 # Дискаверинг UI — element map за секунды
-fletta discover --url https://example.com --output element-map.json
+frap discover --url https://example.com --output element-map.json
 
 # Интеграция с Playwright — self-healing селекторы
 # В playwright.config.ts:
-selectors: { 'fletta': '@fletta/playwright' }
+selectors: { 'frap': '@frap/frap-playwright' }
 
 // В тесте:
-await page.click('fletta://filters/category');
+await page.click('frap://filters/category');
 ```
 
 ---

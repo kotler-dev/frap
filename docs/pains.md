@@ -106,7 +106,7 @@ Fletta — **слой вокруг UI-структуры и селекторов
 
 | Боль (ID) | Возможность Fletta | Демо / кейс |
 |-----------|-------------------|-------------|
-| P01, P04 | Structure discovery | `fletta discover`, C004 |
+| P01, P04 | Structure discovery | `frap discover`, C004 |
 | P02, P03 | Self-healing + explainability | CP002, CP003, C001 |
 | P05 | Deterministic, no ML | CP003 safe-fail, positioning vs Healenium |
 | P06 | Unified context, RCA | C002, C003 (v1.1+) |

@@ -7,7 +7,7 @@
 ## Принципы
 
 1. **Core всегда OSS** — structure discovery, resolution, clustering, SDK, CLI — deterministic algorithms only, NO ML dependencies.
-2. **Enhancements опциональны** — ML/LLM features в отдельном пакете (`fletta-enhancements`), bring-your-own-key или managed.
+2. **Enhancements опциональны** — ML/LLM features в отдельном пакете (`frap-enhancements`), bring-your-own-key или managed.
 3. **Банк использует core бесплатно** — InSourceHub strategy, monetization через внешний рынок.
 4. **Нет paywall на core безопасность** — audit log базовый в OSS; расширенный compliance — paid enterprise tier.
 
@@ -46,10 +46,10 @@
 |-----------|-------------|
 | **Rust/WASM Core** | Signature computation, Drain3 clustering, resolution engine |
 | **Sources** | Chrome/CDP, Playwright adapter |
-| **CLI** | `fletta discover`, `fletta analyze`, `fletta resolve` |
+| **CLI** | `frap discover`, `frap analyze`, `frap resolve` |
 | **SDK** | TypeScript SDK, Java SDK (roadmap) |
 | **Element Map Format** | Open specification |
-| **MCP Server** | `fletta/discover`, `fletta/analyze` tools |
+| **MCP Server** | `frap/discover`, `frap/analyze` tools |
 | **Basic Audit** | Local logs, console output |
 | **Documentation** | Full docs, quickstart guides |
 
@@ -68,7 +68,7 @@
 
 ## Tier 2: Enhancements (Pro / Managed)
 
-**Package:** `@fletta/enhancements` (npm) / `fletta-enhancements` (crate)
+**Package:** `@frap/frap-enhancements` (npm) / `frap-enhancements` (crate)
 
 ### Pro: Bring-Your-Own-Key (BYO-key)
 
@@ -127,7 +127,7 @@ enhancements:
 enhancements:
   semantic_naming:
     enabled: true
-    provider: fletta_managed
+    provider: frap_managed
     # No API key needed
     caching: true
     rate_limit: 60/minute
@@ -252,7 +252,7 @@ enhancements:
 
 ## Comparison with Competitors
 
-| | Healenium | Testim/Mabl | fletta |
+| | Healenium | Testim/Mabl | frap |
 |---|---|---|---|
 | **Core** | Partially OSS | Closed | **Fully OSS (Apache-2.0)** |
 | **ML in core** | Yes | Yes | **NO — deterministic** |

@@ -22,10 +22,10 @@ Fletta не заменяет AI-агент — Fletta делает его дей
 
 ## User workflow
 
-1. AI-агент тестирует приложение через fletta MCP
-2. fletta записывает: tool calls, аргументы, результаты
+1. AI-агент тестирует приложение через frap MCP
+2. frap записывает: tool calls, аргументы, результаты
 3. Тестировщик задаёт assertions: «вызвать replay ровно 2 раза"
-4. fletta проверяет assertions на записанной сессии
+4. frap проверяет assertions на записанной сессии
 5. При смене модели (GPT-4 → Claude) — replay сессии, сравнение behavior
 6. Для мультиагентных систем: A2A flow testing
 
@@ -46,10 +46,10 @@ Fletta не заменяет AI-агент — Fletta делает его дей
 
 ## Acceptance criteria
 
-- [ ] Capture: `fletta agent:record` записывает tool calls
-- [ ] Assertions: `fletta agent:assert` проверяет правила
-- [ ] Replay: `fletta agent:replay` с другой моделью
-- [ ] A2A: `fletta agent:swarm` для мультиагентов
+- [ ] Capture: `frap agent:record` записывает tool calls
+- [ ] Assertions: `frap agent:assert` проверяет правила
+- [ ] Replay: `frap agent:replay` с другой моделью
+- [ ] A2A: `frap agent:swarm` для мультиагентов
 - [ ] C007: assertions проходят на исходной модели
 - [ ] C008: A2A коммуникация протестирована
 - [ ] Audit trail: immutable log действий агента
@@ -77,7 +77,7 @@ struct AgentSession {
 
 struct ToolCall {
     timestamp: u64,
-    tool: String,           // "fletta/replay"
+    tool: String,           // "frap/replay"
     arguments: Value,
     result: Value,
 }
@@ -96,21 +96,21 @@ enum Assertion {
 ### CLI
 ```bash
 # Запись сессии
-fletta agent:record --agent-id "shop-assistant" --session-id "audit-001"
+frap agent:record --agent-id "shop-assistant" --session-id "audit-001"
 
 # Отправка запроса агенту
-echo "Проверь оформление заказа" | fletta agent:prompt --session "audit-001"
+echo "Проверь оформление заказа" | frap agent:prompt --session "audit-001"
 
 # Проверка assertions
-fletta agent:assert --session "audit-001" \
-  --rule "fletta/replay called 2 times" \
+frap agent:assert --session "audit-001" \
+  --rule "frap/replay called 2 times" \
   --rule "duration < 60s"
 
 # Replay с другой моделью
-fletta agent:replay --session "audit-001" --model "claude-sonnet-4"
+frap agent:replay --session "audit-001" --model "claude-sonnet-4"
 
 # A2A swarm
-fletta agent:swarm --agents "coordinator,ui-tester,reporter" --capture
+frap agent:swarm --agents "coordinator,ui-tester,reporter" --capture
 ```
 
 ### Риски и зависимости
@@ -123,15 +123,15 @@ fletta agent:swarm --agents "coordinator,ui-tester,reporter" --capture
 ### Manual smoke
 ```bash
 # C007: AI-Agent Tool Call Audit
-fletta agent:record --agent-id "shop-assistant" --session-id "test-001"
-echo "Проверь оформление заказа" | fletta agent:prompt --session "test-001"
-fletta agent:assert --session "test-001" --rule "fletta/replay called 2 times"
+frap agent:record --agent-id "shop-assistant" --session-id "test-001"
+echo "Проверь оформление заказа" | frap agent:prompt --session "test-001"
+frap agent:assert --session "test-001" --rule "frap/replay called 2 times"
 # Expected: PASSED
 
 # C008: Multi-Agent A2A
-fletta agent:swarm --agents "coordinator,ui-tester" --capture
-fletta agent:swarm:task --prompt "Test checkout flow"
-fletta agent:swarm:analyze --run-id <id>
+frap agent:swarm --agents "coordinator,ui-tester" --capture
+frap agent:swarm:task --prompt "Test checkout flow"
+frap agent:swarm:analyze --run-id <id>
 # Expected: messages, delegations, no data loss
 ```
 

@@ -17,7 +17,7 @@
 
 1. Пользователь записывает тест с обычным селектором (например, `[data-testid="pay-btn"]`)
 2. Разработчики меняют UI (например, `data-testid` становится `checkout-pay`)
-3. При следующем запуске fletta не находит элемент по primary-селектору
+3. При следующем запуске frap не находит элемент по primary-селектору
 4. Система ищет по сигнатуре: текст, структура, позиция, стабильные атрибуты
 5. Находит наиболее похожий элемент с confidence score
 6. Если score ≥ minConfidence — тест проходит (healed), иначе — fail с отчётом
@@ -53,7 +53,7 @@
 | Signature extraction | ✅ | `crates/signature/src/lib.rs` |
 | Clustering (Drain3) | ✅ | `crates/clustering/src/lib.rs` |
 | Healing engine | ✅ | `crates/healing/src/lib.rs` |
-| TS SDK (WASM runtime) | ✅ | `sdk/typescript/src/core.ts` → `fletta_core` WASM |
+| TS SDK (WASM runtime) | ✅ | `sdk/typescript/src/core.ts` → `frap_core` WASM |
 | Algorithm tests | ✅ | Unit tests in each crate |
 | E2E tests (CP001-CP003) | ✅ | `e2e/*.spec.ts` |
 
@@ -237,17 +237,17 @@ Core можно использовать без адаптеров через F0
 ### Manual smoke
 ```bash
 # CP001: stable test
-fletta replay --name "stable-flow"
+frap replay --name "stable-flow"
 # Expected: PASSED, healed=false, overhead < 10%
 
 # CP002: refactor heal
 docker-compose up -d checkout-v2  # сменили testid
-fletta replay --name "payment-flow"
+frap replay --name "payment-flow"
 # Expected: PASSED (healed), confidence >= 0.85
 
 # CP003: safe fail
 docker-compose up -d checkout-ambiguous  # две кнопки
-fletta replay --name "payment-flow" --min-confidence 0.85
+frap replay --name "payment-flow" --min-confidence 0.85
 # Expected: FAILED, top-3 candidates in report
 ```
 

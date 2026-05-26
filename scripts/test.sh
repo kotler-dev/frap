@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Test script - runs fletta E2E tests
+# Test script - runs frap E2E tests
 # Usage: ./scripts/test.sh [conference|conference-fail|conference-dbg|conference-single|context|debug|all]
 
 set -e
@@ -20,7 +20,7 @@ NC='\033[0m' # No Color
 CONF_CONFIG="playwright.conference.config.ts"
 CTX_CONFIG="playwright.context.config.ts"
 
-echo -e "${BLUE}=== fletta Test Runner ===${NC}"
+echo -e "${BLUE}=== frap Test Runner ===${NC}"
 echo ""
 
 if ! curl -s http://localhost:$PORT > /dev/null 2>&1; then
@@ -66,7 +66,7 @@ case $TEST_TYPE in
     context)
         echo -e "${BLUE}Running Context Layer E2E (C002/C003/C004)${NC}"
         cd "$PROJECT_ROOT/crates"
-        cargo test -p fletta-context
+        cargo test -p frap-context
         cd "$PROJECT_ROOT/e2e"
         npx playwright test --config="$CTX_CONFIG"
         node context/generate-rca.mjs
@@ -90,6 +90,6 @@ echo ""
 echo -e "${GREEN}=== Tests complete! ===${NC}"
 echo ""
 echo "Reports:"
-echo "  - e2e/fletta-reports/conference/  (Conference project)"
-echo "  - e2e/fletta-reports/context/     (Context Layer C002–C004)"
+echo "  - e2e/frap-reports/conference/  (Conference project)"
+echo "  - e2e/frap-reports/context/     (Context Layer C002–C004)"
 echo "  - e2e/test-results/"

@@ -11,7 +11,7 @@
 
 ## Goal
 
-Пользователь видит пошаговое выполнение healing-процесса, может инспектировать кластеры и понимать почему был выбран тот или иной элемент. Debug Mode повышает прозрачность работы fletta и помогает в отладке тестов.
+Пользователь видит пошаговое выполнение healing-процесса, может инспектировать кластеры и понимать почему был выбран тот или иной элемент. Debug Mode повышает прозрачность работы frap и помогает в отладке тестов.
 
 ## User workflow
 
@@ -48,9 +48,9 @@
 - [x] Флаг `debug: boolean | 'verbose'` работает в `FlettaConfig`
 - [x] При `debug: true` создаётся `DebugReport` с минимальной информацией (шаги + кластеры)
 - [ ] При `debug: 'verbose'` добавляются полные сигнатуры всех кандидатов (future enhancement)
-- [x] HTML-отчёт `fletta-debug.html` генерируется рядом с `fletta-report.json`
-- [x] При 2+ debug-тестах: **Classic (A)** — `fletta-debug.html` (индекс с группами, prev/next на деталях); **Explorer (B)** — `fletta-debug-explorer.html` (sidebar + поиск + iframe с `?embed=1`)
-- [x] Тёмная тема на индексе A, explorer B и детальных страницах (localStorage `fletta-theme`)
+- [x] HTML-отчёт `frap-debug.html` генерируется рядом с `frap-report.json`
+- [x] При 2+ debug-тестах: **Classic (A)** — `frap-debug.html` (индекс с группами, prev/next на деталях); **Explorer (B)** — `frap-debug-explorer.html` (sidebar + поиск + iframe с `?embed=1`)
+- [x] Тёмная тема на индексе A, explorer B и детальных страницах (localStorage `frap-theme`)
 - [x] В отчёте видны все этапы: DOM parsed (N элементов), Clusters built (M кластеров), Candidates ranked (топ-3)
 - [x] Для CP002 в отчёте видно почему элемент был найден (confidence, diff с оригиналом)
 - [x] Для CP003 в отчёте видно почему healing отказался (ambiguity, low confidence)
@@ -179,7 +179,7 @@ heal(primarySelector, originalSignature, domSnapshot): HealResult {
 ### HTML Viewer структура
 
 ```html
-<!-- fletta-debug.html -->
+<!-- frap-debug.html -->
 <!DOCTYPE html>
 <html>
 <head><title>Fletta Debug Report</title></head>
@@ -222,18 +222,18 @@ heal(primarySelector, originalSignature, domSnapshot): HealResult {
 ```bash
 # CP002 с debug mode
 npx playwright test cp002-refactor-heal.spec.ts --reporter=list
-# Ожидаем: в консоли появляются шаги [fletta:debug]
-# Ожидаем: создан fletta-reports/fletta-debug.html
+# Ожидаем: в консоли появляются шаги [frap:debug]
+# Ожидаем: создан frap-reports/frap-debug.html
 
 # Просмотр отчёта
-open fletta-reports/fletta-debug.html
+open frap-reports/frap-debug.html
 # Ожидаем: видны все этапы, кластеры, кандидаты
 ```
 
 ### Automation
 
 - Юнит-тест `DebugTracer`: проверка что все шаги записываются
-- Интеграционный тест: при `debug: true` файл `fletta-debug.html` создаётся
+- Интеграционный тест: при `debug: true` файл `frap-debug.html` создаётся
 - Проверка структуры `DebugReport` через JSON schema
 
 ## Related docs

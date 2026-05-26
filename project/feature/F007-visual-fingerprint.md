@@ -83,7 +83,7 @@ struct VisualSignature {
 ### Manual smoke
 ```bash
 # Сценарий: полная смена атрибутов, стиль остался
-fletta replay --name "visual-test"
+frap replay --name "visual-test"
 # Expected: PASSED, confidence boosted by visual match
 ```
 

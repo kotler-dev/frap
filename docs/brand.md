@@ -8,20 +8,20 @@
 
 | Domain | Purpose | Priority | Status | Timeline |
 |--------|---------|----------|--------|----------|
-| **fletta.dev** | Основной сайт, документация, landing pages | P0 | Зарегистрировать сейчас | MVP |
-| **fletta.org** | Open-source организация, GitHub Pages mirror | P1 | Зарегистрировать после MVP | v1.0 |
-| **fletta.ru** | Русскоязычная документация (InSourceHub) | P1 | Опционально, если нужен RU presence | v1.1 |
-| **fletta.tools** | CLI endpoint, инструменты, API docs | P2 | Поддомены основного | v1.2 |
-| **fletta.cloud** | Managed cloud offering (future commercial) | P3 | Не регистрировать сейчас | v3.0+ |
+| **frap.dev** | Основной сайт, документация, landing pages | P0 | Зарегистрировать сейчас | MVP |
+| **frap.org** | Open-source организация, GitHub Pages mirror | P1 | Зарегистрировать после MVP | v1.0 |
+| **frap.ru** | Русскоязычная документация (InSourceHub) | P1 | Опционально, если нужен RU presence | v1.1 |
+| **frap.tools** | CLI endpoint, инструменты, API docs | P2 | Поддомены основного | v1.2 |
+| **frap.cloud** | Managed cloud offering (future commercial) | P3 | Не регистрировать сейчас | v3.0+ |
 
 ---
 
-## fletta.dev (Primary)
+## frap.dev (Primary)
 
 ### Структура сайта
 
 ```
-fletta.dev/
+frap.dev/
 ├── /                      # Landing page: structure discovery engine
 ├── /docs                  # Полная документация
 │   ├── /quickstart        # 5-minute getting started
@@ -40,9 +40,9 @@ fletta.dev/
 **Phase 1 (MVP): GitHub Pages**
 ```yaml
 # GitHub Pages configuration
-Repository: fletta/fletta.dev
+Repository: frap/frap.dev
 Branch: main /docs folder
-Custom domain: fletta.dev
+Custom domain: frap.dev
 SSL: Automatic (Let's Encrypt)
 CDN: GitHub's CDN
 ```
@@ -52,17 +52,17 @@ CDN: GitHub's CDN
 - ISR (Incremental Static Regeneration) для docs
 - Edge functions для playground demo
 
-### Поддомены (tools.fletta.dev)
+### Поддомены (tools.frap.dev)
 
 | Subdomain | Purpose | Implementation |
 |-----------|---------|----------------|
-| `cli.fletta.dev` | CLI download links, installation docs | Redirect to GitHub releases |
-| `registry.fletta.dev` | Enhancement registry (future) | NPM-like for adapters |
-| `status.fletta.dev` | Service status (managed tier) | Status page |
+| `cli.frap.dev` | CLI download links, installation docs | Redirect to GitHub releases |
+| `registry.frap.dev` | Enhancement registry (future) | NPM-like for adapters |
+| `status.frap.dev` | Service status (managed tier) | Status page |
 
 ---
 
-## fletta.org (Open Source)
+## frap.org (Open Source)
 
 ### Назначение
 
@@ -74,7 +74,7 @@ CDN: GitHub's CDN
 ### Контент
 
 ```
-fletta.org/
+frap.org/
 ├── /community             # Contributors, governance
 ├── /i18n                  # Internationalization effort
 │   ├── /ru               # Russian translation
@@ -85,7 +85,7 @@ fletta.org/
 
 ---
 
-## fletta.ru (Russian)
+## frap.ru (Russian)
 
 ### Целевая аудитория
 
@@ -101,15 +101,15 @@ fletta.org/
 
 ### Регистрация
 
-**Рекомендация:** Держать на fletta.dev/ru, не отдельный домен.
+**Рекомендация:** Держать на frap.dev/ru, не отдельный домен.
 
 Если отдельный домен критичен для SEO/присутствия:
 - Зарегистрировать после v1.0 релиза
-- 301 redirect с fletta.dev/ru → fletta.ru
+- 301 redirect с frap.dev/ru → frap.ru
 
 ---
 
-## fletta.tools (CLI & API)
+## frap.tools (CLI & API)
 
 ### Назначение
 
@@ -121,17 +121,17 @@ fletta.org/
 
 ```bash
 # CLI installation
-curl -fsSL https://tools.fletta.dev/install.sh | sh
+curl -fsSL https://tools.frap.dev/install.sh | sh
 
 # Or
-npm install -g @fletta/cli
-# With registry: --registry https://registry.fletta.dev
+npm install -g @frap/frap-cli
+# With registry: --registry https://registry.frap.dev
 ```
 
 ### Registry (Future)
 
 ```
-registry.fletta.dev/
+registry.frap.dev/
 ├── /v1/adapters           # Platform adapters index
 ├── /v1/enhancements       # Enhancement packages
 └── /v1/element-maps       # Community element maps (optional)
@@ -215,14 +215,14 @@ registry.fletta.dev/
 ### Repository Structure
 
 ```
-github.com/fletta/
-├── fletta                 # Core monorepo
+github.com/frap/
+├── frap                 # Core monorepo
 │   ├── /crates           # Rust crates
 │   ├── /sdk              # TypeScript SDK
 │   └── /docs             # Documentation source
 │
-├── fletta.dev            # Website source (GitHub Pages)
-├── fletta.org            # Community site (GitHub Pages)
+├── frap.dev            # Website source (GitHub Pages)
+├── frap.org            # Community site (GitHub Pages)
 │
 ├── adapters/
 │   ├── playwright-adapter
@@ -242,8 +242,8 @@ github.com/fletta/
 
 **Display name:** Fletta
 **Description:** Deterministic UI structure discovery engine. NO ML in core. AI-ready via MCP.
-**URL:** https://fletta.dev
-**Email:** hi@fletta.dev
+**URL:** https://frap.dev
+**Email:** hi@frap.dev
 
 ---
 
@@ -253,18 +253,18 @@ github.com/fletta/
 
 | Channel | Handle | Priority | Content |
 |---------|--------|----------|---------|
-| **Twitter/X** | @flettadev | P0 | Release notes, tips, community |
+| **Twitter/X** | @frapdev | P0 | Release notes, tips, community |
 | **LinkedIn** | Fletta | P1 | Enterprise, case studies |
 | **YouTube** | Fletta | P2 | Tutorials, demos |
-| **Dev.to** | @fletta | P2 | Technical deep-dives |
+| **Dev.to** | @frap | P2 | Technical deep-dives |
 
 ### Handle Consistency
 
-**Preferred:** `@flettadev` (fletta was taken on most platforms)
+**Preferred:** `@frapdev` (frap was taken on most platforms)
 
 **Fallbacks:**
-- `@flettaeng` (engine)
-- `@flettaio` (if .io domain acquired)
+- `@frapeng` (engine)
+- `@frapio` (if .io domain acquired)
 
 ### Content Calendar (MVP Phase)
 
@@ -289,7 +289,7 @@ github.com/fletta/
 **Recommendation:** Register trademark for "Fletta" in:
 1. US (USPTO) — primary market
 2. EU (EUIPO) — secondary market
-3. Russia (Rospatent) — if fletta.ru launched
+3. Russia (Rospatent) — if frap.ru launched
 
 **Timeline:** After v1.0 release, before v2.0
 
@@ -315,9 +315,9 @@ Required sections:
 ## Launch Checklist
 
 ### Pre-MVP
-- [ ] Register fletta.dev
+- [ ] Register frap.dev
 - [ ] Set up GitHub Pages
-- [ ] Create Twitter @flettadev
+- [ ] Create Twitter @frapdev
 - [ ] Design logo (contract designer)
 
 ### MVP Launch
@@ -327,7 +327,7 @@ Required sections:
 - [ ] Share in relevant subreddits
 
 ### Post-MVP
-- [ ] Register fletta.org
+- [ ] Register frap.org
 - [ ] Apply for trademark
 - [ ] Set up LinkedIn
 - [ ] Create YouTube channel

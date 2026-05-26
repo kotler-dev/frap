@@ -93,7 +93,7 @@ enum Event {
 
 - **Цель**: `Event`, `Timeline`, serde JSON schema.
 - **Файлы**: `crates/context/`, `crates/Cargo.toml`
-- **Готово когда**: `cargo test -p fletta-context`, round-trip JSON.
+- **Готово когда**: `cargo test -p frap-context`, round-trip JSON.
 
 ### F002.2 — Network capture (Playwright)
 
@@ -114,14 +114,14 @@ enum Event {
 
 ### F002.5 — Report serialization + config
 
-- **Цель**: `captureAll` / `fletta-context.json` рядом с `fletta-report.json`.
+- **Цель**: `captureAll` / `frap-context.json` рядом с `frap-report.json`.
 - **Готово когда**: C002/C003 acceptance; overhead замерен (< 20% per AC).
 
 ### F002.6 — WebSocket capture
 
 - **Цель**: WebSocket open/message/close в timeline с `protocol: websocket`.
 - **Файлы**: `network.rs`, `capture.ts`, `test-app/context/ws-cart.html`, `e2e/context/c004-websocket.spec.ts`
-- **Готово когда**: C004 e2e проходит; WS events в `fletta-context.json`.
+- **Готово когда**: C004 e2e проходит; WS events в `frap-context.json`.
 
 | ID | Зависит от | Release |
 |----|------------|---------|
@@ -139,17 +139,17 @@ enum Event {
 ./scripts/build.sh
 ./scripts/test.sh context          # C002, C003, C004 + verify-context.mjs
 ./scripts/bench-context.sh         # overhead < 20%
-cargo test -p fletta-context       # Rust unit tests
+cargo test -p frap-context       # Rust unit tests
 ```
 
 ### Expected
 - C002: POST `/api/payment-intent` 504 **before** UI `not_found` (UI wait 10s, API delay 8s)
 - C003: fast cart `<300ms`, slow cart `≥500ms` в одном timeline
 - C004: WebSocket `open` + `message` events with `protocol: websocket`
-- `e2e/fletta-reports/context/fletta-context.json` содержит network + log + ui
+- `e2e/frap-reports/context/frap-context.json` содержит network + log + ui
 
 ### Automation
-- Rust: `cargo test -p fletta-context` (correlation, window, JSON round-trip)
+- Rust: `cargo test -p frap-context` (correlation, window, JSON round-trip)
 - E2E: `./scripts/test.sh context` + `e2e/context/verify-context.mjs`
 - CI: job `e2e-context` в `.github/workflows/ci.yml`
 

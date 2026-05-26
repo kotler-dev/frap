@@ -77,7 +77,7 @@ description: Break large task into subtasks with explicit file list per step. Us
 - **Цель**: Связать primary/fallback chain
 - **Файлы**:
   - @crates/healing/src/lib.rs
-  - @crates/fletta-core/src/lib.rs (связка)
+  - @crates/frap-core/src/lib.rs (связка)
 - **Критерий готовности**: CP001–CP003 проходят
 ```
 

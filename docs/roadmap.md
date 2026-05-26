@@ -21,12 +21,12 @@
 | Приоритет | Фича | Задачи | Результат |
 |-----------|------|--------|-----------|
 | P0 | F001 Core | Rust core: сигнатуры DOM, кластеризация | WASM библиотека для сравнения элементов |
-| P0 | F008 Adapter | Playwright custom selector `fletta:` | Плагин для Playwright на npm |
+| P0 | F008 Adapter | Playwright custom selector `frap:` | Плагин для Playwright на npm |
 | P0 | C001 Demo | Сценарий Payment Button | Тест проходит после смены data-testid |
 
 **Чек-лист успеха MVP:** (полный список gates: [benchmark.md](./benchmark.md))
 
-- [ ] `npm install @fletta/playwright` работает
+- [ ] `npm install @frap/frap-playwright` работает
 - [ ] Код на GitHub с README + [positioning.md](./positioning.md) one-liner
 - [ ] **CP001–CP003** проходят на demo app (0 false positive на CP003)
 - [ ] **CP005** — JUnit/артефакт в CI
@@ -43,8 +43,8 @@
 
 | Приоритет | Фича | Задачи | Результат |
 |-----------|------|--------|-----------|
-| P1 | TS SDK | Типы, CLI, конфигурация | Пакет `@fletta/core` |
-| P1 | F009 Feedback | CLI команда `fletta learn` | Обновление весов сигнатур |
+| P1 | TS SDK | Типы, CLI, конфигурация | Пакет `@frap/frap-core` |
+| P1 | F009 Feedback | CLI команда `frap learn` | Обновление весов сигнатур |
 | P1 | C004 Page Object | Генерация из URL | Базовый генератор для новых страниц |
 
 **Внутреннее развёртывание:**

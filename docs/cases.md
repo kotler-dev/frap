@@ -52,14 +52,14 @@
 1. Записываем тест: клик на `[data-testid="pay-btn"]`
 2. Разработчик деплоит новую версию (ID изменён)
 3. Запускаем тест — классический селектор не находит элемент
-4. fletta ищет по сигнатуре: текст "Оплатить", близость к форме, структура
+4. frap ищет по сигнатуре: текст "Оплатить", близость к форме, структура
 5. Находит новую кнопку, тест проходит
 6. Обновляет селектор в базе (опционально)
 
 **Демо-скрипт:**
 ```bash
 # 1. Стартовая версия
-fletta record --name "payment-flow" --url "http://demo-store.local/checkout"
+frap record --name "payment-flow" --url "http://demo-store.local/checkout"
 # [user clicks pay button]
 # Saved: selector [data-testid="pay-btn"]
 
@@ -67,8 +67,8 @@ fletta record --name "payment-flow" --url "http://demo-store.local/checkout"
 docker-compose up -d checkout-v2
 
 # 3. Воспроизведение
-fletta replay --name "payment-flow"
-# [fletta detects selector change, finds by signature]
+frap replay --name "payment-flow"
+# [frap detects selector change, finds by signature]
 # Result: PASSED (healed)
 ```
 
@@ -90,7 +90,7 @@ fletta replay --name "payment-flow"
 1. Запускаем тест (UI + Network capture включены)
 2. Тест ждёт кнопку, её нет
 3. Таймаут — тест падает
-4. fletta строит timeline:
+4. frap строит timeline:
    - 10:15:00.100 POST /api/payment-intent START
    - 10:15:30.200 POST /api/payment-intent TIMEOUT
    - 10:15:30.500 UI: элемент "pay-button" not found
@@ -101,10 +101,10 @@ fletta replay --name "payment-flow"
 # Backend с искусственной задержкой
 docker-compose up -d backend-slow
 
-fletta replay --name "payment-flow" --capture-all
+frap replay --name "payment-flow" --capture-all
 # Test: FAILED (timeout waiting for button)
 
-fletta analyze --run-id <id>
+frap analyze --run-id <id>
 # RCA Report:
 #   Primary cause: Network timeout (POST /api/payment-intent)
 #   UI state: Expected element absent due to API failure
@@ -136,11 +136,11 @@ fletta analyze --run-id <id>
 ```bash
 # Массовый запуск
 for i in {1..10}; do
-  fletta replay --name "cart-flow" --capture-all
+  frap replay --name "cart-flow" --capture-all
 done
 
 # Анализ паттерна
-fletta analyze --aggregate --name "cart-flow" --runs 10
+frap analyze --aggregate --name "cart-flow" --runs 10
 # Pattern detected:
 #   Failure correlation: /api/cart response time > 500ms
 #   Success correlation: /api/cart response time < 200ms
@@ -164,7 +164,7 @@ fletta analyze --aggregate --name "cart-flow" --runs 10
 **Сценарий:**
 1. Открываем страницу каталога
 2. Запускаем генерацию
-3. fletta анализирует структуру:
+3. frap анализирует структуру:
    - Повторяющиеся элементы (карточки товаров)
    - Интерактивные элементы (кнопки, фильтры)
    - Формы ввода
@@ -173,7 +173,7 @@ fletta analyze --aggregate --name "cart-flow" --runs 10
 
 **Демо-скрипт:**
 ```bash
-fletta generate --url "http://demo-store.local/catalog" --output ./pages
+frap generate --url "http://demo-store.local/catalog" --output ./pages
 
 # Output:
 # ./pages/CatalogPage.ts
@@ -199,8 +199,8 @@ fletta generate --url "http://demo-store.local/catalog" --output ./pages
 
 **Сценарий:**
 1. LLM получает запрос на естественном языке
-2. Через MCP вызывает fletta: `generate` с описанием
-3. fletta запускает браузер, исследует страницу
+2. Через MCP вызывает frap: `generate` с описанием
+3. frap запускает браузер, исследует страницу
 4. Генерирует шаги: найти кнопку "В корзину", кликнуть, проверить счётчик
 5. Возвращает LLM код теста или результат выполнения
 
@@ -208,7 +208,7 @@ fletta generate --url "http://demo-store.local/catalog" --output ./pages
 ```json
 // MCP Request
 {
-  "method": "fletta/generate",
+  "method": "frap/generate",
   "params": {
     "description": "Add product to cart and proceed to checkout",
     "url": "http://demo-store.local"
@@ -257,19 +257,19 @@ fletta generate --url "http://demo-store.local/catalog" --output ./pages
 
 **Контекст:**
 - AI-агент помощника для оформления заказов
-- Агент использует MCP инструменты fletta для тестирования UI
+- Агент использует MCP инструменты frap для тестирования UI
 - Нужно убедиться что агент вызывает инструменты правильно и в нужном порядке
 
 **Сценарий:**
-1. Запускаем агента с fletta agent capture
+1. Запускаем агента с frap agent capture
 2. Пользователь просит: "Проверь что пользователь может оформить заказ"
 3. Агент генерирует план и вызывает MCP инструменты:
-   - `fletta/replay` — сценарий "add-to-cart"
-   - `fletta/replay` — сценарий "checkout"  
-   - `fletta/analyze` — если тест упал
-4. fletta записывает все tool calls с аргументами и результатами
+   - `frap/replay` — сценарий "add-to-cart"
+   - `frap/replay` — сценарий "checkout"  
+   - `frap/analyze` — если тест упал
+4. frap записывает все tool calls с аргументами и результатами
 5. Проверяем assertions:
-   - Агент вызвал `fletta/replay` ровно 2 раза
+   - Агент вызвал `frap/replay` ровно 2 раза
    - Вызовы были в правильном порядке
    - Аргументы валидны (существующие scenario names)
    - Время выполнения < 60 секунд
@@ -279,22 +279,22 @@ fletta generate --url "http://demo-store.local/catalog" --output ./pages
 **Демо-скрипт:**
 ```bash
 # 1. Запускаем agent capture
-fletta agent:record --agent-id "shop-assistant" --session-id "audit-001"
+frap agent:record --agent-id "shop-assistant" --session-id "audit-001"
 
 # 2. Пользовательский запрос к агенту (через CLI или UI)
-echo "Проверь оформление заказа" | fletta agent:prompt --session "audit-001"
+echo "Проверь оформление заказа" | frap agent:prompt --session "audit-001"
 
 # 3. Останавливаем запись
-fletta agent:stop --session "audit-001"
+frap agent:stop --session "audit-001"
 
 # 4. Проверяем assertions
-fletta agent:assert --session "audit-001" \
-  --rule "fletta/replay called 2 times" \
-  --rule "fletta/analyze called 0 times" \
+frap agent:assert --session "audit-001" \
+  --rule "frap/replay called 2 times" \
+  --rule "frap/analyze called 0 times" \
   --rule "duration < 60s"
 
 # 5. Регрессия — тестируем с другой моделью
-fletta agent:replay --session "audit-001" --model "claude-3-5-sonnet"
+frap agent:replay --session "audit-001" --model "claude-3-5-sonnet"
 ```
 
 **Проверка успеха:**
@@ -311,7 +311,7 @@ fletta agent:replay --session "audit-001" --model "claude-3-5-sonnet"
 **Фичи:** F011 (AI-Agent Testing)
 
 **Контекст:**
-- Рой из 3 агентов: Coordinator (планирует), UI-Tester (выполняет fletta), Reporter (формирует отчёт)
+- Рой из 3 агентов: Coordinator (планирует), UI-Tester (выполняет frap), Reporter (формирует отчёт)
 - Агенты общаются через A2A протокол
 - Нужно тестировать что они корректно делегируют и передают контекст
 
@@ -319,7 +319,7 @@ fletta agent:replay --session "audit-001" --model "claude-3-5-sonnet"
 1. Запускаем capture для всего роя
 2. Coordinator получает задачу "Протестировать checkout"
 3. Coordinator делегирует UI-Tester через A2A
-4. UI-Tester выполняет fletta/replay, возвращает результат
+4. UI-Tester выполняет frap/replay, возвращает результат
 5. Coordinator делегирует Reporter — формирует summary
 6. Проверяем:
    - Coordinator корректно разбил задачу
@@ -330,13 +330,13 @@ fletta agent:replay --session "audit-001" --model "claude-3-5-sonnet"
 **Демо-скрипт:**
 ```bash
 # Запускаем 3 агента в режиме capture
-fletta agent:swarm --agents "coordinator,ui-tester,reporter" --capture
+frap agent:swarm --agents "coordinator,ui-tester,reporter" --capture
 
 # Отправляем задачу в swarm
-fletta agent:swarm:task --prompt "Test checkout flow" --timeout 120s
+frap agent:swarm:task --prompt "Test checkout flow" --timeout 120s
 
 # Анализируем A2A коммуникацию
-fletta agent:swarm:analyze --run-id <id>
+frap agent:swarm:analyze --run-id <id>
 # Отчёт:
 #   Messages: 5
 #   Delegations: 2

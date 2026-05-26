@@ -1,4 +1,4 @@
-# Позиционирование fletta
+# Позиционирование frap
 
 Документ фиксирует место продукта на рынке, отличия от конкурентов, продуктовые формулировки и официальный one-liner. Основан на анализе рынка и внутренней стратегии (банк / InSourceHub / open source).
 
@@ -6,7 +6,7 @@
 
 ## One-liner (официальный)
 
-> **fletta** — deterministic engine для автоматического извлечения структуры UI: парсит деревья элементов (DOM, ViewTree, accessibility), кластеризует компоненты детерминированными алгоритмами, генерирует устойчивые идентификаторы для PageObject и тестов. Без ML в core, без облачных API — bank-grade deterministic. Внутренняя механика resolution обеспечивает стабильность при изменениях UI. AI-ready через MCP и optional enhancements tier: LLM получают структурированные element maps для генерации семантического кода.
+> **frap** — deterministic engine для автоматического извлечения структуры UI: парсит деревья элементов (DOM, ViewTree, accessibility), кластеризует компоненты детерминированными алгоритмами, генерирует устойчивые идентификаторы для PageObject и тестов. Без ML в core, без облачных API — bank-grade deterministic. Внутренняя механика resolution обеспечивает стабильность при изменениях UI. AI-ready через MCP и optional enhancements tier: LLM получают структурированные element maps для генерации семантического кода.
 
 ### Короткие варианты по аудиториям
 
@@ -66,7 +66,7 @@
 3. **AI-Native Testing Infrastructure**
    - Не "Fletta генерирует тесты через LLM"
    - А "Fletta даёт LLM инструменты для надёжного тестирования"
-   - Агент использует MCP tools: `fletta/discover`, `fletta/analyze`
+   - Агент использует MCP tools: `frap/discover`, `frap/analyze`
 
 ---
 
@@ -117,7 +117,7 @@ Fletta Core (grounding layer, внутри)
 
 ## Решение (Solution)
 
-**fletta** — platform-agnostic deterministic engine (Rust → WASM) для анализа UI-структур:
+**frap** — platform-agnostic deterministic engine (Rust → WASM) для анализа UI-структур:
 
 ### Core Components
 
@@ -138,8 +138,8 @@ Fletta Core (grounding layer, внутри)
    - Пользователь видит: "element map обновлён, diff: ..."
 
 5. **AI Integration** — MCP tools для LLM
-   - `fletta/discover` — element map для grounding
-   - `fletta/analyze` — RCA для понимания падений
+   - `frap/discover` — element map для grounding
+   - `frap/analyze` — RCA для понимания падений
    - Fletta не генерирует тесты — даёт инструменты для генерации
 
 ### No-ML by Default
@@ -150,17 +150,17 @@ Fletta Core (grounding layer, внутри)
 - Resolution — weighted attribute comparison, fixed formula
 
 **Enhancements (опционально, M3+):**
-- Semantic naming via LLM — отдельный пакет `fletta-enhancements`
+- Semantic naming via LLM — отдельный пакет `frap-enhancements`
 - Visual matching — OpenCV-based adapter
 - Step generation — external LLM integration
 
 ---
 
-## Зачем fletta, если есть Playwright MCP + healer?
+## Зачем frap, если есть Playwright MCP + healer?
 
 ### Разные роли в стеке
 
-| | Playwright MCP | playwright-healer / AutoHeal | **fletta** |
+| | Playwright MCP | playwright-healer / AutoHeal | **frap** |
 |---|---|---|---|
 | **Роль** | Агент **действует** в браузере (explore, codegen) | Чинит локаторы в рантайме (часто с AI/heuristics) | **Grounding layer** — structure discovery + stable execution |
 | **Когда** | Разработка теста, ad-hoc сценарии | Падение локатора при прогоне | Структурный анализ, CI stabilization, audit |
@@ -170,14 +170,14 @@ Fletta Core (grounding layer, внутри)
 
 ### One-liner для сравнения с MCP
 
-> Playwright MCP помогает агенту **действовать** в браузере; fletta **даёт агенту структуру** для надёжных действий — element maps, stable identifiers, deterministic resolution, explainable audit.
+> Playwright MCP помогает агенту **действовать** в браузере; frap **даёт агенту структуру** для надёжных действий — element maps, stable identifiers, deterministic resolution, explainable audit.
 
 ### Совместное использование (не конкуренция)
 
 ```
 Требования → LLM анализирует (снаружи)
                 ↓
-        LLM вызывает fletta/discover → получает element map
+        LLM вызывает frap/discover → получает element map
                 ↓
         LLM генерирует test steps на основе структуры
                 ↓
@@ -188,7 +188,7 @@ Fletta Core (grounding layer, внутри)
         Fletta analyze даёт RCA если что-то пошло не так
 ```
 
-**fletta не заменяет Playwright.** Playwright = browser driver; Fletta = structure engine + observability layer.
+**frap не заменяет Playwright.** Playwright = browser driver; Fletta = structure engine + observability layer.
 
 ---
 
@@ -196,7 +196,7 @@ Fletta Core (grounding layer, внутри)
 
 ### Прямые (structure discovery / POM generation)
 
-| Продукт | Тип | Пересечение | Отличие fletta |
+| Продукт | Тип | Пересечение | Отличие frap |
 |---|---|---|---|
 | [Healenium](https://github.com/healenium/healenium) | OSS + ML | Selenium healing | Без ML в core, без тяжёлого proxy/PostgreSQL, explainable |
 | playwright-healer, AutoHeal | OSS / AI | Playwright healing | No-ML default, platform-agnostic core, bank on-prem |
@@ -207,10 +207,10 @@ Fletta Core (grounding layer, внутри)
 
 | Продукт | Роль |
 |---|---|
-| Playwright + getByRole/testId | Best practices — fletta **не мешает**, дополняет структурным анализом |
-| Playwright MCP | Explore/codegen — fletta даёт **grounding** для стабильности |
-| Karate | API+UI сценарии — fletta как structure layer для UI части |
-| Allure, ReportPortal | Отчёты — fletta экспортирует discovery + resolution events |
+| Playwright + getByRole/testId | Best practices — frap **не мешает**, дополняет структурным анализом |
+| Playwright MCP | Explore/codegen — frap даёт **grounding** для стабильности |
+| Karate | API+UI сценарии — frap как structure layer для UI части |
+| Allure, ReportPortal | Отчёты — frap экспортирует discovery + resolution events |
 
 ### Защищаемый wedge (moat)
 
@@ -268,7 +268,7 @@ Fletta Core (grounding layer, внутри)
 ### MVP (недели 2–3)
 
 - Benchmark repo: ≥5 UI-рефакторингов, сравнение element map stability
-- 3 команды в банке используют `fletta discover` для PageObject
+- 3 команды в банке используют `frap discover` для PageObject
 - Документированный discover → element map → generated code workflow < 15 минут
 
 ---

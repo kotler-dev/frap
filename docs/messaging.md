@@ -24,7 +24,7 @@
 **Главное сообщение:** «Получи структурированную карту UI для PageObject без ручного анализа XPath — deterministic, on-prem, bank-grade»
 
 **Ключевые тезисы:**
-- `fletta discover <url> → element-map.json` за секунды вместо часов ручного анализа
+- `frap discover <url> → element-map.json` за секунды вместо часов ручного анализа
 - Не новый раннер — JUnit listener / SDK для существующих тестов
 - Core deterministic (NO ML dependencies) — проходит security review
 - Экспорт healing events в JUnit XML / Allure для CI audit
@@ -34,7 +34,7 @@
 **Главное сообщение:** «Быстрое получение структуры для тестов — с устойчивыми селекторами, которые переживут рефакторинг»
 
 **Ключевые тезисы:**
-- `fletta discover` даёт element map с confidence scores
+- `frap discover` даёт element map с confidence scores
 - Generated PageObject с stable signatures — рефакторинг UI не ломает тесты
 - Deterministic resolution — explainable diff при изменениях
 - Можно использовать standalone (через CDP) или как Playwright adapter
@@ -46,7 +46,7 @@
 **Ключевые тезисы:**
 - **Глаза:** element map вместо raw DOM — структурированное зрение для LLM
 - **Руки:** deterministic resolution при изменении UI — стабильные действия
-- MCP tools: `fletta/discover`, `fletta/analyze`, `fletta/resolve`
+- MCP tools: `frap/discover`, `frap/analyze`, `frap/resolve`
 - Fletta не генерирует тесты — даёт grounding layer для надёжной генерации
 
 ---
@@ -70,7 +70,7 @@
 
 ### Phase 1: Discovery (сейчас)
 ```bash
-fletta discover --url https://shop.example.com/catalog
+frap discover --url https://shop.example.com/catalog
 # Output: element-map.json
 # - Все интерактивные элементы
 # - Clusters (карточки товаров, фильтры, пагинация)
@@ -94,7 +94,7 @@ class CatalogPage {
 ### Phase 3: Maintenance (автоматическая)
 ```bash
 # При изменении UI
-fletta analyze --url https://shop.example.com/catalog \
+frap analyze --url https://shop.example.com/catalog \
   --against element-map.json
 # Output: drift-report.json
 # - Что изменилось
@@ -108,10 +108,10 @@ fletta analyze --url https://shop.example.com/catalog \
 
 **Цель:** показать за 5-7 минут ценность без подготовки
 
-1. **Discovery** — `fletta discover https://demo-store.local`, показываем element map
+1. **Discovery** — `frap discover https://demo-store.local`, показываем element map
 2. **Structure** — clusters, confidence scores, stable IDs
 3. **Break it** — меняем DOM структуру (рефакторинг)
-4. **Analyze** — `fletta analyze` показывает drift и new mappings
+4. **Analyze** — `frap analyze` показывает drift и new mappings
 5. **Explain** — confidence scores, что изменилось, почему mapping корректен
 
 **Ключевой момент:** deterministic structure analysis, не "magical healing"
@@ -120,20 +120,20 @@ fletta analyze --url https://shop.example.com/catalog \
 
 ## Ответы на возражения
 
-**"У нас уже getByRole, почему нужен fletta?"**
-> getByRole тоже ломается при смене текста или структуры. fletta даёт структурный анализ — element map с confidence scores, который можно использовать для stable PageObject generation. Это не замена getByRole, а foundation для maintainable selectors.
+**"У нас уже getByRole, почему нужен frap?"**
+> getByRole тоже ломается при смене текста или структуры. frap даёт структурный анализ — element map с confidence scores, который можно использовать для stable PageObject generation. Это не замена getByRole, а foundation для maintainable selectors.
 
 **"Почему не Healenium?"**
-> Healenium использует ML (не объяснимо), требует PostgreSQL + proxy (тяжёлый стек), сложно пройти security в банке. fletta — deterministic (NO ML in core), WASM, zero external dependencies.
+> Healenium использует ML (не объяснимо), требует PostgreSQL + proxy (тяжёлый стек), сложно пройти security в банке. frap — deterministic (NO ML in core), WASM, zero external dependencies.
 
 **"Почему не playwright-healer / AutoHeal?"**
-> Часто используют AI/heuristics без детерминизма и explainability. fletta даёт воспроизводимый element map — при одинаковой структуре всегда одинаковый результат, explainable для аудита в CI.
+> Часто используют AI/heuristics без детерминизма и explainability. frap даёт воспроизводимый element map — при одинаковой структуре всегда одинаковый результат, explainable для аудита в CI.
 
 **"У нас Selenium/Java, не Playwright"**
-> Core на Rust компилируется в нативный код для Java через FFI. `fletta discover` — CLI tool, работает с любым фреймворком. Element map → generated PageObject для вашего стека.
+> Core на Rust компилируется в нативный код для Java через FFI. `frap discover` — CLI tool, работает с любым фреймворком. Element map → generated PageObject для вашего стека.
 
 **"Это замена Playwright/Selenium?"**
-> Нет. fletta — structure discovery engine. Playwright/Selenium остаются execution layer. Fletta даёт: (1) быстрый discovery, (2) stable identifiers, (3) drift detection.
+> Нет. frap — structure discovery engine. Playwright/Selenium остаются execution layer. Fletta даёт: (1) быстрый discovery, (2) stable identifiers, (3) drift detection.
 
 **"Как это работает с AI-агентами?"**
 > Fletta — grounding layer: даёт LLM структурированный element map через MCP. Агент использует эту структуру для надёжных действий. Метафора: **Fletta даёт AI-агенту надёжные руки и глаза**.
@@ -142,7 +142,7 @@ fletta analyze --url https://shop.example.com/catalog \
 
 ## Конкурентное позиционирование
 
-| | Healenium | playwright-healer | **fletta** |
+| | Healenium | playwright-healer | **frap** |
 |--|-----------|-------------------|------------|
 | **Core** | ML-based | Heuristics + optional AI | **Deterministic (NO ML)** |
 | **Output** | Fixed selector | Fixed selector | **Element map + stable IDs** |

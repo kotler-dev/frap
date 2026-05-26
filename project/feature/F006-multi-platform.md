@@ -78,10 +78,10 @@ fn compare_signatures(a: &ElementSignature, b: &ElementSignature) -> f64 {
 ```rust
 // Android (JNI)
 #[no_mangle]
-pub extern "C" fn Java_com_fletta_core_heal(...)
+pub extern "C" fn Java_com_frap_core_heal(...)
 
 // iOS (C header)
-pub extern "C" fn fletta_heal(...)
+pub extern "C" fn frap_heal(...)
 ```
 
 ### Риски и зависимости
@@ -94,9 +94,9 @@ pub extern "C" fn fletta_heal(...)
 ### Manual smoke
 ```bash
 # Android
-fletta record --platform android --name "mobile-payment"
+frap record --platform android --name "mobile-payment"
 # Меняем resource_id в приложении
-fletta replay --platform android --name "mobile-payment"
+frap replay --platform android --name "mobile-payment"
 # Expected: PASSED (healed)
 
 # iOS — аналогично

@@ -16,7 +16,7 @@
 
 **Пример:**
 ```bash
-fletta discover --url https://shop.example.com
+frap discover --url https://shop.example.com
 # Output: element-map.json с интерактивными элементами, clusters, confidence scores
 ```
 
@@ -159,7 +159,7 @@ interface Cluster {
 
 **Detection:**
 ```bash
-fletta analyze --url https://shop.example.com \
+frap analyze --url https://shop.example.com \
   --against element-map-baseline.json
 # Output: drift-report.json
 ```
@@ -236,7 +236,7 @@ impl Source for ChromeSource {
 
 **Структура:**
 ```
-fletta-enhancements/
+frap-enhancements/
   ├── semantic-naming/      # LLM-based method names
   ├── visual-matching/      # OpenCV image features
   └── step-generation/      # AI test generation
@@ -270,9 +270,9 @@ fletta-enhancements/
 **Fletta MCP tools:**
 | Tool | Input | Output | Purpose |
 |------|-------|--------|---------|
-| `fletta/discover` | URL | element map | Structure extraction |
-| `fletta/resolve` | signature | element + confidence | Stable execution |
-| `fletta/analyze` | run ID | RCA report | Drift detection |
+| `frap/discover` | URL | element map | Structure extraction |
+| `frap/resolve` | signature | element + confidence | Stable execution |
+| `frap/analyze` | run ID | RCA report | Drift detection |
 
 **Важно:** Fletta предоставляет tools через MCP, но не управляет workflow агента.
 

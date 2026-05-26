@@ -16,7 +16,7 @@
 ## User workflow
 
 1. Тест падает
-2. fletta анализирует timeline событий ±5 сек от failure
+2. frap анализирует timeline событий ±5 сек от failure
 3. Классификация причины: UI-изменение | API-ошибка | Инфраструктура | Flaky
 4. RCA-репорт с обоснованием классификации
 5. Для LLM-агентов: структурированный JSON для принятия решений
@@ -40,7 +40,7 @@
 - [x] C002: при API timeout классифицируется как API-error
 - [x] C003: при flaky тесте классифицируется как Flaky с паттерном
 - [x] RCA-репорт содержит: primary cause, confidence, timeline excerpt, recommendation
-- [x] JSON формат для MCP: `fletta/analyze` tool (stub)
+- [x] JSON формат для MCP: `frap/analyze` tool (stub)
 - [x] Экспорт в JUnit: `<failure message="...">` с RCA
 - [x] Per-test RCA по `trace_id`: C002 isolated → `api_error`
 - [x] CP005-эквивалент: `verify-reports.mjs` проверяет все артефакты
@@ -79,7 +79,7 @@ enum RootCause {
 ### MCP API
 ```json
 {
-  "method": "fletta/analyze",
+  "method": "frap/analyze",
   "params": { "run_id": "..." },
   "result": {
     "primary_cause": "api_error",
@@ -101,7 +101,7 @@ enum RootCause {
 
 - **Цель**: enum + rule engine без ML.
 - **Файлы**: `crates/rca/Cargo.toml`, `crates/rca/src/{classifier,rules,report}.rs`
-- **Готово когда**: `cargo test -p fletta-rca` на synthetic timelines.
+- **Готово когда**: `cargo test -p frap-rca` на synthetic timelines.
 
 ### F003.1 — Classifier pipeline
 
@@ -112,20 +112,20 @@ enum RootCause {
 ### F003.2 — RCA report JSON
 
 - **Цель**: `primary_cause`, `confidence`, `timeline_excerpt`, `recommendation`.
-- **Файлы**: `crates/rca/src/report.rs`, запись в `fletta-report.json` / отдельный `fletta-rca.json`
+- **Файлы**: `crates/rca/src/report.rs`, запись в `frap-report.json` / отдельный `frap-rca.json`
 - **Готово когда**: ручной smoke на C002.
 
 ### F003.3 — Playwright / JUnit integration
 
 - **Цель**: RCA в failure message JUnit; все 5 тестов в отчёте; пустой healing suite скрыт.
 - **Файлы**: `adapters/playwright/src/reporter.ts`
-- **Готово когда**: CP005-совместимый XML с RCA snippet; `tests="5"` в `fletta-context` suite.
+- **Готово когда**: CP005-совместимый XML с RCA snippet; `tests="5"` в `frap-context` suite.
 
 ### F003.3a — Per-test RCA по trace_id
 
 - **Цель**: Изолированный RCA для каждого failed test через `trace_id` correlation.
 - **Файлы**: `adapters/playwright/src/context/store.ts`, `rca.ts`, `reporter.ts`
-- **Готово когда**: `fletta-rca.json` v2 с `suite` (merged) и `by_test[]` (per-test); C002 isolated → `api_error`.
+- **Готово когда**: `frap-rca.json` v2 с `suite` (merged) и `by_test[]` (per-test); C002 isolated → `api_error`.
 
 ### F003.4 — Flaky aggregate (C003)
 
@@ -135,7 +135,7 @@ enum RootCause {
 
 ### F003.5 — MCP-shaped JSON (stub)
 
-- **Цель**: стабильный JSON для будущего `fletta/analyze` (F005); без RPC-сервера.
+- **Цель**: стабильный JSON для будущего `frap/analyze` (F005); без RPC-сервера.
 - **Файлы**: `crates/rca/src/mcp.rs` или schema в docs
 - **Готово когда**: fixture JSON в тестах; полный MCP → v1.2.0.
 
@@ -159,14 +159,14 @@ enum RootCause {
 ### Manual smoke
 ```bash
 # C002: API Timeout
-fletta replay --name "payment-flow" --capture-all
+frap replay --name "payment-flow" --capture-all
 # Test FAILED
 
-fletta analyze --run-id <id>
+frap analyze --run-id <id>
 # Expected: primary_cause = "api_error", endpoint = "/api/payment-intent"
 
 # C003: Flaky
-fletta analyze --aggregate --name "cart-flow" --runs 10
+frap analyze --aggregate --name "cart-flow" --runs 10
 # Expected: primary_cause = "flaky", pattern = "api_cart_latency > 500ms"
 ```
 

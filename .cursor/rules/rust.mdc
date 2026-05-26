@@ -1,10 +1,10 @@
 ---
-description: Правила для Rust кода — ядро fletta
+description: Правила для Rust кода — ядро frap
 globs: "**/*.rs"
 alwaysApply: false
 ---
 
-# fletta Rust правила
+# frap Rust правила
 
 ## Архитектура
 - Ядро разбито на crates: `signature`, `clustering`, `healing`, `context`, `rca`, и т.д.

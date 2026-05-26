@@ -9,7 +9,7 @@
 
 1. Fast run: `GET /api/cart?delay=100` — cart ready marker visible (`duration_ms < 300`).
 2. Slow run: `delay=600` — ready marker not visible within 400ms (intentional fail, `duration_ms ≥ 500`).
-3. Single `fletta-context.json` compares both `/api/cart` latencies (spread ≥ 400ms).
+3. Single `frap-context.json` compares both `/api/cart` latencies (spread ≥ 400ms).
 
 ## Run
 

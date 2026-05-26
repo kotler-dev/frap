@@ -1,6 +1,6 @@
 # PoC, MVP и Benchmark
 
-Как **быстро проверить** работоспособность и **доказать качество** fletta: корневые кейсы, метрики, структура benchmark-репозитория, gates по фазам.
+Как **быстро проверить** работоспособность и **доказать качество** frap: корневые кейсы, метрики, структура benchmark-репозитория, gates по фазам.
 
 ---
 
@@ -18,7 +18,7 @@
 ./scripts/test.sh conference
 ```
 
-Кейсы `CONF-*`, отчёт: `e2e/fletta-reports/conference/`. См. [e2e/conference/README.md](../e2e/conference/README.md) и [project/cases/conference/CASES.md](../project/cases/conference/CASES.md).
+Кейсы `CONF-*`, отчёт: `e2e/frap-reports/conference/`. См. [e2e/conference/README.md](../e2e/conference/README.md) и [project/cases/conference/CASES.md](../project/cases/conference/CASES.md).
 
 ---
 
@@ -31,7 +31,7 @@ E2E gates C002–C004 (unified timeline):
 ./scripts/bench-context.sh   # captureAll overhead < 20%
 ```
 
-Отчёт: `e2e/fletta-reports/context/fletta-context.json`. См. [e2e/context/README.md](../e2e/context/README.md).
+Отчёт: `e2e/frap-reports/context/frap-context.json`. См. [e2e/context/README.md](../e2e/context/README.md).
 
 | Gate | Метрика | Порог |
 |------|---------|-------|
@@ -48,12 +48,12 @@ E2E gates C002–C004 (unified timeline):
 
 ### CP001: Happy path — primary селектор работает
 
-**Цель:** Убедиться, что fletta **не ломает** стабильные тесты.
+**Цель:** Убедиться, что frap **не ломает** стабильные тесты.
 
 | Шаг | Действие |
 |-----|----------|
 | 1 | Тест с `[data-testid="pay-btn"]`, UI без изменений |
-| 2 | `fletta` adapter включён |
+| 2 | `frap` adapter включён |
 | 3 | Прогон |
 
 **Успех:** Healing **не вызывался**; latency overhead &lt; 10% vs baseline.
@@ -106,7 +106,7 @@ E2E gates C002–C004 (unified timeline):
 
 ### CP004: Playwright best practice — role locator
 
-**Цель:** fletta **дополняет**, не конкурирует с `getByRole`.
+**Цель:** frap **дополняет**, не конкурирует с `getByRole`.
 
 | Шаг | Действие |
 |-----|----------|
@@ -118,7 +118,7 @@ E2E gates C002–C004 (unified timeline):
 | Шаг | Действие |
 |-----|----------|
 | 3 | Меняем видимый текст кнопки |
-| 4 | Replay с fletta fallback на сигнатуру |
+| 4 | Replay с frap fallback на сигнатуру |
 
 **Успех:** Healing срабатывает или корректный fail с объяснением.
 
@@ -135,7 +135,7 @@ E2E gates C002–C004 (unified timeline):
 
 **Успех:**
 
-- CI видит step `fletta-heal` с diff
+- CI видит step `frap-heal` с diff
 - Артефакт скачивается из GitLab/Jenkins job
 
 **Фичи:** F008 + export (см. [integrations.md](./integrations.md))
@@ -163,7 +163,7 @@ E2E gates C002–C004 (unified timeline):
 
 ## Benchmark repository (публичный или internal)
 
-Структура репозитория `fletta-benchmark` (отдельно или `benchmarks/` в monorepo):
+Структура репозитория `frap-benchmark` (отдельно или `benchmarks/` в monorepo):
 
 ```
 benchmarks/
@@ -197,7 +197,7 @@ benchmarks/
 | Вариант | Что меряем |
 |---------|------------|
 | Playwright only (role/testId) | % passed без healing |
-| Playwright + fletta | % passed + heal count |
+| Playwright + frap | % passed + heal count |
 | (опционально) playwright-healer | heal count, API calls, determinism |
 
 ---
@@ -252,7 +252,7 @@ Docker Compose:
 - run: docker compose up -d checkout-v1
 - run: npx playwright test
 - run: docker compose up -d checkout-v2
-- run: npx playwright test  # with @fletta/playwright
+- run: npx playwright test  # with @frap/frap-playwright
 - run: node scripts/collect-metrics.js
 - assert: metrics.precision >= 0.95
 ```

@@ -15,25 +15,25 @@ Python SDK с тем же контрактом, что F013: `configure`, `heal`
 
 ## User workflow
 
-1. `pip install fletta` (или path dependency из monorepo `sdk/python/`).
-2. В `conftest.py`: fixture `fletta_driver` оборачивает Selenium driver.
+1. `pip install frap` (или path dependency из monorepo `sdk/python/`).
+2. В `conftest.py`: fixture `frap_driver` оборачивает Selenium driver.
 3. При `NoSuchElementException` → snapshot → `heal()` → retry или fail + diff.
-4. Отчёты: `fletta-events.jsonl`, опционально JUnit-compatible output для CI.
+4. Отчёты: `frap-events.jsonl`, опционально JUnit-compatible output для CI.
 
 ### Альтернатива (v1)
 
 ```bash
-fletta discover --url https://app.example/login  # без pytest, фаза 0
+frap discover --url https://app.example/login  # без pytest, фаза 0
 ```
 
 ## Scope
 
 ### In
 
-- `sdk/python/` — пакет `fletta`, типы `HealResult`, config
-- v1 transport: subprocess JSON-RPC к `fletta` CLI (F000)
+- `sdk/python/` — пакет `frap`, типы `HealResult`, config
+- v1 transport: subprocess JSON-RPC к `frap` CLI (F000)
 - pytest plugin / fixture для Selenium
-- Паритет событий с TS/Java (`fletta-events.jsonl`)
+- Паритет событий с TS/Java (`frap-events.jsonl`)
 - Документация: align с [sdk-strategy.md](../architecture/sdk-strategy.md)
 
 ### In (later)
@@ -52,7 +52,7 @@ fletta discover --url https://app.example/login  # без pytest, фаза 0
 - [ ] `sdk/python` устанавливается из monorepo, `pip install -e sdk/python`
 - [ ] `heal()` через JSON-RPC возвращает структуру, совместимую с F013 `HealResult`
 - [ ] pytest fixture: 1 pilot test с intentional locator drift → heal или safe-fail
-- [ ] Events пишутся в `fletta-reports/fletta-events.jsonl`
+- [ ] Events пишутся в `frap-reports/frap-events.jsonl`
 - [ ] README: quick start < 20 мин
 - [ ] (later) ctypes/FFI без subprocess overhead
 
@@ -60,12 +60,12 @@ fletta discover --url https://app.example/login  # без pytest, фаза 0
 
 ```
 sdk/python/
-  fletta/
+  frap/
     __init__.py
     client.py      # JSON-RPC → Core
     types.py
     config.py
-adapters/pytest/   # или sdk/python/fletta_pytest/
+adapters/pytest/   # или sdk/python/frap_pytest/
   plugin.py
   fixtures.py
 ```
@@ -83,7 +83,7 @@ result = core_client.heal(
 )
 ```
 
-Subprocess к `fletta rpc` — см. F000 JSON-RPC spec.
+Subprocess к `frap rpc` — см. F000 JSON-RPC spec.
 
 ### Зависимости
 

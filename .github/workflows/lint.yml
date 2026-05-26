@@ -1,6 +1,6 @@
 name: Lint and Format Check
 
-# Rust fmt/clippy + TS lint on release tags (same cadence as fletta CI).
+# Rust fmt/clippy + TS lint on release tags (same cadence as frap CI).
 on:
   push:
     tags:

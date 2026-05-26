@@ -16,7 +16,7 @@
 ## User workflow
 
 1. Тесты регулярно запускаются в CI
-2. fletta собирает метрики: healing events, время поиска, изменения UI
+2. frap собирает метрики: healing events, время поиска, изменения UI
 3. Рассчитывается health score (0–100%) для каждого теста
 4. Dashboard показывает тренды
 5. Алерты при деградации стабильности
@@ -99,11 +99,11 @@ dashboard/
 ```bash
 # Запуск серии тестов
 for i in {1..10}; do
-  fletta replay --name "cart-flow" --metrics
+  frap replay --name "cart-flow" --metrics
 done
 
 # Просмотр health score
-fletta health --name "cart-flow"
+frap health --name "cart-flow"
 # Expected: score, healing count, recommendations
 
 # Dashboard

@@ -11,15 +11,15 @@
 
 ## Goal
 
-Интерфейс для вызова fletta из LLM-агентов через Model Context Protocol (JSON-RPC). 
+Интерфейс для вызова frap из LLM-агентов через Model Context Protocol (JSON-RPC). 
 
 **Fletta как grounding layer для AI-агентов:** Fletta не генерирует тесты и не управляет LLM — Fletta даёт AI-агенту **надёжные руки и глаза**: структурированный доступ к UI (element maps) и стабильное выполнение действий (resolution при изменениях).
 
 ## User workflow
 
 1. LLM-агент получает задачу на естественном языке
-2. Через MCP вызывает fletta tools: record, replay, analyze, generate
-3. fletta выполняет операцию и возвращает структурированный результат
+2. Через MCP вызывает frap tools: record, replay, analyze, generate
+3. frap выполняет операцию и возвращает структурированный результат
 4. Агент принимает решение на основе результата
 5. Повторяет или завершает задачу
 
@@ -41,10 +41,10 @@
 ## Acceptance criteria
 
 - [ ] MCP сервер запускается локально
-- [ ] Tool `fletta/record`: начать запись сценария
-- [ ] Tool `fletta/replay`: воспроизвести сценарий с healing
-- [ ] Tool `fletta/analyze`: RCA-репорт для упавшего теста
-- [ ] Tool `fletta/generate`: создать тест из описания
+- [ ] Tool `frap/record`: начать запись сценария
+- [ ] Tool `frap/replay`: воспроизвести сценарий с healing
+- [ ] Tool `frap/analyze`: RCA-репорт для упавшего теста
+- [ ] Tool `frap/generate`: создать тест из описания
 - [ ] C005: LLM генерирует тест из текста
 - [ ] Schema документирована для агентов
 - [ ] Rate limiting: local-only, no external calls
@@ -66,13 +66,13 @@ crates/mcp/
 
 ### Tool Schemas
 ```rust
-// fletta/record
+// frap/record
 struct RecordInput {
     name: String,
     url: String,
 }
 
-// fletta/replay
+// frap/replay
 struct ReplayInput {
     name: String,
     capture_all: Option<bool>,
@@ -82,7 +82,7 @@ struct ReplayOutput {
     healing_events: Vec<HealingEvent>,
 }
 
-// fletta/analyze
+// frap/analyze
 struct AnalyzeInput {
     run_id: String,
 }
@@ -92,7 +92,7 @@ struct AnalyzeOutput {
     recommendation: String,
 }
 
-// fletta/generate
+// frap/generate
 struct GenerateInput {
     description: String,
     url: String,
@@ -106,19 +106,19 @@ struct GenerateOutput {
 ### MCP Registration
 ```json
 {
-  "name": "fletta",
+  "name": "frap",
   "tools": [
-    { "name": "fletta/record", "description": "..." },
-    { "name": "fletta/replay", "description": "..." },
-    { "name": "fletta/analyze", "description": "..." },
-    { "name": "fletta/generate", "description": "..." }
+    { "name": "frap/record", "description": "..." },
+    { "name": "frap/replay", "description": "..." },
+    { "name": "frap/analyze", "description": "..." },
+    { "name": "frap/generate", "description": "..." }
   ]
 }
 ```
 
 ### Разделение с Playwright MCP
 - Playwright MCP: navigate, click, snapshot — агент **действует**
-- fletta MCP: replay, analyze, generate — агент **стабилизирует и проверяет**
+- frap MCP: replay, analyze, generate — агент **стабилизирует и проверяет**
 
 ### Риски и зависимости
 - Зависит от F003 (analyze) и F004 (generate)
@@ -131,7 +131,7 @@ struct GenerateOutput {
 ```json
 // MCP Request: generate test
 {
-  "method": "fletta/generate",
+  "method": "frap/generate",
   "params": {
     "description": "Add product to cart and proceed to checkout",
     "url": "http://demo-store.local"

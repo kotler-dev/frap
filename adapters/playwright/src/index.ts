@@ -1,5 +1,5 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
-import { FlettaConfig } from '@fletta/sdk';
+import { FlettaConfig } from '@frap/sdk';
 import { FlettaPlaywrightConfig, mergePlaywrightConfig } from './config';
 import { createFlettaSelectorEngine, initFlettaEngine, recordSignature } from './selector-engine';
 import { withFletta, getLastHealResult } from './wrapper';
@@ -41,7 +41,7 @@ export {
 };
 export type { ContextCaptureOptions } from './context';
 
-export function flettaPlaywright(
+export function frapPlaywright(
   userConfig?: Partial<FlettaPlaywrightConfig>
 ): Partial<PlaywrightTestConfig> {
   const config = mergePlaywrightConfig(userConfig);
@@ -51,7 +51,7 @@ export function flettaPlaywright(
     ? (Array.isArray(baseReporter) ? baseReporter : [baseReporter])
     : [['list']];
   
-  reporters.push(['@fletta/playwright/dist/reporter.js', { 
+  reporters.push(['@frap/playwright/dist/reporter.js', { 
     minConfidence: config.minConfidence,
     reportDir: config.reportDir,
     enableHealing: config.enableHealing,
@@ -73,8 +73,8 @@ export function flettaPlaywright(
     reporter: reporters as any,
     build: {
       ...userBuild,
-      // Keep @fletta/sdk (and WASM) on Node's native loader — Playwright must not babel-parse .wasm.
-      external: [...externalList, '@fletta/sdk'],
+      // Keep @frap/sdk (and WASM) on Node's native loader — Playwright must not babel-parse .wasm.
+      external: [...externalList, '@frap/sdk'],
     },
   };
 
@@ -87,7 +87,7 @@ export async function registerFlettaSelector(
 ): Promise<void> {
   const fullConfig: FlettaConfig = {
     minConfidence: 0.85,
-    reportDir: './fletta-reports',
+    reportDir: './frap-reports',
     enableHealing: true,
     enableReporting: true,
     ...config,
@@ -96,7 +96,7 @@ export async function registerFlettaSelector(
   await initFlettaEngine(fullConfig);
   
   const engine = createFlettaSelectorEngine(fullConfig);
-  await selectors.register('fletta', engine);
+  await selectors.register('frap', engine);
 }
 
 export const VERSION = '0.1.0';

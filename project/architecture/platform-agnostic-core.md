@@ -108,7 +108,7 @@ crates/
 ```toml
 # crates/core/Cargo.toml
 [package]
-name = "fletta-core"
+name = "frap-core"
 version = "0.1.0"
 edition = "2021"
 
@@ -373,7 +373,7 @@ Core compiles to WASM for JavaScript SDK:
 cd crates/core
 wasm-pack build --target web --features wasm
 
-# Output: pkg/fletta_core.js + pkg/fletta_core_bg.wasm
+# Output: pkg/frap_core.js + pkg/frap_core_bg.wasm
 ```
 
 **WASM exports:**

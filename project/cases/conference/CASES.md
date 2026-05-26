@@ -1,6 +1,6 @@
 # Conference demo — каталог кейсов (CONF-*)
 
-Проект: **FixtureConf 2026 Spring** · отчёты: `e2e/fletta-reports/conference/`
+Проект: **FixtureConf 2026 Spring** · отчёты: `e2e/frap-reports/conference/`
 
 Миграция PoC: CP001 → `CONF-PW-REG-PASS`, CP002 → `CONF-SH-SCHED-PASS`, CP003 → `CONF-SH-CFP-FAIL`.
 
@@ -29,7 +29,7 @@
 | ID | Spec | Страница | Config | Ожидание |
 |----|------|----------|--------|----------|
 | CONF-PW-REG-PASS | registration.spec | register | debug | клик без healing |
-| CONF-PW-SPK-PASS | speakers.spec | speakers | — | `getByRole`, без fletta |
+| CONF-PW-SPK-PASS | speakers.spec | speakers | — | `getByRole`, без frap |
 | CONF-PW-NAV-FAIL | navigation.spec | index | debug | сломанный селектор, FAIL |
 
 ### DBG — Debug

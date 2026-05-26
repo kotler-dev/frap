@@ -16,7 +16,7 @@
 ## User workflow
 
 1. Тест падает из-за healing failure или неправильного элемента
-2. Пользователь запускает `fletta learn`
+2. Пользователь запускает `frap learn`
 3. Интерактивно указывает правильный элемент (drag-and-drop или selector)
 4. Система сравнивает: что нашли vs что правильно
 5. Обновляет веса сигнатур для данного сценария
@@ -25,7 +25,7 @@
 ## Scope
 
 ### In
-- CLI команда `fletta learn`
+- CLI команда `frap learn`
 - Интерактивный выбор элемента (browser UI или drag-and-drop)
 - Обновление весов сигнатур
 - Сохранение весов per-scenario
@@ -38,7 +38,7 @@
 
 ## Acceptance criteria
 
-- [ ] Команда `fletta learn --name <scenario>` работает
+- [ ] Команда `frap learn --name <scenario>` работает
 - [ ] Интерактивный выбор элемента
 - [ ] Обновление весов сигнатур после выбора
 - [ ] Веса сохраняются per-scenario
@@ -80,7 +80,7 @@ scenario_weights: HashMap<String, SignatureWeights>
 ### CLI
 ```bash
 # Интерактивное обучение
-fletta learn --name "payment-flow"
+frap learn --name "payment-flow"
 # [открывается UI со сценарием]
 # [пользователь выбирает правильный элемент]
 # Saved: updated weights for scenario "payment-flow"
@@ -96,15 +96,15 @@ fletta learn --name "payment-flow"
 ### Manual smoke
 ```bash
 # 1. Запуск с неправильным healing
-fletta replay --name "payment-flow"
+frap replay --name "payment-flow"
 # Result: FAILED или неправильный элемент
 
 # 2. Обучение
-fletta learn --name "payment-flow"
+frap learn --name "payment-flow"
 # [выбираем правильный элемент]
 
 # 3. Повторный запуск
-fletta replay --name "payment-flow"
+frap replay --name "payment-flow"
 # Result: PASSED с правильным элементом
 ```
 

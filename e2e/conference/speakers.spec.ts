@@ -3,7 +3,7 @@ import { CONF_PATH } from './helpers';
 
 test.describe('Conference 2026 Spring', () => {
   test.describe('Speakers', () => {
-    test('CONF-PW-SPK-PASS: native role locator without fletta', async ({ page }) => {
+    test('CONF-PW-SPK-PASS: native role locator without frap', async ({ page }) => {
       await page.goto(CONF_PATH.speakers);
 
       await page.getByRole('link', { name: 'Профиль спикера Алексей' }).click();

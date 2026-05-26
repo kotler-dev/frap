@@ -1,6 +1,6 @@
 # Features
 
-Краткий каталог возможностей fletta. Каждая фича имеет ID для связи с кейсами.
+Краткий каталог возможностей frap. Каждая фича имеет ID для связи с кейсами.
 
 ---
 
@@ -64,7 +64,7 @@
 
 ## F005: MCP/A2A Integration
 
-**Суть:** Интерфейс для вызова fletta из LLM-агентов.
+**Суть:** Интерфейс для вызова frap из LLM-агентов.
 
 **Команды:**
 - `record`: начать запись сценария
@@ -108,21 +108,21 @@
 
 ## F008: Playwright Adapter
 
-**Суть:** Интеграция fletta с Playwright через custom selectors API. **Интеграция, не замена** — см. [integrations.md](./integrations.md).
+**Суть:** Интеграция frap с Playwright через custom selectors API. **Интеграция, не замена** — см. [integrations.md](./integrations.md).
 
 **Зачем:**
 - Playwright — самый быстрорастущий фреймворк для e2e тестирования
 - Минимальный порог входа: не требуется миграция существующих тестов
-- Просто добавляем `fletta` в selector chain
-- Отличие от Playwright MCP: MCP действует в браузере; fletta стабилизирует тесты в CI — [positioning.md](./positioning.md)
+- Просто добавляем `frap` в selector chain
+- Отличие от Playwright MCP: MCP действует в браузере; frap стабилизирует тесты в CI — [positioning.md](./positioning.md)
 
 **Как работает:**
 ```typescript
 // Стандартный Playwright селектор
 await page.click('[data-testid="pay-btn"]');
 
-// С fletta adapter
-await page.click('fletta:pay-btn'); // fallback на сигнатуры при failure
+// С frap adapter
+await page.click('frap:pay-btn'); // fallback на сигнатуры при failure
 ```
 
 **Статус:** integration | MVP | приоритет высокий
@@ -183,7 +183,7 @@ AI-Agent Testing = Record agent sessions → Assert expected tool calls → Repl
    - Сопоставление с UI/Network контекстом
 
 2. **Agent Behavior Assertion**
-   - "Агент должен вызвать `fletta/replay` перед `fletta/analyze`"
+   - "Агент должен вызвать `frap/replay` перед `frap/analyze`"
    - "При ошибке API агент должен запросить подтверждение у пользователя"
 
 3. **A2A Flow Testing**
@@ -199,22 +199,22 @@ AI-Agent Testing = Record agent sessions → Assert expected tool calls → Repl
 **Пример сценария:**
 ```typescript
 // Записываем сессию агента
-fletta agent:record --agent-id "checkout-assistant" --session-id "sess-123"
+frap agent:record --agent-id "checkout-assistant" --session-id "sess-123"
 
 // Агент выполняет: "Оформи заказ для пользователя"
 // Захвачено:
 // 1. LLM call: generate steps
-// 2. MCP: fletta/replay --scenario "add-to-cart"
-// 3. MCP: fletta/replay --scenario "checkout"
+// 2. MCP: frap/replay --scenario "add-to-cart"
+// 3. MCP: frap/replay --scenario "checkout"
 // 4. LLM call: summarize result
 
 // Проверяем expected behavior
-fletta agent:assert --session "sess-123" \
-  --expect "fletta/replay called 2 times" \
+frap agent:assert --session "sess-123" \
+  --expect "frap/replay called 2 times" \
   --expect "checkout completed within 30s"
 
 // Воспроизводим с другой моделью
-fletta agent:replay --session "sess-123" --model "claude-sonnet-4"
+frap agent:replay --session "sess-123" --model "claude-sonnet-4"
 ```
 
 **Применения:**

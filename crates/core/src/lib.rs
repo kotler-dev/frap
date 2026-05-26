@@ -10,9 +10,9 @@ pub mod wasm;
 
 pub use error::CoreError;
 
-// Algorithm crates (also available as `fletta_core::signature`, etc.)
+// Algorithm crates (also available as `frap_core::signature`, etc.)
 pub use clustering;
-pub use fletta_rca::{
+pub use frap_rca::{
     analyze_timeline_json, PrimaryCause as RcaPrimaryCause, RcaReport,
     DEFAULT_WINDOW_MS as RCA_DEFAULT_WINDOW_MS,
 };
@@ -147,7 +147,7 @@ mod tests {
     }
 
     #[test]
-    fn fletta_core_heals_when_primary_missing() {
+    fn frap_core_heals_when_primary_missing() {
         let mut core = FlettaCore::new();
         let result = core.heal(
             "[data-testid='pay-btn']",
@@ -162,7 +162,7 @@ mod tests {
     }
 
     #[test]
-    fn fletta_core_primary_found_no_healing() {
+    fn frap_core_primary_found_no_healing() {
         let mut core = FlettaCore::new();
         let snapshot = cp002_snapshot();
         let selector = "[data-testid='checkout-pay']";

@@ -1,4 +1,4 @@
-# Архитектура fletta
+# Архитектура frap
 
 Общая архитектура системы и описание основных компонентов.
 
@@ -127,7 +127,7 @@ pub fn analyze_rca(timeline: &Timeline, failure_time: u64) -> RootCause;
 
 ```typescript
 // Playwright adapter
-export function flettaPlaywright(config: FlettaConfig): PlaywrightConfig;
+export function frapPlaywright(config: FlettaConfig): PlaywrightConfig;
 export function withFletta<T extends Locator>(locator: T): FlettaLocator<T>;
 
 // Core (через WASM)

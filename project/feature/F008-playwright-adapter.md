@@ -11,20 +11,20 @@
 
 ## Goal
 
-Интеграция fletta с Playwright через custom selectors API. Не заменяем Playwright — дополняем при failure.
+Интеграция frap с Playwright через custom selectors API. Не заменяем Playwright — дополняем при failure.
 
 ## User workflow
 
-1. Пользователь устанавливает `@fletta/playwright`
-2. Добавляет fletta в playwright.config.ts
-3. В тесте использует `fletta:` prefix или `withFletta()` обёртку
-4. При изменении UI fletta активирует self-healing
+1. Пользователь устанавливает `@frap/frap-playwright`
+2. Добавляет frap в playwright.config.ts
+3. В тесте использует `frap:` prefix или `withFletta()` обёртку
+4. При изменении UI frap активирует self-healing
 5. Результат: отчёт в JUnit/JSON формате
 
 ## Scope
 
 ### In
-- Playwright custom selector engine `fletta:`
+- Playwright custom selector engine `frap:`
 - Обертка `withFletta()` для существующих локаторов
 - Конфигурация: minConfidence, reportDir, policy
 - Экспорт отчётов: JUnit XML, JSON
@@ -37,13 +37,13 @@
 
 ## Acceptance criteria
 
-- [x] Установка: `npm install @fletta/playwright` работает (local)
+- [x] Установка: `npm install @frap/frap-playwright` работает (local)
 - [x] Конфигурация через playwright.config.ts
-- [x] Custom selector: `page.locator('fletta:pay-btn')` работает
+- [x] Custom selector: `page.locator('frap:pay-btn')` работает
 - [x] Wrapper: `withFletta(page.getByTestId('pay-btn'))` работает
 - [x] CP001 проходит: stable тест без healing
 - [x] CP002 проходит: heal при смене testid
-- [x] CP005 проходит: JUnit XML артефакт в CI (`e2e/conference/verify-reports.mjs`, artifact `fletta-conference-reports`)
+- [x] CP005 проходит: JUnit XML артефакт в CI (`e2e/conference/verify-reports.mjs`, artifact `frap-conference-reports`)
 - [x] Документация: quick start < 15 минут
 
 ### Implementation Status
@@ -58,7 +58,7 @@
 
 ### Usage Example
 ```typescript
-import { withFletta } from '@fletta/playwright';
+import { withFletta } from '@frap/frap-playwright';
 
 test('payment', async ({ page }) => {
   const button = await withFletta(page.getByTestId('pay-btn'), page);
@@ -84,12 +84,12 @@ adapters/playwright/
 ### Custom selector engine
 ```typescript
 // playwright.config.ts
-import { flettaPlaywright } from '@fletta/playwright';
+import { frapPlaywright } from '@frap/frap-playwright';
 
 export default defineConfig({
-  ...flettaPlaywright({
+  ...frapPlaywright({
     minConfidence: 0.85,
-    reportDir: './fletta-reports',
+    reportDir: './frap-reports',
   }),
 });
 ```
@@ -98,7 +98,7 @@ export default defineConfig({
 ```typescript
 // Вариант A: custom selector
 test('payment', async ({ page }) => {
-  await page.locator('fletta:pay-btn').click();
+  await page.locator('frap:pay-btn').click();
 });
 
 // Вариант B: обёртка существующего
@@ -128,22 +128,22 @@ Playwright adapter — тонкая обёртка: DOM snapshot → SDK/Core.he
 ```bash
 # Установка и настройка
 cd demo-app
-npm install @fletta/playwright
+npm install @frap/frap-playwright
 
 # Конфигурация
-# playwright.config.ts — добавить flettaPlaywright()
+# playwright.config.ts — добавить frapPlaywright()
 
 # Запуск тестов
 npx playwright test
 
 # Проверка отчёта
-ls fletta-reports/
+ls frap-reports/
 # Expected: junit.xml, healing-report.json
 ```
 
 ### Automation
 - Интеграционные тесты: CP001–CP005
-- E2E тесты: реальный Playwright + fletta
+- E2E тесты: реальный Playwright + frap
 - CI pipeline: GitHub Actions
 
 ## Related docs

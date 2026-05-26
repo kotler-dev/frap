@@ -28,7 +28,7 @@
 - Healenium тяжёлый (ML, proxy, PostgreSQL) или не проходит security.
 - Нет объяснимого отчёта «что починили и почему».
 
-**Что даёт fletta:**
+**Что даёт frap:**
 
 - Java SDK / JUnit listener (roadmap P4) — **не новый раннер**.
 - Экспорт healing events в JUnit XML / Allure.
@@ -50,9 +50,9 @@
 - Flaky из-за таймингов; непонятно UI vs API.
 - playwright-healer тянет AI или не даёт enterprise audit.
 
-**Что даёт fletta:**
+**Что даёт frap:**
 
-- `@fletta/playwright` — custom selector `fletta:` + отчёты.
+- `@frap/frap-playwright` — custom selector `frap:` + отчёты.
 - PoC за неделю, минимальный порог входа.
 
 **Сообщение:** «Добавьте одну строку в конфиг — healing в CI с explainable diff.»
@@ -71,11 +71,11 @@
 - Нет детерминированного отчёта по tool calls агента.
 - Смена модели ломает поведение агента незаметно.
 
-**Что даёт fletta (v3, F011):**
+**Что даёт frap (v3, F011):**
 
 - Capture MCP tool calls, assertions на порядок/аргументы.
-- `fletta/analyze` для RCA после падения агентного сценария.
-- Совместно с Playwright MCP: MCP пишет, fletta **стабилизирует и проверяет**.
+- `frap/analyze` для RCA после падения агентного сценария.
+- Совместно с Playwright MCP: MCP пишет, frap **стабилизирует и проверяет**.
 
 **Сообщение:** «Тестируйте не только приложение, но и поведение агента — детерминированно.»
 
@@ -127,9 +127,9 @@
 
 ## Anti-personas (не ЦА на старте)
 
-- Команды **без e2e** — сначала им нужен Playwright, не fletta.
+- Команды **без e2e** — сначала им нужен Playwright, не frap.
 - Стартапы, готовые платить за Testim/Mabl «из коробки» — другой GTM.
-- «Только генерация тестов из текста» без CI — это Playwright MCP + LLM, fletta подключается позже.
+- «Только генерация тестов из текста» без CI — это Playwright MCP + LLM, frap подключается позже.
 
 ---
 

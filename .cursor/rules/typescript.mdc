@@ -4,7 +4,7 @@ globs: "**/*.{ts,tsx}"
 alwaysApply: false
 ---
 
-# fletta TypeScript правила
+# frap TypeScript правила
 
 ## Структура
 - `sdk/typescript/` — core SDK
@@ -61,7 +61,7 @@ async function healElement(selector: string, options: HealOptions): Promise<Heal
 
 ```typescript
 // Custom selector engine
-export const flettaSelectorEngine: SelectorEngine = {
+export const frapSelectorEngine: SelectorEngine = {
   queryAll(root, selector) {
     // Делегировать к core
     return healingEngine.findMatches(root, selector);
@@ -111,7 +111,7 @@ let wasmModule: WasmModule | null = null;
 
 export async function initFletta(): Promise<void> {
   if (wasmModule) return;
-  wasmModule = await import('./fletta_core.wasm');
+  wasmModule = await import('./frap_core.wasm');
   await wasmModule.default();
 }
 ```

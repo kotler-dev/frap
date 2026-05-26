@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * CONF-RPT-RUN-PASS (post-run): fletta-report.json and junit.xml are written in reporter onEnd,
+ * CONF-RPT-RUN-PASS (post-run): frap-report.json and junit.xml are written in reporter onEnd,
  * after Playwright exits — run from scripts/test.sh conference.
  */
 import fs from 'fs';
@@ -8,16 +8,16 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const reportDir = path.resolve(__dirname, '..', 'fletta-reports', 'conference');
+const reportDir = path.resolve(__dirname, '..', 'frap-reports', 'conference');
 
 function fail(msg) {
   console.error(`[CONF-RPT-RUN-PASS] ${msg}`);
   process.exit(1);
 }
 
-const summaryPath = path.join(reportDir, 'fletta-report.json');
+const summaryPath = path.join(reportDir, 'frap-report.json');
 const junitPath = path.join(reportDir, 'junit.xml');
-const eventsPath = path.join(reportDir, 'fletta-events.jsonl');
+const eventsPath = path.join(reportDir, 'frap-events.jsonl');
 
 if (!fs.existsSync(summaryPath)) fail(`Missing ${summaryPath}`);
 if (!fs.existsSync(junitPath)) fail(`Missing ${junitPath}`);

@@ -1,4 +1,4 @@
-import { FlettaConfig, mergeConfig as mergeBaseConfig } from '@fletta/sdk';
+import { FlettaConfig, mergeConfig as mergeBaseConfig } from '@frap/sdk';
 import type { PlaywrightTestConfig, TestInfo } from '@playwright/test';
 
 export interface FlettaPlaywrightConfig extends FlettaConfig {

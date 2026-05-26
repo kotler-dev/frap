@@ -1,4 +1,4 @@
-# Таблица фич fletta
+# Таблица фич frap
 
 **Главная страница проекта** — единый источник правды по статусам фич, статистике и планированию релизов.
 
@@ -45,7 +45,7 @@
 
 | Фича | Статус | Severity | Release | Примечание |
 |------|--------|----------|---------|------------|
-| [F000: Core Platform API](./feature/F000-core-platform-api.md) | ✅ | Critical | v1.0.0 | P0 WASM + `fletta-core`; FFI/JSON-RPC → v1.4.0 |
+| [F000: Core Platform API](./feature/F000-core-platform-api.md) | ✅ | Critical | v1.0.0 | P0 WASM + `frap-core`; FFI/JSON-RPC → v1.4.0 |
 | [F001: Self-Healing Selectors](./feature/F001-self-healing.md) | ✅ | Critical | v1.0.0 | Rust Core + WASM runtime; Conference E2E |
 | [F013: TypeScript SDK](./feature/F013-typescript-sdk.md) | ✅ | Critical | v1.0.0 | `healJson` WASM; README API |
 | [F008: Playwright Adapter](./feature/F008-playwright-adapter.md) | ✅ | Critical | v1.0.0 | `withFletta`, JUnit в CI (CP005) |
@@ -58,7 +58,7 @@
 | Фича | Статус | Severity | Release | Примечание |
 |------|--------|----------|---------|------------|
 | [F002: Unified Context](./feature/F002-unified-context.md) | ✅ | High | v1.1.0 | timeline + captureAll; C002/C003/C004 e2e |
-| [F003: Root Cause Analysis](./feature/F003-rca.md) | ✅ | High | v1.1.0 | fletta-rca + WASM; C002/C003 verify-rca |
+| [F003: Root Cause Analysis](./feature/F003-rca.md) | ✅ | High | v1.1.0 | frap-rca + WASM; C002/C003 verify-rca |
 
 ---
 
@@ -109,7 +109,7 @@
 ## Критичные фичи для релизов
 
 ### v1.0.0 MVP
-- [x] F000: Core Platform API — P0 WASM + `fletta-core` (FFI/RPC → v1.4.0)
+- [x] F000: Core Platform API — P0 WASM + `frap-core` (FFI/RPC → v1.4.0)
 - [x] F001: Self-Healing Selectors — Rust + WASM в SDK
 - [x] F013: TypeScript SDK — `sdk/typescript` + README
 - [x] F008: Playwright Adapter — Conference E2E + JUnit artifact
@@ -177,20 +177,20 @@
 
 ### Структура проекта
 ```
-fletta/
-├── crates/              # Rust core (signature, clustering, healing, fletta-core)
+frap/
+├── crates/              # Rust core (signature, clustering, healing, frap-core)
 ├── sdk/typescript/      # TypeScript SDK
 ├── adapters/playwright/ # Playwright adapter
 ├── test-app/           # FixtureConf pages (Conference demo)
 ├── e2e/conference/     # PoC gates CP001–CP005 (CONF-*)
 ├── e2e/context/        # C002/C003/C004 context layer demos + verify-context.mjs
-├── crates/context/     # fletta-context (timeline, correlation, WebSocket model)
-├── crates/rca/         # fletta-rca (classifier, report, MCP stub)
+├── crates/context/     # frap-context (timeline, correlation, WebSocket model)
+├── crates/rca/         # frap-rca (classifier, report, MCP stub)
 └── .github/workflows/  # CI pipeline
 ```
 
 ### Реализовано
-- [x] Rust workspace: `signature`, `clustering`, `healing`, `fletta-core` (`crates/core`)
+- [x] Rust workspace: `signature`, `clustering`, `healing`, `frap-core` (`crates/core`)
 - [x] F000 P0: WASM `healJson`, `FlettaCore`, CI wasm-pack
 - [x] TypeScript SDK: `HealingEngine` → WASM (`core.ts` + `core-fallback.ts` dev-only)
 - [x] Playwright adapter + JUnit/JSON reporter

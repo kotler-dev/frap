@@ -15,15 +15,15 @@
 
 ## User workflow
 
-1. Пакет `@fletta/sdk` подключается как зависимость (monorepo: `file:../sdk/typescript` или npm publish).
+1. Пакет `@frap/frap-sdk` подключается как зависимость (monorepo: `file:../sdk/typescript` или npm publish).
 2. Адаптер (F008) или custom код вызывает `HealingEngine.heal()` с DOM snapshot.
 3. SDK возвращает структурированный результат (healed, confidence, diff, candidates).
-4. События пишутся в `fletta-events.jsonl`; опционально debug HTML (F012).
+4. События пишутся в `frap-events.jsonl`; опционально debug HTML (F012).
 
 ## Scope
 
 ### In
-- Пакет `sdk/typescript/` (`@fletta/sdk`)
+- Пакет `sdk/typescript/` (`@frap/frap-sdk`)
 - Типы: `HealResult`, `Signature`, `Candidate`, `DOMSnapshot`, `HealingSemantics`
 - `HealingEngine`: extract signature, heal, clustering helpers
 - Конфигурация: `FlettaConfig` (minConfidence, reportDir, debug)
@@ -41,7 +41,7 @@
 - [x] Типы экспортируются из `src/index.ts`
 - [x] `HealingEngine.heal()` возвращает `HealResult` с confidence и candidates
 - [x] E2e используют SDK через `file:../sdk/typescript`
-- [x] F008 adapter зависит от `@fletta/sdk`
+- [x] F008 adapter зависит от `@frap/frap-sdk`
 - [x] WASM Core подключён: `healJson` из `sdk/typescript/wasm/`
 - [x] Документация: API reference в `sdk/typescript/README.md`
 
@@ -89,7 +89,7 @@ sdk/typescript/
 
 ```bash
 cd sdk/typescript && npm install && npm run build
-cd ../../e2e && npm test   # косвенно через @fletta/sdk
+cd ../../e2e && npm test   # косвенно через @frap/frap-sdk
 ```
 
 ### Automation
