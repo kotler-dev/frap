@@ -7,7 +7,8 @@ import io.github.kotlerdev.frap.playwright.context.FrapContext;
 import io.github.kotlerdev.frap.playwright.extension.FrapExtension;
 import io.github.kotlerdev.frap.playwright.wrapper.Frap;
 import io.github.kotlerdev.frap.core.client.FrapCoreClient;
-import io.github.kotlerdev.frap.core.context.ContextTimeline;
+import io.github.kotlerdev.frap.core.client.FrapRpcClient;
+import io.github.kotlerdev.frap.core.context.*;
 import io.github.kotlerdev.frap.core.rca.PrimaryCause;
 import io.github.kotlerdev.frap.core.rca.RcaReport;
 import org.junit.jupiter.api.*;
@@ -19,6 +20,7 @@ import static org.assertj.core.api.Assertions.*;
  * C002 API Timeout RCA test (context layer).
  * Mirrors TypeScript c002-payment-timeout.spec.ts.
  */
+@Tag("e2e")
 @ExtendWith(FrapExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DisplayName("C002 API Timeout RCA")
@@ -47,7 +49,7 @@ class PaymentTimeoutTest {
     @BeforeEach
     void beforeEach() throws Exception {
         page = browser.newPage();
-        client = FrapCoreClient.create();
+        client = FrapRpcClient.create();
 
         // Enable context capture
         traceId = FrapContext.attach(page, new FrapContext.ContextCaptureOptions(
@@ -106,16 +108,16 @@ class PaymentTimeoutTest {
         ContextTimeline timeline = new ContextTimeline();
 
         // Add network error event
-        timeline.addEvent(new io.frap.core.context.ContextEvent.NetworkEvent(
+        timeline.addEvent(new ContextEvent.NetworkEvent(
             System.currentTimeMillis() - 5000,
             traceId,
-            new io.frap.core.context.NetworkEventPayload(
+            new NetworkEventPayload(
                 "POST",
                 "https://api.example.com/payment-intent",
                 500,
                 5000L,
-                io.frap.core.context.NetworkPhase.RESPONSE,
-                io.frap.core.context.NetworkProtocol.HTTP,
+                NetworkPhase.RESPONSE,
+                NetworkProtocol.HTTP,
                 null,
                 null,
                 "Internal Server Error"
@@ -123,7 +125,7 @@ class PaymentTimeoutTest {
         ));
 
         // Add UI failure event
-        timeline.addEvent(new io.frap.core.context.ContextEvent.UiEvent(
+        timeline.addEvent(new ContextEvent.UiEvent(
             System.currentTimeMillis(),
             traceId,
             "[data-testid='pay-btn']",
@@ -152,7 +154,7 @@ class PaymentTimeoutTest {
         // Timeline with only UI events (no network errors)
         ContextTimeline timeline = new ContextTimeline();
 
-        timeline.addEvent(new io.frap.core.context.ContextEvent.UiEvent(
+        timeline.addEvent(new ContextEvent.UiEvent(
             System.currentTimeMillis() - 1000,
             traceId,
             "[data-testid='old-btn']",
@@ -160,7 +162,7 @@ class PaymentTimeoutTest {
             "Attempting to click old button"
         ));
 
-        timeline.addEvent(new io.frap.core.context.ContextEvent.UiEvent(
+        timeline.addEvent(new ContextEvent.UiEvent(
             System.currentTimeMillis(),
             traceId,
             "[data-testid='old-btn']",

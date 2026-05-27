@@ -30,7 +30,7 @@ class FrapCoreClientTest {
     @BeforeEach
     void setUp() throws IOException {
         String binaryPath = findBinaryPath();
-        client = new FrapCoreClient(binaryPath);
+        client = new FrapRpcClient(binaryPath);
         assertThat(client.isAlive()).isTrue();
     }
 

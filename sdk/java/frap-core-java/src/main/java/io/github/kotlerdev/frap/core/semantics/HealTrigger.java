@@ -1,5 +1,7 @@
 package io.github.kotlerdev.frap.core.semantics;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * Why healing was attempted.
  * Mirrors TypeScript {@code HealTrigger} from healing-semantics.ts.
@@ -14,6 +16,7 @@ public enum HealTrigger {
         this.value = value;
     }
 
+    @JsonValue
     public String value() {
         return value;
     }

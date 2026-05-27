@@ -35,6 +35,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Playwright context capture: `attachFlettaContext`, `captureAll` config
 - C002/C003 fixtures: `test-app/context/`, `e2e/context/`, `./scripts/test.sh context`
 
+## [Unreleased]
+
+### Added
+
+- Java Playwright adapter (`adapters/playwright-java`): `withFrap`, healing proxy, `FrapExtension`, selector resolution (`Locator@` + explicit override)
+- Java E2E demo (`examples/java-playwright-demo`): conference healing, CP005 reports, C002 RCA; gate `./scripts/run-java-e2e.sh`
+- CI job `java-playwright-e2e`; Maven profiles `java-unit` / `java-e2e` in `sdk/java/pom.xml`
+
+### Documentation
+
+- F014 status ⚠️ (Playwright track ✅, WebDriver/Selenide pending); `project/FEATURES.md` updated
+
 ## [1.0.1] - Unreleased
 
 ### Planned
