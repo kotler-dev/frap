@@ -72,7 +72,26 @@ await withFletta(page.getByTestId('pay-btn')).click();
 
 ---
 
-## Selenium / Java (roadmap P4, зафиксировано для банка)
+## Java / Playwright (PoC ✅, v1.4 track A)
+
+**Модули:** `sdk/java/frap-core-java`, `adapters/playwright-java`, `examples/java-playwright-demo`.
+
+**Gate:** `./scripts/run-java-e2e.sh` — `frap-core-rpc` + test-app `:3000` + Playwright Chromium + 13 E2E (`@Tag("e2e")`).
+
+```java
+@ExtendWith(FrapExtension.class)
+class ScheduleTest {
+  @Test void openTalk() {
+    Frap.withFrap(page.locator("[data-testid='talk-open-healing']"), page).click();
+  }
+}
+```
+
+Документация: [java-sdk-rpc.md](./en/java-sdk-rpc.md), [examples/java-playwright-demo/README.md](../examples/java-playwright-demo/README.md). Статус: [F014](../project/feature/F014-java-sdk-ui-adapters.md) ⚠️ (Playwright ✅, WebDriver pending).
+
+---
+
+## Selenium / Java (roadmap P4 track B, зафиксировано для банка)
 
 **Минимальная интеграция** (JUnit 5 + Selenium + Page Object, фазы 0–2, CI): **[integrations-selenium-java.md](./integrations-selenium-java.md)**.
 

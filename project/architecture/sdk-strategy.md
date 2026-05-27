@@ -48,7 +48,7 @@ Accepted (target architecture). Реализация по языкам — по�
 | SDK | Transport | Почему | Статус |
 |-----|-----------|--------|--------|
 | **TypeScript** | WASM in-process | Playwright/Node, MVP | ⚠️ в работе |
-| **Java** | JNI → native `cdylib` | Selenium/JVM, bank on-prem, без Node | ❌ P4 / v1.4 |
+| **Java** | JSON-RPC (`frap-core-rpc`) сейчас; JNI → `cdylib` позже | Playwright Java PoC ✅; Selenium/JVM bank S1 — v1.4 | ⚠️ Playwright ✅ / WebDriver ❌ |
 | **Python** | (1) JSON-RPC subprocess к Core CLI, (2) позже `ctypes`/FFI | pytest, быстрый старт без JNI | ❌ backlog |
 
 **Правило:** алгоритмы только в Core; SDK не дублирует scoring/clustering.

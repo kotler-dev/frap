@@ -89,7 +89,7 @@
 
 | Фича | Статус | Severity | Release | Примечание |
 |------|--------|----------|---------|------------|
-| [F014: Java SDK & UI Adapters](./feature/F014-java-sdk-ui-adapters.md) | ❌ | High | v1.4.0 | JUnit 5 + WebDriver P0; Selenide P1 |
+| [F014: Java SDK & UI Adapters](./feature/F014-java-sdk-ui-adapters.md) | ⚠️ | High | v1.4.0 | Playwright Java PoC ✅; WebDriver/Selenide P0–P1 в работе |
 
 ---
 
@@ -119,7 +119,7 @@
 - [x] F012: Debug Trace Mode — developer experience
 
 ### v1.4.0 Java
-- [ ] F014: Java SDK & UI Adapters — JUnit 5 + WebDriver; Selenide P1
+- [ ] F014: Java SDK & UI Adapters — **Playwright Java PoC ✅** (RPC + demo E2E); WebDriver + Selenide P1 — в работе
 
 ### v2.0.0 Scale (Structural Contract F017)
 - [ ] F017.0: Documentation + availability matrix + case C006 — v1.2.0 docs
@@ -171,11 +171,11 @@
 | v1.0.0 | 5 | 5 | 0 | 0 | 100% |
 | v1.1.0 | 2 | 2 | 0 | 0 | 100% |
 | v1.2.0 | 3 | 0 | 0 | 3 | 0% |
-| v1.4.0 | 1 | 0 | 0 | 1 | 0% |
+| v1.4.0 | 1 | 0 | 1 | 0 | 50% |
 | backlog | 1 | 0 | 0 | 1 | 0% |
 | v2.0.0 | 4 | 0 | 0 | 4 | 0% |
 | v3.0.0 | 1 | 0 | 0 | 1 | 0% |
-| **Всего** | **17** | **7** | **0** | **10** | **41%** |
+| **Всего** | **17** | **7** | **1** | **9** | **44%** |
 
 ---
 
@@ -206,6 +206,8 @@ frap/
 - [x] Playwright adapter + JUnit/JSON reporter
 - [x] Conference E2E (CP001–CP005 gates) + `verify-reports.mjs`
 - [x] CI: Rust tests, WASM build, Conference E2E, Context Layer E2E + RCA verify, JUnit artifact upload
+- [x] Java SDK (JSON-RPC): `sdk/java/frap-core-java`, `frap-core-rpc` smoke in CI
+- [x] Playwright Java adapter + L4 demo E2E (`examples/java-playwright-demo`, `./scripts/run-java-e2e.sh`, CI job `java-playwright-e2e`)
 
 ### Ожидает (v1.0.1 / v1.4.0)
 
@@ -215,6 +217,8 @@ frap/
 | P1 | FFI + cbindgen (F000) | v1.4.0 |
 | P2 | JSON-RPC CLI (F000, Python F015) | v1.4.0 / backlog |
 | P3 | Custom adapter guide + standalone examples | v1.4.0+ |
+| P4 | Java Playwright PoC (F014 track A) | ✅ 2026-05-27 |
+| P5 | Java WebDriver + Selenide (F014 track B) | v1.4.0 |
 
 ### Подзадачи v1.0.0 (закрыто)
 

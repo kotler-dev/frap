@@ -2,7 +2,10 @@ package io.github.kotlerdev.frap.playwright.wrapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.microsoft.playwright.ElementHandle;
+import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import com.microsoft.playwright.PlaywrightException;
 import io.github.kotlerdev.frap.core.dto.DOMElementInfo;
 import io.github.kotlerdev.frap.core.dto.DOMSnapshot;
 import org.slf4j.Logger;
@@ -48,11 +51,10 @@ public class SnapshotBuilder {
                 if (testId) {
                     selector = `[data-testid="${testId}"]`;
                 } else if (el.id) {
-                    selector = `#${el.id}`;
+                    selector = `#${CSS.escape(el.id)}`;
                 } else {
                     const tagName = el.tagName.toLowerCase();
-                    const text = (el.textContent || '').substring(0, 20);
-                    selector = `${tagName}:contains("${text}")`;
+                    selector = tagName;
                 }
 
                 elements.push({
@@ -87,7 +89,7 @@ public class SnapshotBuilder {
     public DOMSnapshot build() {
         try {
             @SuppressWarnings("unchecked")
-            Map<String, Object> rawResult = page.evaluate(SNAPSHOT_SCRIPT);
+            Map<String, Object> rawResult = (Map<String, Object>) page.evaluate(SNAPSHOT_SCRIPT);
 
             String html = (String) rawResult.getOrDefault("html", "");
             @SuppressWarnings("unchecked")
@@ -132,6 +134,10 @@ public class SnapshotBuilder {
      * @return DOMElementInfo if found, null otherwise
      */
     public DOMElementInfo extractForSelector(String selector) {
+        if (!isLikelyCssSelector(selector)) {
+            logger.debug("Skipping signature extraction for non-CSS selector: {}", selector);
+            return null;
+        }
         String script = String.format("""
             (selector) => {
                 const el = document.querySelector(selector);
@@ -169,7 +175,11 @@ public class SnapshotBuilder {
             }
             return parseElement(raw);
         } catch (Exception e) {
-            logger.warn("Failed to extract signature for {}: {}", selector, e.getMessage());
+            if (isInvalidSelectorError(e)) {
+                logger.debug("Skipping signature extraction for invalid CSS selector {}: {}", selector, e.getMessage());
+            } else {
+                logger.warn("Failed to extract signature for {}: {}", selector, e.getMessage());
+            }
             return null;
         }
     }
@@ -178,15 +188,96 @@ public class SnapshotBuilder {
      * Quick check if an element exists for the given selector.
      */
     public boolean exists(String selector) {
+        if (!isLikelyCssSelector(selector)) {
+            logger.debug("Skipping CSS existence check for non-CSS selector: {}", selector);
+            return false;
+        }
         try {
-            Boolean exists = page.evaluate(
+            Boolean exists = (Boolean) page.evaluate(
                 "(sel) => document.querySelector(sel) !== null",
                 selector
             );
             return Boolean.TRUE.equals(exists);
         } catch (Exception e) {
-            logger.warn("Failed to check existence of {}: {}", selector, e.getMessage());
+            if (isInvalidSelectorError(e)) {
+                logger.debug("Skipping invalid CSS selector {}: {}", selector, e.getMessage());
+            } else {
+                logger.warn("Failed to check existence of {}: {}", selector, e.getMessage());
+            }
             return false;
         }
+    }
+
+    public boolean exists(Locator locator) {
+        try {
+            return locator.count() > 0;
+        } catch (PlaywrightException e) {
+            logger.debug("Failed locator existence check: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    public DOMElementInfo extractForLocator(Locator locator, String selectorForReporting) {
+        try {
+            Locator first = locator.first();
+            if (first.count() == 0) {
+                return null;
+            }
+            ElementHandle handle = first.elementHandle();
+            if (handle == null) {
+                return null;
+            }
+            @SuppressWarnings("unchecked")
+            Map<String, Object> raw = (Map<String, Object>) handle.evaluate("""
+                (el) => {
+                    const attributes = {};
+                    const attrs = Array.from(el.attributes || []);
+                    for (const attr of attrs) {
+                        attributes[attr.name] = attr.value;
+                    }
+
+                    const path = [];
+                    let current = el;
+                    while (current && current !== document.body) {
+                        const role = current.getAttribute('role');
+                        path.unshift(`${current.tagName.toLowerCase()}:${role || '-'}`);
+                        current = current.parentElement;
+                    }
+
+                    return {
+                        selector: null,
+                        tag: el.tagName.toLowerCase(),
+                        attributes: attributes,
+                        text_content: (el.textContent || '').substring(0, 100) || undefined,
+                        path: path
+                    };
+                }
+                """);
+            if (raw == null) {
+                return null;
+            }
+            if (selectorForReporting != null && !selectorForReporting.isBlank()) {
+                raw.put("selector", selectorForReporting);
+            }
+            return parseElement(raw);
+        } catch (PlaywrightException e) {
+            logger.debug("Failed to extract signature via locator {}: {}", selectorForReporting, e.getMessage());
+            return null;
+        }
+    }
+
+    private static boolean isInvalidSelectorError(Exception e) {
+        String msg = e.getMessage();
+        return msg != null && msg.contains("SyntaxError") && msg.contains("querySelector");
+    }
+
+    private static boolean isLikelyCssSelector(String selector) {
+        if (selector == null || selector.isBlank()) {
+            return false;
+        }
+        if (selector.startsWith("Locator@")) {
+            return false;
+        }
+        return !selector.startsWith("internal:");
     }
 }

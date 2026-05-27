@@ -5,7 +5,7 @@
 ## Стек
 
 - **Core:** Rust (алгоритмы кластеризации, сигнатуры DOM/логов) → компиляция в WASM и нативные сборки
-- **SDK:** TypeScript (Playwright adapter), Java (roadmap P4)
+- **SDK:** TypeScript (Playwright adapter), Java (Playwright PoC ✅; Selenium/WebDriver v1.4)
 - **Интеграции:** Playwright (custom selectors), MCP (JSON-RPC для LLM-агентов), JUnit export
 - **Платформы:** Web (v1), Android/iOS (v3)
 

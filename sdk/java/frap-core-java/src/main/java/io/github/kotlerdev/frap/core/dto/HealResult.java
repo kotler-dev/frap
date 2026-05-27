@@ -22,8 +22,8 @@ public record HealResult(
     @JsonProperty("semantics") HealingSemantics semantics
 ) {
     public HealResult {
-        if (selector == null || selector.isBlank()) {
-            throw new IllegalArgumentException("selector is required");
+        if (selector == null) {
+            selector = "";
         }
         topCandidates = topCandidates != null ? List.copyOf(topCandidates) : Collections.emptyList();
     }

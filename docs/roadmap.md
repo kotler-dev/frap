@@ -100,7 +100,7 @@
 
 | Приоритет | Фича | Задачи | Результат |
 |-----------|------|--------|-----------|
-| P4 | F014 Java SDK & UI adapters | JUnit 5 + WebDriver; Selenide P1 | [F014](../project/feature/F014-java-sdk-ui-adapters.md) |
+| P4 | F014 Java SDK & UI adapters | Playwright Java PoC ✅; WebDriver + Selenide P1 | [F014](../project/feature/F014-java-sdk-ui-adapters.md) ⚠️ |
 | P4 | CI Plugins | GitHub Actions, Jenkins | М marketplace |
 | P4 | F007 Visual | Визуальные признаки в сигнатуре | Точность >95% |
 | P4 | Cypress Adapter | Второй по популярности фреймворк | Расширение охвата |

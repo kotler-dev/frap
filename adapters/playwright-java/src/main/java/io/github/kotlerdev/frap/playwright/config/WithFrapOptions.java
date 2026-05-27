@@ -1,6 +1,7 @@
 package io.github.kotlerdev.frap.playwright.config;
 
 import io.github.kotlerdev.frap.core.config.FrapConfig;
+import io.github.kotlerdev.frap.core.semantics.HealPolicy;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.nio.file.Path;
@@ -17,6 +18,7 @@ public class WithFrapOptions {
     private Boolean debug;
     private String healPolicy;
     private Boolean captureAll;
+    private String selector;
     private ExtensionContext testContext;
 
     public WithFrapOptions() {}
@@ -85,6 +87,18 @@ public class WithFrapOptions {
     }
 
     /**
+     * Explicit selector string to use for healing/signature recording.
+     */
+    public String selector() {
+        return selector;
+    }
+
+    public WithFrapOptions selector(String selector) {
+        this.selector = selector;
+        return this;
+    }
+
+    /**
      * JUnit5 extension context for test identification.
      */
     public ExtensionContext testContext() {
@@ -99,6 +113,15 @@ public class WithFrapOptions {
     /**
      * Builds a FrapConfig from these options.
      */
+    private static HealPolicy parseHealPolicy(String policy) {
+        return switch (policy.trim().toLowerCase().replace('-', '_')) {
+            case "allow" -> HealPolicy.ALLOW;
+            case "deny" -> HealPolicy.DENY;
+            case "expect_heal" -> HealPolicy.EXPECT_HEAL;
+            default -> HealPolicy.valueOf(policy.trim().toUpperCase());
+        };
+    }
+
     public FrapConfig toFrapConfig() {
         FrapConfig defaults = FrapConfig.defaults();
         return new FrapConfig(
@@ -107,7 +130,7 @@ public class WithFrapOptions {
             enableHealing != null ? enableHealing : defaults.enableHealing(),
             enableReporting != null ? enableReporting : defaults.enableReporting(),
             debug != null ? debug : defaults.debug(),
-            healPolicy != null ? io.frap.core.semantics.HealPolicy.valueOf(healPolicy.toUpperCase()) : defaults.healPolicy(),
+            healPolicy != null ? parseHealPolicy(healPolicy) : defaults.healPolicy(),
             captureAll != null ? captureAll : defaults.captureAll()
         );
     }
