@@ -34,13 +34,31 @@ node test-app/server.js &
 
 ### 3. Run Tests
 
+**Recommended (full E2E gate):** from repo root:
+
 ```bash
-# With test server running on localhost:3000
+./scripts/run-java-e2e.sh
+```
+
+This builds `frap-core-rpc`, starts `test-app` on `:3000`, installs Playwright Chromium, and runs the `@Tag("e2e")` suite in this module.
+
+**Manual:**
+
+```bash
+# Requires: frap-core-rpc built, test-app on localhost:3000, Playwright browsers installed
 mvn test
 
-# Or skip integration tests
+# Skip E2E when server/RPC/browsers are unavailable
 mvn test -DskipIT
 ```
+
+## Test suites
+
+| Module | Command | What runs |
+|--------|---------|-----------|
+| `adapters/playwright-java` | `mvn test` | Unit tests only (`excludedGroups=e2e`) |
+| `examples/java-playwright-demo` | `mvn test` or `./scripts/run-java-e2e.sh` | E2E: Playwright browser + `frap-core-rpc` + conference/context scenarios (`@Tag("e2e")`) |
+| `sdk/java` (unit) | `mvn test -Pjava-unit` | Core + adapter unit tests |
 
 ## Test Structure
 

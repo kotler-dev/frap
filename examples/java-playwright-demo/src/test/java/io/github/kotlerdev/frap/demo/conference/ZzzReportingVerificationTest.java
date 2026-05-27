@@ -17,10 +17,11 @@ import static org.assertj.core.api.Assertions.*;
  * CP005 equivalent: Report artifact verification.
  * Mirrors TypeScript zzz-reporting.spec.ts.
  */
+@Tag("e2e")
 @ExtendWith(FrapExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DisplayName("Conference 2026 Spring - Reporting")
-class ReportingVerificationTest {
+class ZzzReportingVerificationTest {
 
     static final ObjectMapper objectMapper = new ObjectMapper();
     static Path reportDir;

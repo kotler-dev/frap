@@ -2,6 +2,13 @@
 
 Playwright adapter for Frap self-healing selectors.
 
+## Testing
+
+| Suite | Location | Command |
+|-------|----------|---------|
+| **Unit** | this module (`src/test`) | `mvn test` |
+| **E2E** (browser + `frap-core-rpc` + test-app) | `examples/java-playwright-demo` | `./scripts/run-java-e2e.sh` from repo root |
+
 ## Quick Start
 
 ```java

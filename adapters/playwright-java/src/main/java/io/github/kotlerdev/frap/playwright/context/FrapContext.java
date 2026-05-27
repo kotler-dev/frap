@@ -143,9 +143,7 @@ public class FrapContext {
         page.onConsoleMessage(message -> {
             LogLevel level = mapConsoleLevel(message.type());
             String text = message.text();
-            String location = message.location() != null
-                ? message.location().url() + ":" + message.location().lineNumber()
-                : "";
+            String location = message.location() != null ? message.location() : "";
 
             pushEvent(new ContextEvent.LogEvent(
                 System.currentTimeMillis(),
@@ -159,7 +157,7 @@ public class FrapContext {
             pushEvent(new ContextEvent.LogEvent(
                 System.currentTimeMillis(),
                 traceId,
-                new LogEventPayload(LogLevel.ERROR, error.getMessage(), "page")
+                new LogEventPayload(LogLevel.ERROR, error, "page")
             ));
         });
 
@@ -217,7 +215,7 @@ public class FrapContext {
                 ));
             });
 
-            webSocket.onClose(() -> {
+            webSocket.onClose(reason -> {
                 pushEvent(new ContextEvent.NetworkEvent(
                     System.currentTimeMillis(),
                     traceId,
@@ -242,7 +240,7 @@ public class FrapContext {
             Files.createDirectories(reportDir);
             Path eventsFile = reportDir.resolve("frap-context-events.jsonl");
 
-            String json = io.frap.playwright.reports.JsonlReporter.toJson(event);
+            String json = io.github.kotlerdev.frap.playwright.reports.JsonlReporter.toJson(event);
             Files.writeString(eventsFile, json + "\n",
                 StandardOpenOption.CREATE,
                 StandardOpenOption.APPEND);

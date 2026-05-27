@@ -26,8 +26,16 @@
 
 ### Iter 3: Reports + Demo
 - **Example**: `examples/java-playwright-demo/`
-- **Tests**: Conference healing tests, RCA tests, reporting verification
-- **Artifacts**: frap-report.json, junit.xml, frap-context.json, frap-rca.json, debug HTML
+- **Tests**: Conference healing tests, RCA tests, reporting verification (`@Tag("e2e")`)
+- **Artifacts**: frap-report.json, junit.xml, frap-context-events.jsonl, frap-events.jsonl
+- **E2E gate**: `./scripts/run-java-e2e.sh` (13 tests, `BUILD SUCCESS`)
+- **CI**: job `java-playwright-e2e` in `.github/workflows/ci.yml`
+
+### Iter 3.1: Selector resolution & test split (2026-05-27)
+- **`extractSelector`**: parses `locator('...')` and `Locator@` + selector (Playwright Java `toString()`)
+- **`SnapshotBuilder`**: pre-record via `exists(Locator)` / `extractForLocator` (Playwright API, not `querySelector` on invalid strings)
+- **`WithFrapOptions.selector()`**, `Frap.withFrap(Page, String, …)` for explicit selector override
+- **Test suites**: unit in `adapters/playwright-java` (`excludedGroups=e2e`); E2E in demo module
 
 ### Iter 4: JNI/Native (Production)
 - **Rust FFI**: `crates/core/src/ffi.rs` - C API
@@ -90,6 +98,11 @@ For examples with all modules:
 ```bash
 cd sdk/java
 mvn install -DincludeExamples
+```
+
+Full Playwright Java E2E (from repo root):
+```bash
+./scripts/run-java-e2e.sh
 ```
 
 ## 📋 Next Steps (when ready)

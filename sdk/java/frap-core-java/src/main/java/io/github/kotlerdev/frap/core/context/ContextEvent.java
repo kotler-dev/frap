@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     property = "kind",
-    visible = true
+    visible = false
 )
 @JsonSubTypes({
     @JsonSubTypes.Type(value = ContextEvent.UiEvent.class, name = "ui"),

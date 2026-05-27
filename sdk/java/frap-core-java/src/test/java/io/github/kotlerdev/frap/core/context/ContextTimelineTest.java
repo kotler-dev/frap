@@ -36,9 +36,10 @@ class ContextTimelineTest {
 
         List<ContextEvent> window = timeline.window(2000L, 1000L);
 
-        assertThat(window).hasSize(2); // 2000 and 3000
-        assertThat(window.get(0).timestampMs()).isEqualTo(2000L);
-        assertThat(window.get(1).timestampMs()).isEqualTo(3000L);
+        assertThat(window).hasSize(3); // [center - window, center + window] → 1000, 2000, 3000
+        assertThat(window.get(0).timestampMs()).isEqualTo(1000L);
+        assertThat(window.get(1).timestampMs()).isEqualTo(2000L);
+        assertThat(window.get(2).timestampMs()).isEqualTo(3000L);
     }
 
     @Test

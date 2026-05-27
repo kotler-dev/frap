@@ -1,5 +1,7 @@
 package io.github.kotlerdev.frap.playwright.reports;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -142,18 +144,42 @@ public class ReportGenerator {
      * Generates JUnit XML report.
      */
     public void generateJUnitXml(List<FrapReport.ContextTestResult> tests, String suiteName) throws IOException {
+        generateJUnitXml(tests, List.of(), suiteName);
+    }
+
+    /**
+     * Generates JUnit XML from context test results and/or healing events.
+     */
+    public void generateJUnitXml(List<FrapReport.ContextTestResult> tests, List<HealingEvent> events,
+                                 String suiteName) throws IOException {
         Files.createDirectories(reportDir);
+
+        List<FrapReport.ContextTestResult> allTests = new java.util.ArrayList<>(tests);
+        if (allTests.isEmpty() && events != null) {
+            for (HealingEvent event : events) {
+                String id = event.testId() != null ? event.testId() : event.testName();
+                allTests.add(new FrapReport.ContextTestResult(
+                    id,
+                    event.healed() ? "passed" : "failed",
+                    0,
+                    null,
+                    event.timestamp(),
+                    null,
+                    null
+                ));
+            }
+        }
 
         StringBuilder xml = new StringBuilder();
         xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
         xml.append(String.format(
             "<testsuite name=\"%s\" tests=\"%d\" errors=\"0\" failures=\"%d\" skipped=\"0\" time=\"0\">\n",
             escapeXml(suiteName),
-            tests.size(),
-            (int) tests.stream().filter(t -> "failed".equals(t.status())).count()
+            allTests.size(),
+            (int) allTests.stream().filter(t -> "failed".equals(t.status())).count()
         ));
 
-        for (FrapReport.ContextTestResult test : tests) {
+        for (FrapReport.ContextTestResult test : allTests) {
             xml.append(String.format(
                 "  <testcase name=\"%s\" classname=\"%s\" time=\"%s\">\n",
                 escapeXml(test.playwrightTestId()),

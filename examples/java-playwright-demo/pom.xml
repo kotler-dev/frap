@@ -19,6 +19,9 @@
     <properties>
         <playwright.version>1.44.0</playwright.version>
         <test.server.url>http://localhost:3000</test.server.url>
+        <!-- E2E suite: Playwright browser + frap-core-rpc + test-app on :3000 -->
+        <junit.groups>e2e</junit.groups>
+        <frap.core.bin>${project.basedir}/../../crates/target/release/frap-core-rpc</frap.core.bin>
     </properties>
 
     <dependencies>
@@ -66,22 +69,28 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <groups>${junit.groups}</groups>
                     <systemPropertyVariables>
-                        <frap.reportDir>${project.build.directory}/frap-reports</frap.reportDir>
+                        <frap.reportDir>${project.build.directory}/frap-reports/conference</frap.reportDir>
                         <test.server.url>${test.server.url}</test.server.url>
                     </systemPropertyVariables>
                     <environmentVariables>
-                        <FRAP_CORE_BIN>${project.basedir}/../../crates/target/release/frap-core-rpc</FRAP_CORE_BIN>
+                        <FRAP_CORE_BIN>${frap.core.bin}</FRAP_CORE_BIN>
                     </environmentVariables>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
             </plugin>
         </plugins>
     </build>
 
     <profiles>
-        <!-- Profile to skip integration tests when server not available -->
+        <!-- Skip E2E when test-app / RPC / browsers are unavailable -->
         <profile>
-            <id>skip-it</id>
+            <id>skip-e2e</id>
             <activation>
                 <property>
                     <name>skipIT</name>

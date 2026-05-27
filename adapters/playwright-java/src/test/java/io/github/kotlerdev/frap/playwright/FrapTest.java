@@ -5,6 +5,7 @@ import io.github.kotlerdev.frap.playwright.wrapper.Frap;
 import io.github.kotlerdev.frap.playwright.wrapper.SnapshotBuilder;
 import org.junit.jupiter.api.*;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -31,7 +32,7 @@ class FrapTest {
                 "../../../crates/target/debug/frap-core-rpc",
             };
             for (String candidate : candidates) {
-                if (java.io.File(candidate).exists()) {
+                if (new File(candidate).exists()) {
                     System.setProperty("FRAP_CORE_BIN", candidate);
                     break;
                 }

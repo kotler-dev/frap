@@ -51,6 +51,24 @@
                 <module>../../examples/java-playwright-demo</module>
             </modules>
         </profile>
+        <!-- Unit tests only (frap-core-java + playwright adapter). No browser/RPC E2E. -->
+        <profile>
+            <id>java-unit</id>
+            <modules>
+                <module>frap-core-java</module>
+                <module>frap-core-native</module>
+                <module>../../adapters/playwright-java</module>
+            </modules>
+        </profile>
+        <!-- E2E: examples/java-playwright-demo — use scripts/run-java-e2e.sh -->
+        <profile>
+            <id>java-e2e</id>
+            <modules>
+                <module>frap-core-java</module>
+                <module>../../adapters/playwright-java</module>
+                <module>../../examples/java-playwright-demo</module>
+            </modules>
+        </profile>
     </profiles>
 
     <dependencyManagement>
@@ -80,6 +98,11 @@
             </dependency>
 
             <!-- Testing -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>

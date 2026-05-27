@@ -3,6 +3,8 @@ package io.github.kotlerdev.frap.playwright.extension;
 import io.github.kotlerdev.frap.core.config.FrapConfig;
 import io.github.kotlerdev.frap.playwright.config.FrapPlaywrightConfig;
 import io.github.kotlerdev.frap.playwright.context.FrapContext;
+import io.github.kotlerdev.frap.playwright.reports.FrapReport;
+import io.github.kotlerdev.frap.playwright.reports.ReportGenerator;
 import org.junit.jupiter.api.extension.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +36,7 @@ import java.util.List;
  */
 public class FrapExtension implements BeforeAllCallback, BeforeEachCallback, AfterEachCallback, AfterAllCallback {
     private static final Logger logger = LoggerFactory.getLogger(FrapExtension.class);
-    private static final String STORE_NS = "io.frap";
+    private static final String STORE_NS = "io.github.kotlerdev.frap";
     private static final String KEY_CONFIG = "config";
     private static final String KEY_TRACE_ID = "traceId";
 
@@ -118,13 +120,13 @@ public class FrapExtension implements BeforeAllCallback, BeforeEachCallback, Aft
         logger.info("[frap] Generating reports in: {}", reportDir);
 
         try {
-            var generator = new io.frap.playwright.reports.ReportGenerator(reportDir);
+            var generator = new ReportGenerator(reportDir);
 
             // Load healing events and generate report
             var events = generator.loadHealingEvents();
             var contextTests = loadContextTests(reportDir);
             generator.generateJsonReport(events, contextTests);
-            generator.generateJUnitXml(contextTests, "frap-conference");
+            generator.generateJUnitXml(contextTests, events, "frap-conference");
 
             logger.info("[frap] Reports generated: {} events, {} tests", events.size(), contextTests.size());
         } catch (Exception e) {
@@ -132,9 +134,8 @@ public class FrapExtension implements BeforeAllCallback, BeforeEachCallback, Aft
         }
     }
 
-    private List<io.frap.playwright.reports.FrapReport.ContextTestResult> loadContextTests(Path reportDir) {
-        // Load context test results from events file
-        List<io.frap.playwright.reports.FrapReport.ContextTestResult> results = new ArrayList<>();
+    private List<FrapReport.ContextTestResult> loadContextTests(Path reportDir) {
+        List<FrapReport.ContextTestResult> results = new ArrayList<>();
 
         try {
             Path eventsFile = reportDir.resolve("frap-context-events.jsonl");
