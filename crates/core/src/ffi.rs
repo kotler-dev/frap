@@ -83,7 +83,9 @@ pub unsafe extern "C" fn frap_core_new() -> *mut FrapCoreHandle {
 /// # Safety
 /// Returns a valid pointer that must be freed with `frap_core_free`.
 #[no_mangle]
-pub unsafe extern "C" fn frap_core_with_confidence(min_confidence: c_double) -> *mut FrapCoreHandle {
+pub unsafe extern "C" fn frap_core_with_confidence(
+    min_confidence: c_double,
+) -> *mut FrapCoreHandle {
     let handle = Box::new(FrapCoreHandle {
         core: FlettaCore::new().with_min_confidence(min_confidence),
     });
@@ -143,14 +145,26 @@ pub unsafe extern "C" fn frap_heal(
             let result: serde_json::Value = match serde_json::from_str(&result_json) {
                 Ok(v) => v,
                 Err(e) => {
-                    set_last_error(FrapErrorCode::JsonError, &format!("Failed to parse result: {}", e));
+                    set_last_error(
+                        FrapErrorCode::JsonError,
+                        &format!("Failed to parse result: {}", e),
+                    );
                     return FrapErrorCode::JsonError as c_int;
                 }
             };
 
-            let healed = result.get("healed").and_then(|v| v.as_bool()).unwrap_or(false);
-            let selector = result.get("selector").and_then(|v| v.as_str()).unwrap_or("");
-            let confidence = result.get("confidence").and_then(|v| v.as_f64()).unwrap_or(0.0);
+            let healed = result
+                .get("healed")
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let selector = result
+                .get("selector")
+                .and_then(|v| v.as_str())
+                .unwrap_or("");
+            let confidence = result
+                .get("confidence")
+                .and_then(|v| v.as_f64())
+                .unwrap_or(0.0);
             let diff = result.get("diff").and_then(|v| v.as_str());
 
             // Build result struct
@@ -166,7 +180,10 @@ pub unsafe extern "C" fn frap_heal(
             FrapErrorCode::Ok as c_int
         }
         Err(e) => {
-            set_last_error(FrapErrorCode::HealingFailed, &format!("Healing failed: {}", e));
+            set_last_error(
+                FrapErrorCode::HealingFailed,
+                &format!("Healing failed: {}", e),
+            );
             FrapErrorCode::HealingFailed as c_int
         }
     }
