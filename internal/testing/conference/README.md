@@ -139,14 +139,26 @@ open internal/testing/frap-reports/conference/frap-debug-explorer.html
 | `/conference/speakers.html` | Role locators |
 | `/conference/speaker.html?id=alexey` | Профиль спикера (не путать с `talk.html`) |
 
-## Cross-language contract (next step)
+## Cross-language contract: `id → data-id`
 
-Paths for the upcoming `id → data-id` clustering contract work:
+Общие фикстуры и ожидания для TS/Java/Rust:
 
 | Asset | Path |
 |-------|------|
-| TS contract spec | [clustering-id-migration.spec.ts](./clustering-id-migration.spec.ts) |
-| Expected behavior (this doc) | Sections «Пример кластера» and matrix in [CASES.md](../../project/cases/conference/CASES.md) |
-| Presentation slide | [internal/demo/presentation/index.html](../../demo/presentation/index.html) (slide «id → data-id») |
-| Java paired demo | [internal/demo/showcase/java-playwright/](../../demo/showcase/java-playwright/) |
+| Fixture (HTML + JSON) | [fixtures/contract/clustering-id-migration](../../../fixtures/contract/clustering-id-migration/) |
+| Playwright e2e | [clustering-id-migration.spec.ts](./clustering-id-migration.spec.ts) |
+| Rust integration | `crates/core/tests/contract_clustering_id_migration.rs` |
+| TypeScript (Jest) | `sdk/typescript/src/contract/clustering-id-migration.contract.test.ts` |
+| Java (JUnit) | `ClusteringIdMigrationContractTest.java` |
+
+Проверяются контрактные поля (`healed`, `confidence`, `top_candidates`), а не точная сериализация селектора SDK.
+
+Запуск одного e2e-кейса:
+
+```bash
+cd internal/testing
+npx playwright test --config=playwright.conference.config.ts --grep "CONF-CL-REG-PASS"
+```
+
+| Presentation slide | [internal/demo/index.html](../../demo/index.html) (slide «id → data-id») |
 | Golden reports (generated) | `internal/testing/frap-reports/conference/` |

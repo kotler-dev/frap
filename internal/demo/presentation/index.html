@@ -457,7 +457,7 @@ LocatorExport export = map.export(ExportOptions.builder()
                     </ul>
                 </div>
             </div>
-            <p class="caption">Кейс используется как пример для будущей кластеризации: при миграции <code>id -&gt; data-id</code> структура кластера сохраняется, меняется только confidence и решение heal.</p>
+            <p class="caption">Контракт в <code>fixtures/contract/clustering-id-migration</code> проверяется в Rust/TS/Java: кластер списка сохраняется, heal выбирает <code>li[data-id='2']</code> при потере <code>li#2</code>.</p>
         </section>
 
         <section class="slide" data-slide="7">

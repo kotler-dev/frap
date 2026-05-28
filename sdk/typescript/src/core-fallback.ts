@@ -114,7 +114,37 @@ function calculateConfidence(original: Signature, candidate: Signature): number 
         : 0.0;
 
   const bonus = calculateAttributeBonus(original, candidate);
-  return Math.min(1.0, 0.5 * pathSim + 0.3 * tokenSim + 0.2 * structuralSim + bonus);
+  const penalty = calculateIdentifierConflictPenalty(original, candidate);
+  return Math.min(
+    1.0,
+    Math.max(0, 0.5 * pathSim + 0.3 * tokenSim + 0.2 * structuralSim + bonus - penalty)
+  );
+}
+
+function calculateIdentifierMigrationBonus(original: Signature, candidate: Signature): number {
+  const origId = original.stable_attrs['id'];
+  const origDataId = original.stable_attrs['data-id'];
+  const candId = candidate.stable_attrs['id'];
+  const candDataId = candidate.stable_attrs['data-id'];
+
+  if (origId && candDataId === origId) return 0.35;
+  if (origId && candId === origId) return 0.1;
+  if (origDataId && candId === origDataId) return 0.35;
+  if (origDataId && candDataId === origDataId) return 0.1;
+  return 0;
+}
+
+function calculateIdentifierConflictPenalty(original: Signature, candidate: Signature): number {
+  let penalty = 0;
+  const origId = original.stable_attrs['id'];
+  const candId = candidate.stable_attrs['id'];
+  if (origId && candId && origId !== candId) penalty += 0.4;
+
+  const origDataId = original.stable_attrs['data-id'];
+  const candDataId = candidate.stable_attrs['data-id'];
+  if (origDataId && candDataId && origDataId !== candDataId) penalty += 0.4;
+
+  return penalty;
 }
 
 function calculatePathSimilarity(a: string, b: string): number {
@@ -141,6 +171,16 @@ function calculateAttributeBonus(original: Signature, candidate: Signature): num
   ) {
     bonus += 0.1;
   }
+
+  if (
+    original.position_in_parent !== undefined &&
+    candidate.position_in_parent !== undefined &&
+    original.position_in_parent === candidate.position_in_parent
+  ) {
+    bonus += 0.08;
+  }
+
+  bonus += calculateIdentifierMigrationBonus(original, candidate);
 
   for (const [key, value] of Object.entries(original.stable_attrs)) {
     if (candidate.stable_attrs[key] === value) {
@@ -208,6 +248,15 @@ function fallbackExtractSignatureFromElement(element: DOMElementInfo): Signature
       stable_attrs[key] = element.attributes[key];
     }
   }
+  if (element.attributes['data-testid']) {
+    stable_attrs['data-testid'] = element.attributes['data-testid'];
+  }
+  if (element.attributes['id']) {
+    stable_attrs['id'] = element.attributes['id'];
+  }
+  if (element.attributes['data-id']) {
+    stable_attrs['data-id'] = element.attributes['data-id'];
+  }
 
   return {
     path: tokens,
@@ -217,7 +266,7 @@ function fallbackExtractSignatureFromElement(element: DOMElementInfo): Signature
       .join('>'),
     stable_attrs,
     text_content: element.text_content,
-    position_in_parent: undefined,
+    position_in_parent: element.position_in_parent,
     children_hash: 0,
     depth: tokens.length,
   };

@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -86,6 +88,45 @@ public class Frap {
         return result != null && result.healed();
     }
 
+    /**
+     * Captures the page DOM and builds a clustered element map via Core.
+     */
+    public static ElementMap discover(Page page, MapOptions options) throws IOException {
+        DOMSnapshot snapshot = new SnapshotBuilder(page).build();
+        MapOptions opts = options != null ? options : MapOptions.defaults();
+        if (opts.url() == null && page.url() != null) {
+            opts = new MapOptions(page.url(), opts.includeNonInteractive(), opts.maxElements());
+        }
+        return getOrCreateClient().buildElementMap(snapshot, opts);
+    }
+
+    public static ElementMap discover(Page page) throws IOException {
+        return discover(page, new MapOptions(page.url(), true, null));
+    }
+
+    /**
+     * Discovers the page, generates Page Object Java sources, and writes files under {@code outputDir}.
+     */
+    public static List<Path> generatePageObject(Page page, Path outputDir, GenerateOptions options)
+        throws IOException {
+        ElementMap map = discover(page);
+        GeneratedArtifact artifact = getOrCreateClient().generatePageObject(
+            map,
+            options != null ? options : GenerateOptions.javaPlaywright("GeneratedPage", null)
+        );
+        List<Path> written = new ArrayList<>();
+        for (GeneratedFile file : artifact.files()) {
+            Path target = outputDir.resolve(file.path());
+            if (target.getParent() != null) {
+                Files.createDirectories(target.getParent());
+            }
+            Files.writeString(target, file.content());
+            written.add(target);
+            logger.info("[frap] Wrote Page Object: {}", target);
+        }
+        return written;
+    }
+
     public static void clearSignatures() {
         recordedSignatures.clear();
     }
@@ -151,12 +192,23 @@ public class Frap {
             .reduce((a, b) -> a + ">" + b)
             .orElse("");
 
+        Map<String, String> stableAttrs = new HashMap<>();
+        if (element.attributes().containsKey("data-testid")) {
+            stableAttrs.put("data-testid", element.attributes().get("data-testid"));
+        }
+        if (element.attributes().containsKey("id")) {
+            stableAttrs.put("id", element.attributes().get("id"));
+        }
+        if (element.attributes().containsKey("data-id")) {
+            stableAttrs.put("data-id", element.attributes().get("data-id"));
+        }
+
         return new Signature(
             path,
             prefix,
-            new HashMap<>(element.attributes()),
+            stableAttrs,
             element.textContent(),
-            null,
+            element.positionInParent(),
             0L,
             path.size()
         );
@@ -165,6 +217,37 @@ public class Frap {
     static Signature constructSignatureFromSelector(String selector, DOMSnapshot snapshot) {
         java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\[data-testid=[\"']([^\"']+)[\"']\\]");
         java.util.regex.Matcher matcher = pattern.matcher(selector);
+
+        java.util.regex.Pattern attrIdPattern = java.util.regex.Pattern.compile("\\[id=[\"']([^\"']+)[\"']\\]");
+        java.util.regex.Matcher attrIdMatcher = attrIdPattern.matcher(selector);
+        if (attrIdMatcher.find()) {
+            String idValue = attrIdMatcher.group(1);
+            for (DOMElementInfo el : snapshot.elements()) {
+                String elId = el.attributes().get("id");
+                String elDataId = el.attributes().get("data-id");
+                if (idValue.equals(elId) || idValue.equals(elDataId)) {
+                    Signature sig = constructSignatureFromElement(el);
+                    return new Signature(
+                        sig.path(),
+                        sig.prefix(),
+                        Map.of("id", idValue),
+                        sig.textContent(),
+                        el.positionInParent(),
+                        sig.childrenHash(),
+                        sig.depth()
+                    );
+                }
+            }
+            return new Signature(
+                List.of(new DOMToken("li", null, 0)),
+                "li:-",
+                Map.of("id", idValue),
+                null,
+                null,
+                0L,
+                1
+            );
+        }
 
         if (matcher.find()) {
             String originalTestId = matcher.group(1);

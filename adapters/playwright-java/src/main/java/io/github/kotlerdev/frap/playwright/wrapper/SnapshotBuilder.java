@@ -28,7 +28,7 @@ public class SnapshotBuilder {
             const elements = [];
             // Only interactive elements and elements with data-testid - much faster than querySelectorAll('*')
             const interactiveElements = document.querySelectorAll(
-                'button, input, a, select, textarea, [data-testid], [role="button"], [role="link"], [role="input"]'
+                'button, input, a, select, textarea, [data-testid], [data-id], li[id], [role="button"], [role="link"], [role="input"]'
             );
 
             interactiveElements.forEach((el) => {
@@ -48,21 +48,35 @@ public class SnapshotBuilder {
 
                 let selector;
                 const testId = el.getAttribute('data-testid');
+                const dataId = el.getAttribute('data-id');
+                const tagName = el.tagName.toLowerCase();
                 if (testId) {
                     selector = `[data-testid="${testId}"]`;
+                } else if (dataId) {
+                    selector = `${tagName}[data-id="${dataId}"]`;
                 } else if (el.id) {
-                    selector = `#${CSS.escape(el.id)}`;
+                    selector = `${tagName}[id="${el.id}"]`;
                 } else {
-                    const tagName = el.tagName.toLowerCase();
                     selector = tagName;
+                }
+
+                let positionInParent = undefined;
+                const parent = el.parentElement;
+                if (parent) {
+                    const siblings = Array.from(parent.children).filter(
+                        (child) => child.tagName === el.tagName
+                    );
+                    const idx = siblings.indexOf(el);
+                    if (idx >= 0) positionInParent = idx;
                 }
 
                 elements.push({
                     selector: selector,
-                    tag: el.tagName.toLowerCase(),
+                    tag: tagName,
                     attributes: attributes,
                     text_content: (el.textContent || '').substring(0, 100) || undefined,
-                    path: path
+                    path: path,
+                    position_in_parent: positionInParent
                 });
             });
 
@@ -118,12 +132,19 @@ public class SnapshotBuilder {
         @SuppressWarnings("unchecked")
         List<String> path = (List<String>) raw.get("path");
 
+        Integer positionInParent = null;
+        Object rawPosition = raw.get("position_in_parent");
+        if (rawPosition instanceof Number number) {
+            positionInParent = number.intValue();
+        }
+
         return new DOMElementInfo(
             selector != null ? selector : "",
             tag != null ? tag : "unknown",
             attributes != null ? attributes : Map.of(),
             textContent,
-            path != null ? path : List.of()
+            path != null ? path : List.of(),
+            positionInParent
         );
     }
 

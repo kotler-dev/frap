@@ -2,8 +2,14 @@ package io.github.kotlerdev.frap.core.native_;
 
 import io.github.kotlerdev.frap.core.client.FrapCoreClient;
 import io.github.kotlerdev.frap.core.context.ContextTimeline;
+import io.github.kotlerdev.frap.core.dto.DOMSnapshot;
+import io.github.kotlerdev.frap.core.dto.ElementMap;
+import io.github.kotlerdev.frap.core.dto.FilterSpec;
+import io.github.kotlerdev.frap.core.dto.GeneratedArtifact;
+import io.github.kotlerdev.frap.core.dto.GenerateOptions;
 import io.github.kotlerdev.frap.core.dto.HealRequest;
 import io.github.kotlerdev.frap.core.dto.HealResult;
+import io.github.kotlerdev.frap.core.dto.MapOptions;
 import io.github.kotlerdev.frap.core.rca.RcaReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,6 +190,27 @@ public class FrapNativeClient implements FrapCoreClient, AutoCloseable {
         }
 
         return fromJson(resultJson, RcaReport.class);
+    }
+
+    @Override
+    public ElementMap buildElementMap(DOMSnapshot snapshot, MapOptions options) throws IOException {
+        throw new UnsupportedOperationException(
+            "buildElementMap requires frap-core-rpc; use FrapRpcClient"
+        );
+    }
+
+    @Override
+    public ElementMap filterElementMap(ElementMap map, FilterSpec spec) throws IOException {
+        throw new UnsupportedOperationException(
+            "filterElementMap requires frap-core-rpc; use FrapRpcClient"
+        );
+    }
+
+    @Override
+    public GeneratedArtifact generatePageObject(ElementMap map, GenerateOptions options) throws IOException {
+        throw new UnsupportedOperationException(
+            "generatePageObject requires frap-core-rpc; use FrapRpcClient"
+        );
     }
 
     @Override
