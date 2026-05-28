@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>io.frap</groupId>
+        <groupId>io.github.kotlerdev.frap</groupId>
         <artifactId>frap-sdk-parent</artifactId>
         <version>1.1.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -19,11 +19,12 @@
 
     <properties>
         <native.lib.dir>${project.build.directory}/native-lib</native.lib.dir>
+        <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>io.frap</groupId>
+            <groupId>io.github.kotlerdev.frap</groupId>
             <artifactId>frap-core-java</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -125,17 +125,24 @@ When a primary selector fails, frap:
 
 ```
 frap/
-├── crates/                 # Rust core (signature, clustering, healing, context, rca)
-├── sdk/typescript/         # TypeScript SDK + WASM bindings
-├── adapters/playwright/    # Playwright integration
-├── test-app/conference/    # FixtureConf demo pages
-├── test-app/context/       # Context layer demo pages
-├── e2e/conference/         # PoC gates CP001–CP005 (CONF-*)
-├── e2e/context/            # Context gates C002–C004
-├── docs/                   # Positioning, benchmark, integrations
-├── project/                # Features, architecture, cases
-└── scripts/                # setup, build, test, dev
+├── crates/                      # Rust core (signature, clustering, healing, context, rca)
+├── sdk/                         # TypeScript + Java SDK
+├── adapters/                    # Playwright integrations
+├── internal/
+│   ├── architecture/            # Architecture docs (internal)
+│   ├── testing/conference/      # Conference E2E (CONF-*)
+│   ├── demo/
+│   │   ├── presentation/        # Slide deck
+│   │   ├── site/                # Demo server + FixtureConf + context pages
+│   │   └── showcase/java-playwright/  # Java E2E demo
+│   └── project/                 # Features, cases (internal planning)
+├── e2e/                         # Playwright runner + context specs
+├── docs/                        # Public docs
+├── project/                     # Public feature/case docs
+└── scripts/
 ```
+
+See [internal/README.md](internal/README.md) for the internal workspace map.
 
 ## Scripts
 

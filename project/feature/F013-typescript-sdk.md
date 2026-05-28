@@ -13,6 +13,8 @@
 
 Языковой SDK для Node.js/TypeScript: единый контракт вызова Rust Core (WASM), типы `HealResult` / `Signature`, конфигурация, события и debug-отчёты. Reference implementation для Java и Python SDK.
 
+Архитектурный guardrail: SDK не дублирует алгоритмы healing/scoring/clustering; вся алгоритмика живёт в Core (см. [ADR-001](../architecture/ADR-001-core-language-strategy.md)).
+
 ## User workflow
 
 1. Пакет `@frap/frap-sdk` подключается как зависимость (monorepo: `file:../sdk/typescript` или npm publish).

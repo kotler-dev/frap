@@ -78,7 +78,7 @@ frap/
 ├── crates/              # Rust ядро (сигнатуры, кластеризация, healing)
 ├── sdk/typescript/      # TypeScript SDK + WASM bindings
 ├── adapters/playwright/ # Интеграция с Playwright
-├── test-app/            # Демо-страницы
+├── internal/demo/site/            # Демо-страницы
 ├── e2e/                 # End-to-end тесты
 └── docs/                # Документация (en/ru)
 ```

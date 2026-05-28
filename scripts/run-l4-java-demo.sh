@@ -21,8 +21,8 @@ cargo build --release -p frap-core --bin frap-core-rpc
 export FRAP_CORE_BIN="${ROOT_DIR}/crates/target/release/frap-core-rpc"
 echo "[l4] FRAP_CORE_BIN=${FRAP_CORE_BIN}"
 
-echo "[l4] starting test-app server (:3000)..."
-cd "${ROOT_DIR}/test-app"
+echo "[l4] starting demo site server (:3000)..."
+cd "${ROOT_DIR}/internal/demo/site"
 node server.js > /tmp/frap-test-app.log 2>&1 &
 TEST_APP_PID=$!
 trap 'kill "${TEST_APP_PID}" >/dev/null 2>&1 || true' EXIT
@@ -42,14 +42,14 @@ cd "${ROOT_DIR}/sdk/java"
 mvn -q install -DskipTests
 
 echo "[l4] installing Playwright Chromium (Java)..."
-cd "${ROOT_DIR}/examples/java-playwright-demo"
+cd "${ROOT_DIR}/internal/demo/showcase/java-playwright"
 mvn -q org.codehaus.mojo:exec-maven-plugin:3.1.0:java \
   -Dexec.mainClass=com.microsoft.playwright.CLI \
   -Dexec.args="install chromium"
 
-echo "[l4] running Java E2E suite (@Tag e2e) in examples/java-playwright-demo..."
+echo "[l4] running Java E2E suite (@Tag e2e) in internal/demo/showcase/java-playwright..."
 mvn test -Dfrap.core.bin="${FRAP_CORE_BIN}"
 
 echo "[l4] report artifacts:"
-ls -la "${ROOT_DIR}/examples/java-playwright-demo/target/frap-reports/conference"
+ls -la "${ROOT_DIR}/internal/demo/showcase/java-playwright/target/frap-reports/conference"
 

@@ -6,10 +6,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>io.frap</groupId>
+        <groupId>io.github.kotlerdev.frap</groupId>
         <artifactId>frap-sdk-parent</artifactId>
         <version>1.1.1-SNAPSHOT</version>
-        <relativePath>../../sdk/java/pom.xml</relativePath>
+        <relativePath>../../../../sdk/java/pom.xml</relativePath>
     </parent>
 
     <artifactId>java-playwright-demo</artifactId>
@@ -19,15 +19,15 @@
     <properties>
         <playwright.version>1.44.0</playwright.version>
         <test.server.url>http://localhost:3000</test.server.url>
-        <!-- E2E suite: Playwright browser + frap-core-rpc + test-app on :3000 -->
+        <!-- E2E suite: Playwright browser + frap-core-rpc + demo site on :3000 -->
         <junit.groups>e2e</junit.groups>
-        <frap.core.bin>${project.basedir}/../../crates/target/release/frap-core-rpc</frap.core.bin>
+        <frap.core.bin>${project.basedir}/../../../../crates/target/release/frap-core-rpc</frap.core.bin>
     </properties>
 
     <dependencies>
         <!-- Frap -->
         <dependency>
-            <groupId>io.frap</groupId>
+            <groupId>io.github.kotlerdev.frap</groupId>
             <artifactId>frap-playwright</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -88,7 +88,7 @@
     </build>
 
     <profiles>
-        <!-- Skip E2E when test-app / RPC / browsers are unavailable -->
+        <!-- Skip E2E when demo site / RPC / browsers are unavailable -->
         <profile>
             <id>skip-e2e</id>
             <activation>

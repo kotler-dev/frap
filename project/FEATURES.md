@@ -6,6 +6,8 @@
 
 **Правило**: Фича считается реализованной только если есть работающий код + тесты + документация + минимум один проходящий кейс.
 
+**Архитектурное правило SDK**: алгоритмы healing/scoring/clustering не дублируются в SDK-языках; реализация только в Core ([ADR-001](./architecture/ADR-001-core-language-strategy.md)).
+
 ---
 
 ## Терминология
@@ -191,8 +193,8 @@ frap/
 ├── crates/              # Rust core (signature, clustering, healing, frap-core)
 ├── sdk/typescript/      # TypeScript SDK
 ├── adapters/playwright/ # Playwright adapter
-├── test-app/           # FixtureConf pages (Conference demo)
-├── e2e/conference/     # PoC gates CP001–CP005 (CONF-*)
+├── internal/demo/site/           # FixtureConf pages (Conference demo)
+├── internal/testing/conference/     # PoC gates CP001–CP005 (CONF-*)
 ├── e2e/context/        # C002/C003/C004 context layer demos + verify-context.mjs
 ├── crates/context/     # frap-context (timeline, correlation, WebSocket model)
 ├── crates/rca/         # frap-rca (classifier, report, MCP stub)
@@ -207,7 +209,7 @@ frap/
 - [x] Conference E2E (CP001–CP005 gates) + `verify-reports.mjs`
 - [x] CI: Rust tests, WASM build, Conference E2E, Context Layer E2E + RCA verify, JUnit artifact upload
 - [x] Java SDK (JSON-RPC): `sdk/java/frap-core-java`, `frap-core-rpc` smoke in CI
-- [x] Playwright Java adapter + L4 demo E2E (`examples/java-playwright-demo`, `./scripts/run-java-e2e.sh`, CI job `java-playwright-e2e`)
+- [x] Playwright Java adapter + L4 demo E2E (`internal/demo/showcase/java-playwright`, `./scripts/run-java-e2e.sh`, CI job `java-playwright-e2e`)
 
 ### Ожидает (v1.0.1 / v1.4.0)
 

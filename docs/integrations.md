@@ -74,7 +74,7 @@ await withFletta(page.getByTestId('pay-btn')).click();
 
 ## Java / Playwright (PoC ✅, v1.4 track A)
 
-**Модули:** `sdk/java/frap-core-java`, `adapters/playwright-java`, `examples/java-playwright-demo`.
+**Модули:** `sdk/java/frap-core-java`, `adapters/playwright-java`, `internal/demo/showcase/java-playwright`.
 
 **Gate:** `./scripts/run-java-e2e.sh` — `frap-core-rpc` + test-app `:3000` + Playwright Chromium + 13 E2E (`@Tag("e2e")`).
 
@@ -87,7 +87,7 @@ class ScheduleTest {
 }
 ```
 
-Документация: [java-sdk-rpc.md](./en/java-sdk-rpc.md), [examples/java-playwright-demo/README.md](../examples/java-playwright-demo/README.md). Статус: [F014](../project/feature/F014-java-sdk-ui-adapters.md) ⚠️ (Playwright ✅, WebDriver pending).
+Документация: [java-sdk-rpc.md](./en/java-sdk-rpc.md), [internal/demo/showcase/java-playwright/README.md](../internal/demo/showcase/java-playwright/README.md). Статус: [F014](../project/feature/F014-java-sdk-ui-adapters.md) ⚠️ (Playwright ✅, WebDriver pending).
 
 ---
 

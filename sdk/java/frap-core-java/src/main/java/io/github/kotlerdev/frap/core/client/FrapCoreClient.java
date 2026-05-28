@@ -9,7 +9,8 @@ import java.io.IOException;
 
 /**
  * Common interface for Frap Core clients (RPC and Native).
- * Implementations: {@link FrapCoreClient} (subprocess RPC), {@link FrapNativeClient} (JNI native).
+ * Implementations include {@link FrapRpcClient} (subprocess RPC).
+ * JNI implementation lives in the optional `frap-core-native` module.
  */
 public interface FrapCoreClient extends AutoCloseable {
 

@@ -3,7 +3,7 @@
 - **Status**: validated
 - **Features**: F001, F002, F003
 - **E2E**: [e2e/context/c003-flaky-cart.spec.ts](../../e2e/context/c003-flaky-cart.spec.ts)
-- **Fixture**: [test-app/context/cart.html](../../test-app/context/cart.html)
+- **Fixture**: [internal/demo/site/context/cart.html](../../internal/demo/site/context/cart.html)
 
 ## Scenario
 

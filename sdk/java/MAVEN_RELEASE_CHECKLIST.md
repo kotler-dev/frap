@@ -24,10 +24,22 @@ gpg --keyserver keyserver.ubuntu.com --send-keys KEY_ID
 
 Add to https://github.com/kotler-dev/frap/settings/secrets/actions:
 
-- [ ] `OSSRH_USERNAME` — Sonatype JIRA username
-- [ ] `OSSRH_TOKEN` — Sonatype JIRA password or token
+- [ ] `CENTRAL_USERNAME` — Sonatype Central Portal token username
+- [ ] `CENTRAL_PASSWORD` — Sonatype Central Portal token password
 - [ ] `GPG_PRIVATE_KEY` — Output of `gpg --armor --export-secret-keys KEY_ID`
 - [ ] `GPG_PASSPHRASE` — Your GPG key passphrase
+
+### 4. Release Scope for 1.0.0
+
+Publish to Maven Central:
+
+- [ ] `io.github.kotlerdev.frap:frap-core-java:1.0.0`
+- [ ] `io.github.kotlerdev.frap:frap-playwright:1.0.0`
+
+Do not publish in 1.0.0:
+
+- [ ] `frap-core-native` (kept in repository for local/experimental JNI flow)
+- [ ] `internal/demo/showcase/java-playwright` (demo-only module)
 
 ## Release Steps
 
@@ -36,7 +48,7 @@ Add to https://github.com/kotler-dev/frap/settings/secrets/actions:
 ```bash
 # Update version (remove -SNAPSHOT)
 cd sdk/java
-mvn versions:set -DnewVersion=1.1.0
+mvn versions:set -DnewVersion=1.0.0
 mvn versions:commit
 
 # Verify
@@ -65,11 +77,11 @@ mvn clean verify -P release
 ```bash
 # Commit version change
 git add sdk/java/
-git commit -m "Release 1.1.0"
+git commit -m "Release 1.0.0"
 
 # Create tag
-git tag -a v1.1.0 -m "Release 1.1.0"
-git push origin v1.1.0
+git tag -a v1.0.0 -m "Release 1.0.0"
+git push origin v1.0.0
 ```
 
 ### 4. CI Release
@@ -77,37 +89,29 @@ git push origin v1.1.0
 GitHub Actions automatically:
 - Builds native binaries for Linux/macOS
 - Extracts them to resources
-- Publishes to Maven Central staging
+- Publishes `frap-core-java` and `frap-playwright` to Maven Central
 
 Monitor at: https://github.com/kotler-dev/frap/actions
 
-### 5. Release from Staging
-
-1. Go to https://s01.oss.sonatype.org/
-2. Log in with Sonatype credentials
-3. Navigate to "Staging Repositories"
-4. Find your staging repo (e.g., `iogithubkotlerdevfrap-1000`)
-5. Click "Close" (waits for checks)
-6. Click "Release" (publishes to Maven Central)
-
-### 6. Verify
+### 5. Verify on Central
 
 Wait 10-30 minutes, then verify:
 
 ```bash
 # Check Maven Central
-curl "https://repo1.maven.org/maven2/io/github/kotlerdev/frap/frap-core-java/1.1.0/frap-core-java-1.1.0.pom"
+curl "https://repo1.maven.org/maven2/io/github/kotlerdev/frap/frap-core-java/1.0.0/frap-core-java-1.0.0.pom"
+curl "https://repo1.maven.org/maven2/io/github/kotlerdev/frap/frap-playwright/1.0.0/frap-playwright-1.0.0.pom"
 
 # Or use in test project
 mvn dependency:resolve -DincludeArtifactIds=frap-core-java
 ```
 
-### 7. Post-Release
+### 6. Post-Release
 
 ```bash
 # Update to next SNAPSHOT
 cd sdk/java
-mvn versions:set -DnewVersion=1.2.0-SNAPSHOT
+mvn versions:set -DnewVersion=1.0.1-SNAPSHOT
 mvn versions:commit
 
 git add sdk/java/
@@ -119,9 +123,9 @@ git push
 
 ### "401 Unauthorized" in CI
 
-**Cause**: Wrong OSSRH credentials.
+**Cause**: Wrong Sonatype Central token credentials.
 
-**Solution**: Verify secrets in GitHub settings.
+**Solution**: Verify `CENTRAL_USERNAME` and `CENTRAL_PASSWORD` in GitHub settings.
 
 ### "No public key" in staging
 
@@ -132,7 +136,7 @@ git push
 gpg --keyserver keyserver.ubuntu.com --send-keys KEY_ID
 ```
 
-### Missing artifacts in staging
+### Missing artifacts in publish bundle
 
 **Cause**: Native binaries not bundled.
 
@@ -140,7 +144,8 @@ gpg --keyserver keyserver.ubuntu.com --send-keys KEY_ID
 ```yaml
 - uses: actions/download-artifact@v4
   with:
-    name: native-binaries
+    pattern: native-binaries-*
+    merge-multiple: true
     path: sdk/java/frap-core-java/src/main/resources/META-INF/native/
 ```
 
@@ -157,3 +162,11 @@ Examples:
 - `1.1.0` — New features
 - `1.1.1` — Bug fix
 - `2.0.0` — Breaking changes
+
+## Final Go/No-Go (before pushing `v1.0.0`)
+
+- [ ] No `io.frap` remains in Maven coordinates (`pom.xml`, README snippets, demo POM)
+- [ ] No `SNAPSHOT` remains in release-facing docs/snippets
+- [ ] `mvn -P release -pl frap-core-java,../../adapters/playwright-java -am verify` passes
+- [ ] `target` outputs include `.jar`, `-sources.jar`, `-javadoc.jar`, `.pom`, `.asc`
+- [ ] CI secrets (`CENTRAL_*`, `GPG_*`) are present and valid
