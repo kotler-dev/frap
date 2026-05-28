@@ -211,7 +211,9 @@ async function buildSnapshotFromPage(page: Page): Promise<DOMSnapshot> {
     return await page.evaluate(() => {
       const elements: DOMElementInfo[] = [];
       // Only get interactive elements and elements with data-testid - much faster than querySelectorAll('*')
-      const interactiveElements = document.querySelectorAll('button, input, a, select, textarea, [data-testid], [role="button"], [role="link"], [role="input"]');
+      const interactiveElements = document.querySelectorAll(
+        'button, input, a, select, textarea, [data-testid], [data-id], li[id], [role="button"], [role="link"], [role="input"]'
+      );
 
       interactiveElements.forEach((el) => {
         const attributes: Record<string, string> = {};
@@ -230,22 +232,36 @@ async function buildSnapshotFromPage(page: Page): Promise<DOMSnapshot> {
 
         let selector: string;
         const testId = el.getAttribute('data-testid');
+        const dataId = el.getAttribute('data-id');
+        const tagName = el.tagName.toLowerCase();
         if (testId) {
           selector = `[data-testid="${testId}"]`;
+        } else if (dataId) {
+          selector = `${tagName}[data-id="${dataId}"]`;
         } else if (el.id) {
-          selector = `#${el.id}`;
+          selector = `${tagName}[id="${el.id}"]`;
         } else {
-          const tagName = el.tagName.toLowerCase();
           const text = el.textContent?.substring(0, 20) || '';
           selector = `${tagName}:contains("${text}")`;
         }
 
+        let positionInParent: number | undefined;
+        const parent = el.parentElement;
+        if (parent) {
+          const siblings = Array.from(parent.children).filter(
+            (child) => child.tagName === el.tagName
+          );
+          const idx = siblings.indexOf(el);
+          if (idx >= 0) positionInParent = idx;
+        }
+
         elements.push({
           selector,
-          tag: el.tagName.toLowerCase(),
+          tag: tagName,
           attributes,
           text_content: el.textContent?.substring(0, 100) || undefined,
           path,
+          position_in_parent: positionInParent,
         });
       });
 
@@ -291,6 +307,9 @@ async function extractSignatureFromPage(page: Page, selector: string): Promise<a
           stable_attrs[key] = attributes[key];
         }
       }
+      if (attributes['data-testid']) stable_attrs['data-testid'] = attributes['data-testid'];
+      if (attributes['id']) stable_attrs['id'] = attributes['id'];
+      if (attributes['data-id']) stable_attrs['data-id'] = attributes['data-id'];
 
       const tokens = path.map((pathToken, i) => {
         const parts = pathToken.split(':');
@@ -395,13 +414,45 @@ function constructSignatureFromSelector(selector: string, snapshot: DOMSnapshot)
     };
   }
 
-  // Parse ID selector: #id
+  // Parse attribute id selector: li[id="2"] or #id
+  const attrIdMatch = selector.match(/\[id=["']([^"']+)["']\]/);
+  if (attrIdMatch) {
+    const idValue = attrIdMatch[1];
+    const liCandidate = snapshot.elements.find(
+      (el) => el.attributes['id'] === idValue || el.attributes['data-id'] === idValue
+    );
+    if (liCandidate) {
+      const pathTokens = liCandidate.path.map((p, i) => {
+        const parts = p.split(':');
+        return { tag: parts[0] || 'unknown', role: parts[1] !== '-' ? parts[1] : undefined, depth: i };
+      });
+      return {
+        path: pathTokens,
+        prefix: pathTokens.slice(0, 5).map((t: any) => `${t.tag}:${t.role || '-'}`).join('>'),
+        stable_attrs: { id: idValue },
+        text_content: liCandidate.text_content,
+        position_in_parent: liCandidate.position_in_parent,
+        children_hash: 0,
+        depth: pathTokens.length,
+      };
+    }
+    return {
+      path: [{ tag: 'li', depth: 0 }],
+      prefix: 'li:-',
+      stable_attrs: { id: idValue },
+      text_content: undefined,
+      position_in_parent: undefined,
+      children_hash: 0,
+      depth: 1,
+    };
+  }
+
   const idMatch = selector.match(/^#([a-zA-Z0-9_-]+)$/);
   if (idMatch) {
     return {
       path: [],
       prefix: '',
-      stable_attrs: { 'id': idMatch[1] },
+      stable_attrs: { id: idMatch[1] },
       text_content: undefined,
       children_hash: 0,
       depth: 0,

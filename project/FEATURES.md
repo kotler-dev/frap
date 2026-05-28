@@ -70,7 +70,7 @@
 
 | Фича | Статус | Severity | Release | Примечание |
 |------|--------|----------|---------|------------|
-| [F004: Page Object Generator](./feature/F004-page-object-gen.md) | ❌ | Medium | v1.2.0 | Автогенерация из структуры |
+| [F004: Page Object Generator](./feature/F004-page-object-gen.md) | ⚠️ | Medium | v1.2.0 | Java `generate_page_object` ✅; CLI/TS — backlog |
 | [F005: MCP/A2A Integration](./feature/F005-mcp-integration.md) | ❌ | Medium | v1.2.0 | JSON-RPC для LLM-агентов |
 | [F009: Feedback Loop](./feature/F009-feedback-loop.md) | ❌ | Medium | v1.2.0 | Обучение на исправлениях |
 
@@ -91,7 +91,7 @@
 
 | Фича | Статус | Severity | Release | Примечание |
 |------|--------|----------|---------|------------|
-| [F014: Java SDK & UI Adapters](./feature/F014-java-sdk-ui-adapters.md) | ⚠️ | High | v1.4.0 | Playwright Java PoC ✅; WebDriver/Selenide P0–P1 в работе |
+| [F014: Java SDK & UI Adapters](./feature/F014-java-sdk-ui-adapters.md) | ⚠️ | High | v1.0.0 / v1.4.0 | Maven 1.0.0: core + Playwright + discovery/PO; WebDriver — v1.4 |
 
 ---
 

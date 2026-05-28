@@ -4,8 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import io.github.kotlerdev.frap.core.context.ContextTimeline;
+import io.github.kotlerdev.frap.core.dto.DOMSnapshot;
+import io.github.kotlerdev.frap.core.dto.ElementMap;
+import io.github.kotlerdev.frap.core.dto.FilterSpec;
+import io.github.kotlerdev.frap.core.dto.GeneratedArtifact;
+import io.github.kotlerdev.frap.core.dto.GenerateOptions;
 import io.github.kotlerdev.frap.core.dto.HealRequest;
 import io.github.kotlerdev.frap.core.dto.HealResult;
+import io.github.kotlerdev.frap.core.dto.MapOptions;
 import io.github.kotlerdev.frap.core.rca.RcaReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -240,6 +246,56 @@ public class FrapRpcClient implements FrapCoreClient {
             return objectMapper.readValue(json, RpcResponse.class);
         } catch (JsonProcessingException e) {
             throw new IOException("Failed to parse RPC response: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public ElementMap buildElementMap(DOMSnapshot snapshot, MapOptions options) throws IOException {
+        if (snapshot == null) {
+            throw new IllegalArgumentException("snapshot is required");
+        }
+        var params = new java.util.HashMap<String, Object>();
+        params.put("dom_snapshot", snapshot);
+        params.put("options", options != null ? options : MapOptions.defaults());
+        return invoke("build_element_map", params, ElementMap.class);
+    }
+
+    @Override
+    public ElementMap filterElementMap(ElementMap map, FilterSpec spec) throws IOException {
+        if (map == null || spec == null) {
+            throw new IllegalArgumentException("map and spec are required");
+        }
+        var params = new java.util.HashMap<String, Object>();
+        params.put("element_map", map);
+        params.put("filter", spec);
+        return invoke("filter_element_map", params, ElementMap.class);
+    }
+
+    @Override
+    public GeneratedArtifact generatePageObject(ElementMap map, GenerateOptions options) throws IOException {
+        if (map == null) {
+            throw new IllegalArgumentException("map is required");
+        }
+        var params = new java.util.HashMap<String, Object>();
+        params.put("element_map", map);
+        if (options != null) {
+            params.put("options", options);
+        }
+        return invoke("generate_page_object", params, GeneratedArtifact.class);
+    }
+
+    private <T> T invoke(String method, Object params, Class<T> resultType) throws IOException {
+        int id = nextId.getAndIncrement();
+        RpcRequest rpcRequest = new RpcRequest(id, method, params);
+        String responseJson = sendRequest(rpcRequest);
+        RpcResponse response = parseResponse(responseJson);
+        if (response.isError()) {
+            throw new IOException("RPC error [" + response.error().code() + "]: " + response.error().message());
+        }
+        try {
+            return objectMapper.readValue(response.result(), resultType);
+        } catch (JsonProcessingException e) {
+            throw new IOException("Failed to parse " + resultType.getSimpleName() + ": " + e.getMessage(), e);
         }
     }
 

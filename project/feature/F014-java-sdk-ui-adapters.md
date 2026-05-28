@@ -7,7 +7,7 @@
 - **Status**: in_progress (Playwright track ✅; WebDriver/Selenide pending)
 - **Target release**: v1.4.0
 - **Created**: 2026-05-23
-- **Updated**: 2026-05-27
+- **Updated**: 2026-05-28
 - **Related cases**: CP005 (JUnit export), C002 (RCA), S1 pains
 
 ## Goal
@@ -97,6 +97,9 @@ Java SDK (JNI → Rust Core) и UI-адаптеры для существующ�
 - [x] Context/RCA: `PaymentTimeoutTest` (C002)
 - [x] E2E gate: `./scripts/run-java-e2e.sh` (13 tests)
 - [x] Документация: `internal/demo/showcase/java-playwright/README.md`, `adapters/playwright-java/README.md`
+- [x] Discovery API: `build_element_map`, `filter_element_map`, `Frap.discover`
+- [x] Page Object: `generate_page_object`, `Frap.generatePageObject`
+- [ ] Maven Central 1.0.0 published (workflow ready; tag + secrets required)
 
 ### Track B — WebDriver / bank S1 (❌)
 

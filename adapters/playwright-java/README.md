@@ -9,6 +9,17 @@ Playwright adapter for Frap self-healing selectors.
 | **Unit** | this module (`src/test`) | `mvn test` |
 | **E2E** (browser + `frap-core-rpc` + test-app) | `internal/demo/showcase/java-playwright` | `./scripts/run-java-e2e.sh` from repo root |
 
+## Discovery and Page Object generation
+
+```java
+// After page.navigate(...)
+ElementMap map = Frap.discover(page);
+Path out = Path.of("target/generated");
+Frap.generatePageObject(page, out, GenerateOptions.javaPlaywright("CatalogPage", "com.example.pages"));
+```
+
+Uses bundled `frap-core-rpc` from `frap-core-java` (no Rust toolchain for consumers).
+
 ## Quick Start
 
 ```java

@@ -193,6 +193,57 @@ pub fn calculate_structural_similarity(a: u64, b: u64) -> f64 {
     }
 }
 
+/// Bonus when an element identifier moved between `id` and `data-id` with the same value.
+/// Penalty when candidate carries a different `id` / `data-id` than the original.
+pub fn calculate_identifier_conflict_penalty(original: &Signature, candidate: &Signature) -> f64 {
+    let mut penalty = 0.0;
+
+    if let Some(orig_id) = original.stable_attrs.get("id") {
+        if let Some(cand_id) = candidate.stable_attrs.get("id") {
+            if orig_id != cand_id {
+                penalty += 0.4;
+            }
+        }
+    }
+
+    if let Some(orig_data_id) = original.stable_attrs.get("data-id") {
+        if let Some(cand_data_id) = candidate.stable_attrs.get("data-id") {
+            if orig_data_id != cand_data_id {
+                penalty += 0.4;
+            }
+        }
+    }
+
+    penalty
+}
+
+pub fn calculate_identifier_migration_bonus(original: &Signature, candidate: &Signature) -> f64 {
+    let orig_id = original.stable_attrs.get("id");
+    let orig_data_id = original.stable_attrs.get("data-id");
+    let cand_id = candidate.stable_attrs.get("id");
+    let cand_data_id = candidate.stable_attrs.get("data-id");
+
+    if let Some(value) = orig_id {
+        if cand_data_id == Some(value) {
+            return 0.35;
+        }
+        if cand_id == Some(value) {
+            return 0.1;
+        }
+    }
+
+    if let Some(value) = orig_data_id {
+        if cand_id == Some(value) {
+            return 0.35;
+        }
+        if cand_data_id == Some(value) {
+            return 0.1;
+        }
+    }
+
+    0.0
+}
+
 pub fn calculate_attribute_bonus(original: &Signature, candidate: &Signature) -> f64 {
     let mut bonus = 0.0;
 
@@ -201,6 +252,16 @@ pub fn calculate_attribute_bonus(original: &Signature, candidate: &Signature) ->
             bonus += 0.1;
         }
     }
+
+    if let (Some(orig_pos), Some(cand_pos)) =
+        (original.position_in_parent, candidate.position_in_parent)
+    {
+        if orig_pos == cand_pos {
+            bonus += 0.08;
+        }
+    }
+
+    bonus += calculate_identifier_migration_bonus(original, candidate);
 
     for (key, value) in &original.stable_attrs {
         if candidate.stable_attrs.get(key) == Some(value) {
@@ -239,9 +300,9 @@ pub fn calculate_confidence(original: &Signature, candidate: &Signature) -> f64 
     let structural_sim =
         calculate_structural_similarity(original.children_hash, candidate.children_hash);
     let bonus = calculate_attribute_bonus(original, candidate);
+    let penalty = calculate_identifier_conflict_penalty(original, candidate);
 
-    let confidence = 0.5 * path_sim + 0.3 * token_sim + 0.2 * structural_sim + bonus;
-    confidence.min(1.0)
+    (0.5 * path_sim + 0.3 * token_sim + 0.2 * structural_sim + bonus - penalty).clamp(0.0, 1.0)
 }
 
 pub fn extract_stable_attrs(attrs: &[(String, String)]) -> HashMap<String, String> {
@@ -347,6 +408,41 @@ mod tests {
         let b = vec![2, 3, 5];
         let lcs = longest_common_subsequence_len(&a, &b, |x, y| x == y);
         assert_eq!(lcs, 2);
+    }
+
+    #[test]
+    fn test_identifier_migration_id_to_data_id() {
+        let original = Signature {
+            path: vec![DOMToken {
+                tag: "li".to_string(),
+                role: None,
+                semantic_type: None,
+                structural_class: None,
+                depth: 0,
+            }],
+            prefix: "html:->ul:->li:-".to_string(),
+            stable_attrs: [("id".to_string(), "2".to_string())].into(),
+            text_content: Some("second".to_string()),
+            position_in_parent: Some(1),
+            children_hash: 0,
+            depth: 3,
+        };
+
+        let candidate = Signature {
+            path: original.path.clone(),
+            prefix: original.prefix.clone(),
+            stable_attrs: [("data-id".to_string(), "2".to_string())].into(),
+            text_content: Some("second".to_string()),
+            position_in_parent: Some(1),
+            children_hash: 0,
+            depth: 3,
+        };
+
+        let bonus = calculate_identifier_migration_bonus(&original, &candidate);
+        assert!(bonus >= 0.35);
+
+        let confidence = calculate_confidence(&original, &candidate);
+        assert!(confidence >= 0.7);
     }
 
     #[test]

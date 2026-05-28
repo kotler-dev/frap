@@ -62,10 +62,11 @@
 - [ ] Core как `cdylib` / `staticlib` (feature `ffi`)
 - [ ] C-header через cbindgen (`crates/core/frap.h`)
 
-### P2 — v1.4.0 / Python backlog (отложено)
+### P2 — JSON-RPC (Java 1.0.0)
 
-- [ ] Бинарь/подкоманда `frap-core rpc` (stdin/stdout JSON-RPC)
-- [ ] Integration test: JSON in → HealResult out
+- [x] Бинарь `frap-core-rpc` (stdin/stdout NDJSON)
+- [x] Methods: `heal`, `analyze_rca`, `build_element_map`, `filter_element_map`, `generate_page_object`
+- [x] Integration tests: Rust contracts + Java `FrapCoreClientTest`
 
 ### P3 — позже (отложено)
 
