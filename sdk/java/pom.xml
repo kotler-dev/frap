@@ -5,7 +5,7 @@
                              http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.frap</groupId>
+    <groupId>io.github.kotlerdev.frap</groupId>
     <artifactId>frap-sdk-parent</artifactId>
     <version>1.1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -28,6 +28,10 @@
         <!-- Plugin versions -->
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
+        <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>3.8.0</maven-javadoc-plugin.version>
+        <maven-gpg-plugin.version>3.2.7</maven-gpg-plugin.version>
+        <maven-deploy-plugin.version>3.1.2</maven-deploy-plugin.version>
     </properties>
 
     <modules>
@@ -48,7 +52,7 @@
             <modules>
                 <module>frap-core-java</module>
                 <module>../../adapters/playwright-java</module>
-                <module>../../examples/java-playwright-demo</module>
+                <module>../../internal/demo/showcase/java-playwright</module>
             </modules>
         </profile>
         <!-- Unit tests only (frap-core-java + playwright adapter). No browser/RPC E2E. -->
@@ -60,16 +64,43 @@
                 <module>../../adapters/playwright-java</module>
             </modules>
         </profile>
-        <!-- E2E: examples/java-playwright-demo — use scripts/run-java-e2e.sh -->
+        <!-- E2E: internal/demo/showcase/java-playwright — use scripts/run-java-e2e.sh -->
         <profile>
             <id>java-e2e</id>
             <modules>
                 <module>frap-core-java</module>
                 <module>../../adapters/playwright-java</module>
-                <module>../../examples/java-playwright-demo</module>
+                <module>../../internal/demo/showcase/java-playwright</module>
             </modules>
         </profile>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
+
+    <distributionManagement>
+        <repository>
+            <id>central</id>
+            <name>Sonatype Central Portal</name>
+            <url>https://central.sonatype.com/api/v1/publisher</url>
+        </repository>
+    </distributionManagement>
 
     <dependencyManagement>
         <dependencies>
@@ -137,8 +168,65 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${maven-source-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven-javadoc-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>${maven-gpg-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>sign-artifacts</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>sign</goal>
+                            </goals>
+                            <configuration>
+                                <gpgArguments>
+                                    <arg>--pinentry-mode</arg>
+                                    <arg>loopback</arg>
+                                </gpgArguments>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>${maven-deploy-plugin.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+        </plugins>
     </build>
 
     <licenses>
@@ -153,4 +241,12 @@
         <developerConnection>scm:git:ssh://github.com:kotler-dev/frap.git</developerConnection>
         <url>https://github.com/kotler-dev/frap/tree/main</url>
     </scm>
+
+    <developers>
+        <developer>
+            <id>kotlerdev</id>
+            <name>Kotler Dev</name>
+            <url>https://github.com/kotler-dev</url>
+        </developer>
+    </developers>
 </project>

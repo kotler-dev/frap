@@ -163,11 +163,20 @@ class ZzzReportingVerificationTest {
             .toList();
 
         if (!debugFiles.isEmpty()) {
-            // Verify first debug report structure
             Path firstDebug = debugFiles.get(0);
             JsonNode debug = objectMapper.readTree(firstDebug.toFile());
             assertThat(debug.has("testName")).isTrue();
             assertThat(debug.has("timestamp")).isTrue();
+            assertThat(debug.has("clusters")).isTrue();
+            assertThat(debug.has("healing")).isTrue();
+        }
+
+        Path debugHtml = reportDir.resolve("frap-debug.html");
+        if (Files.exists(debugDir) && Files.list(debugDir).anyMatch(p -> p.toString().endsWith(".json"))) {
+            assertThat(debugHtml)
+                .as("frap-debug.html should exist when debug JSON reports were written")
+                .exists()
+                .isRegularFile();
         }
     }
 }

@@ -41,6 +41,11 @@ export {
 };
 export type { ContextCaptureOptions } from './context';
 
+// Backward-compatible aliases for older e2e/demo imports.
+export const withFletta = withFrap;
+export const attachFlettaContext = attachFrapContext;
+export type WithFlettaOptions = import('./config').WithFrapOptions;
+
 export function frapPlaywright(
   userConfig?: Partial<FrapPlaywrightConfig>
 ): Partial<PlaywrightTestConfig> {

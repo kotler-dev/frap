@@ -61,9 +61,9 @@
 
 | Язык | Фреймворк | Статус |
 |------|-----------|--------|
-| TypeScript | Playwright | MVP — [F013](../feature/F013-typescript-sdk.md), [F008](../feature/F008-playwright-adapter.md) |
-| Java | JUnit 5 / WebDriver; Selenide P1 | v1.4 — [F014](../feature/F014-java-sdk-ui-adapters.md) |
-| Python | pytest + Selenium | backlog — [F015](../feature/F015-python-sdk-adapters.md) |
+| TypeScript | Playwright | MVP — [F013](../project/feature/F013-typescript-sdk.md), [F008](../project/feature/F008-playwright-adapter.md) |
+| Java | JUnit 5 / WebDriver; Selenide P1 | v1.4 — [F014](../project/feature/F014-java-sdk-ui-adapters.md) |
+| Python | pytest + Selenium | backlog — [F015](../project/feature/F015-python-sdk-adapters.md) |
 
 ### Платформы
 
@@ -140,12 +140,10 @@ export class HealingEngine {
 ## Директории
 
 ```
-project/architecture/
+internal/architecture/
 ├── README.md           # Этот файл — обзор
-├── core.md             # Детали Rust core
 ├── sdk-strategy.md     # SDK Java / TypeScript / Python
-├── adapters.md         # Интеграции с фреймворками
-├── platforms.md        # Мультиплатформа
-├── mcp.md              # MCP/A2A протокол
-└── data-flow.md        # Потоки данных
+├── clustering.md       # Кластеризация DOM
+├── platform-agnostic-core.md
+└── …
 ```

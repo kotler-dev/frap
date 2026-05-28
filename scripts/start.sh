@@ -34,7 +34,7 @@ echo ""
 
 # Start test server
 echo -e "${YELLOW}Starting test server on port $PORT...${NC}"
-cd "$PROJECT_ROOT/test-app"
+cd "$PROJECT_ROOT/internal/demo/site"
 
 # Start server in background
 node server.js &

@@ -25,7 +25,7 @@
 - **Snapshot**: `SnapshotBuilder` - DOM capture via Playwright JS evaluation
 
 ### Iter 3: Reports + Demo
-- **Example**: `examples/java-playwright-demo/`
+- **Example**: `internal/demo/showcase/java-playwright/`
 - **Tests**: Conference healing tests, RCA tests, reporting verification (`@Tag("e2e")`)
 - **Artifacts**: frap-report.json, junit.xml, frap-context-events.jsonl, frap-events.jsonl
 - **E2E gate**: `./scripts/run-java-e2e.sh` (13 tests, `BUILD SUCCESS`)

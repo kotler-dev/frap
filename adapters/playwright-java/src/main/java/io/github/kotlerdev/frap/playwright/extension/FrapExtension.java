@@ -5,6 +5,7 @@ import io.github.kotlerdev.frap.playwright.config.FrapPlaywrightConfig;
 import io.github.kotlerdev.frap.playwright.context.FrapContext;
 import io.github.kotlerdev.frap.playwright.reports.FrapReport;
 import io.github.kotlerdev.frap.playwright.reports.ReportGenerator;
+import io.github.kotlerdev.frap.playwright.reports.debug.DebugHtmlGenerator;
 import org.junit.jupiter.api.extension.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,6 +128,7 @@ public class FrapExtension implements BeforeAllCallback, BeforeEachCallback, Aft
             var contextTests = loadContextTests(reportDir);
             generator.generateJsonReport(events, contextTests);
             generator.generateJUnitXml(contextTests, events, "frap-conference");
+            DebugHtmlGenerator.generateAll(reportDir);
 
             logger.info("[frap] Reports generated: {} events, {} tests", events.size(), contextTests.size());
         } catch (Exception e) {

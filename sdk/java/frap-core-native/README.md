@@ -38,7 +38,7 @@ java -Djava.library.path=/path/to/libs -jar app.jar
 ### 3. Use FrapNativeClient
 
 ```java
-import io.frap.core.native_.FrapNativeClient;
+import io.github.kotlerdev.frap.core.native_.FrapNativeClient;
 
 // Auto-loads library from system property or JAR
 try (FrapNativeClient client = FrapNativeClient.create()) {
@@ -50,9 +50,9 @@ try (FrapNativeClient client = FrapNativeClient.create()) {
 
 ```xml
 <dependency>
-    <groupId>io.frap</groupId>
+    <groupId>io.github.kotlerdev.frap</groupId>
     <artifactId>frap-core-native</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 

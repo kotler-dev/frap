@@ -27,7 +27,7 @@ import java.nio.file.*;
  * </ul>
  *
  * <p>For development or environments where JNI is restricted, use
- * {@link io.frap.core.client.FrapCoreClient} (RPC-based) instead.</p>
+ * {@link io.github.kotlerdev.frap.core.client.FrapCoreClient} (RPC-based) instead.</p>
  */
 public class FrapNativeClient implements FrapCoreClient, AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(FrapNativeClient.class);

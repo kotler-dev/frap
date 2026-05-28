@@ -5,7 +5,7 @@ Demos for F002 Unified Context and F003 Root Cause Analysis: HTTP + WebSocket ne
 ## Prerequisites
 
 ```bash
-./scripts/start.sh    # test-app on :3000
+./scripts/start.sh    # demo site on :3000
 ./scripts/build.sh
 ```
 

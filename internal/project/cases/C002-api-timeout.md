@@ -3,7 +3,7 @@
 - **Status**: validated
 - **Features**: F002, F003
 - **E2E**: [e2e/context/c002-payment-timeout.spec.ts](../../e2e/context/c002-payment-timeout.spec.ts)
-- **Fixture**: [test-app/context/checkout.html](../../test-app/context/checkout.html)
+- **Fixture**: [internal/demo/site/context/checkout.html](../../internal/demo/site/context/checkout.html)
 
 ## Scenario
 

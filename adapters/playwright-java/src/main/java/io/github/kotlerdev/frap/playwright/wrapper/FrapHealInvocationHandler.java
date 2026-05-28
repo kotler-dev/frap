@@ -8,6 +8,8 @@ import io.github.kotlerdev.frap.core.dto.*;
 import io.github.kotlerdev.frap.core.events.HealingEvent;
 import io.github.kotlerdev.frap.core.semantics.*;
 import io.github.kotlerdev.frap.playwright.reports.ReportGenerator;
+import io.github.kotlerdev.frap.playwright.reports.debug.DebugReportBuilder;
+import io.github.kotlerdev.frap.playwright.reports.debug.DebugReportWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +17,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Set;
 
@@ -129,6 +132,26 @@ final class FrapHealInvocationHandler implements InvocationHandler {
         }
     }
 
+    private void writeDebugReportIfEnabled(DOMSnapshot snapshot, HealResult result,
+                                           HealingSemantics semantics) {
+        if (!frapData.config.isDebugEnabled()) {
+            return;
+        }
+        try {
+            Path reportDir = Paths.get(frapData.config.reportDir());
+            var report = DebugReportBuilder.fromHealResult(
+                frapData.testName,
+                result,
+                snapshot,
+                semantics,
+                0
+            );
+            DebugReportWriter.write(reportDir, report);
+        } catch (IOException e) {
+            logger.warn("[frap] Failed to write debug report: {}", e.getMessage());
+        }
+    }
+
     private void recordHealingEvent(HealResult result, HealTrigger trigger, boolean attempted) {
         if (!frapData.config.enableReporting() || !attempted) {
             return;
@@ -187,6 +210,7 @@ final class FrapHealInvocationHandler implements InvocationHandler {
             );
             frapData.lastHealResult = result;
             recordHealingEvent(result, trigger, true);
+            writeDebugReportIfEnabled(snapshot, result, semantics);
 
             logger.info("[frap] Healing result: healed={}, confidence={}, selector=\"{}\"",
                 result.healed(), result.confidence(), result.selector());

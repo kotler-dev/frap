@@ -31,7 +31,7 @@ jobs:
              sdk/java/frap-core-java/src/main/resources/META-INF/native/frap-core-rpc-${{ matrix.target }}
       - uses: actions/upload-artifact@v4
         with:
-          name: native-binaries
+          name: native-binaries-${{ matrix.target }}
           path: sdk/java/frap-core-java/src/main/resources/META-INF/native/
 
   publish:
@@ -45,22 +45,25 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-          server-id: ossrh
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
+          server-id: central
+          server-username: CENTRAL_USERNAME
+          server-password: CENTRAL_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: GPG_PASSPHRASE
       - uses: actions/download-artifact@v4
         with:
-          name: native-binaries
+          pattern: native-binaries-*
+          merge-multiple: true
           path: sdk/java/frap-core-java/src/main/resources/META-INF/native/
       - name: Make binaries executable
         run: chmod +x sdk/java/frap-core-java/src/main/resources/META-INF/native/*
       - name: Publish to Maven Central
         run: |
           cd sdk/java
-          mvn deploy -P release --batch-mode
+          mvn -P release -pl frap-core-java,../../adapters/playwright-java -am \
+            -Dgpg.passphrase="${GPG_PASSPHRASE}" \
+            deploy --batch-mode
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}

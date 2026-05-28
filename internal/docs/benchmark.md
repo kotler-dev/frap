@@ -18,7 +18,7 @@
 ./scripts/test.sh conference
 ```
 
-Кейсы `CONF-*`, отчёт: `e2e/frap-reports/conference/`. См. [e2e/conference/README.md](../e2e/conference/README.md) и [project/cases/conference/CASES.md](../project/cases/conference/CASES.md).
+Кейсы `CONF-*`, отчёт: `internal/testing/frap-reports/conference/`. См. [internal/testing/conference/README.md](../internal/testing/conference/README.md) и [project/cases/conference/CASES.md](../project/cases/conference/CASES.md).
 
 ---
 

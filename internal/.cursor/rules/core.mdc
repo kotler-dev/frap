@@ -10,7 +10,7 @@ alwaysApply: true
 
 ## Документация
 - Трекер фич и карточки: `project/FEATURES.md`, `project/feature/`.
-- Архитектура: `project/architecture/`.
+- Архитектура: `internal/architecture/`.
 - Кейсы и сценарии: `docs/cases.md`, `project/cases/`.
 - Позиционирование: `docs/positioning.md`.
 - Интеграции: `docs/integrations.md`.

@@ -260,19 +260,6 @@ public class ReportGenerator {
         }
     }
 
-    /**
-     * Writes a debug report for a specific test.
-     */
-    public void writeDebugReport(String testName, DebugReport report) throws IOException {
-        Path debugDir = reportDir.resolve("debug-reports");
-        Files.createDirectories(debugDir);
-
-        String slug = testName.replaceAll("[^a-zA-Z0-9-]", "_").replaceAll("_+", "_");
-        Path reportFile = debugDir.resolve("debug-" + slug + ".json");
-
-        objectMapper.writeValue(reportFile.toFile(), report);
-    }
-
     private String inferOutcome(HealingEvent event) {
         if (!event.healed()) return "rejected";
         if (event.policy() != null && "deny".equals(event.policy().value())) return "unexpected_heal";
@@ -290,22 +277,4 @@ public class ReportGenerator {
             .replace("'", "&apos;");
     }
 
-    /**
-     * Debug report structure.
-     */
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public record DebugReport(
-        @JsonProperty("testName") String testName,
-        @JsonProperty("timestamp") String timestamp,
-        @JsonProperty("duration_ms") int durationMs,
-        @JsonProperty("elements_scanned") int elementsScanned,
-        @JsonProperty("steps") List<DebugStep> steps
-    ) {}
-
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public record DebugStep(
-        @JsonProperty("step") String step,
-        @JsonProperty("status") String status,
-        @JsonProperty("details") Object details
-    ) {}
 }
