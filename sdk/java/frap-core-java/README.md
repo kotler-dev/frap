@@ -33,16 +33,16 @@ try (FrapCoreClient client = FrapRpcClient.create()) {
 ```xml
 <!-- RPC client (subprocess) -->
 <dependency>
-    <groupId>io.frap</groupId>
+    <groupId>io.github.kotlerdev.frap</groupId>
     <artifactId>frap-core-java</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.0.0</version>
 </dependency>
 
 <!-- OR: Native client (JNI) for production -->
 <dependency>
-    <groupId>io.frap</groupId>
+    <groupId>io.github.kotlerdev.frap</groupId>
     <artifactId>frap-core-native</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 

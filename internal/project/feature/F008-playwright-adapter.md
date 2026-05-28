@@ -43,7 +43,7 @@
 - [x] Wrapper: `withFrap(page.getByTestId('pay-btn'))` работает
 - [x] CP001 проходит: stable тест без healing
 - [x] CP002 проходит: heal при смене testid
-- [x] CP005 проходит: JUnit XML артефакт в CI (`e2e/conference/verify-reports.mjs`, artifact `Frap-conference-reports`)
+- [x] CP005 проходит: JUnit XML артефакт в CI (`internal/testing/conference/verify-reports.mjs`, artifact `Frap-conference-reports`)
 - [x] Документация: quick start < 15 минут
 
 ### Implementation Status
