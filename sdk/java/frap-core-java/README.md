@@ -57,38 +57,45 @@ Persist snapshots locally with `SnapshotStore` (optional).
 
 Windows is not supported in 1.0.0 (set `FRAP_CORE_BIN` to a custom build if needed).
 
-## Maven Coordinates
+## Maven Coordinates (Maven Central 1.0.0)
 
 ```xml
-<!-- RPC client (subprocess) -->
+<!-- RPC client (subprocess) - Available on Maven Central -->
 <dependency>
     <groupId>io.github.kotlerdev.frap</groupId>
     <artifactId>frap-core-java</artifactId>
     <version>1.0.0</version>
 </dependency>
 
-<!-- OR: Native client (JNI) for production -->
+<!-- Playwright adapter - Available on Maven Central -->
 <dependency>
     <groupId>io.github.kotlerdev.frap</groupId>
-    <artifactId>frap-core-native</artifactId>
+    <artifactId>frap-playwright</artifactId>
     <version>1.0.0</version>
+    <scope>test</scope>
 </dependency>
 ```
 
+**Not on Maven Central in 1.0.0:**
+- `frap-core-native` (JNI) — Experimental, available in repository only. Build locally if needed.
+
 ## Transport Selection
 
-| Transport | Module | Class | Latency | Use Case |
-|-----------|--------|-------|---------|----------|
-| JSON-RPC | `frap-core-java` | `FrapRpcClient` | ~5-15ms | Development, CI |
-| JNI Native | `frap-core-native` | `FrapNativeClient` | ~0.5-2ms | Production |
+| Transport | Module | Class | Latency | Use Case | Status |
+|-----------|--------|-------|---------|----------|--------|
+| JSON-RPC | `frap-core-java` | `FrapRpcClient` | ~5-15ms | Development, CI, Production | ✅ Stable in 1.0.0 |
+| JNI Native | `frap-core-native` | `FrapNativeClient` | ~0.5-2ms | Low-latency production | 🚧 Experimental, not on Central |
 
-Both implement `FrapCoreClient` interface - drop-in replacement:
+Both implement `FrapCoreClient` interface - future drop-in replacement:
 
 ```java
-// Auto-select transport
+// Currently: use RPC (bundled binaries, no setup required)
+FrapCoreClient client = FrapRpcClient.create();
+
+// Future (v1.4+): Auto-select with JNI fallback
 FrapCoreClient client;
 try {
-    client = FrapNativeClient.create();  // Fast native
+    client = FrapNativeClient.create();  // Fast native (when available)
 } catch (UnsatisfiedLinkError e) {
     client = FrapRpcClient.create();     // Fallback to RPC
 }
@@ -159,6 +166,10 @@ mvn test -Dfrap.native.lib=../../../crates/target/release/libfrap_core.dylib
 
 ## See Also
 
-- [../frap-core-native](../frap-core-native) - JNI native client
-- [docs/en/java-sdk-rpc.md](../../../docs/en/java-sdk-rpc.md) - RPC protocol
-- [crates/core](../../../crates/core) - Rust core with FFI
+- [docs/en/java-getting-started.md](../../../docs/en/java-getting-started.md) — Quick start guide (5 minutes)
+- [docs/en/java-api-reference.md](../../../docs/en/java-api-reference.md) — Complete API reference
+- [docs/en/java-maven-central.md](../../../docs/en/java-maven-central.md) — Maven Central usage
+- [docs/en/java-sdk-rpc.md](../../../docs/en/java-sdk-rpc.md) — RPC protocol details
+- [../frap-core-native](../frap-core-native) — JNI native client (experimental, not on Central)
+- [crates/core](../../../crates/core) — Rust core with FFI
+- [sdk/java](../..) — SDK documentation index

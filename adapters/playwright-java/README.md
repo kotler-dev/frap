@@ -141,8 +141,22 @@ Returns true if the locator was healed in the last action.
 
 Attaches context capture (network, console, WebSocket) to a page.
 
+## Reports
+
+With `@ExtendWith(FrapExtension.class)` or `debug(true)`, frap generates:
+
+| File | Description |
+|------|-------------|
+| `frap-report.json` | Summary of all healing events |
+| `frap-debug.html` | Human-readable debug report |
+| `junit.xml` | JUnit XML with frap properties |
+
+Default location: `target/frap-reports/conference/`
+
 ## See Also
 
-- [sdk/java](../../sdk/java) - Core SDK
-- [docs/en/java-sdk-rpc.md](../../docs/en/java-sdk-rpc.md) - RPC protocol
-- [crates/core](../../../crates/core) - Rust core implementation
+- [docs/en/java-getting-started.md](../../docs/en/java-getting-started.md) — Quick start guide
+- [docs/en/java-api-reference.md](../../docs/en/java-api-reference.md) — Complete API reference
+- [sdk/java](../../sdk/java) — Core SDK and documentation index
+- [docs/en/java-sdk-rpc.md](../../docs/en/java-sdk-rpc.md) — RPC protocol details
+- [crates/core](../../../crates/core) — Rust core implementation
