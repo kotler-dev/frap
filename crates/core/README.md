@@ -36,6 +36,8 @@ Binary location: `target/release/frap-core-rpc`
 
 The binary reads newline-delimited JSON (NDJSON) requests from stdin and writes responses to stdout.
 
+**Methods:** `heal`, `analyze_rca`, `build_element_map`, `filter_element_map`, `generate_page_object`
+
 **Request format:**
 ```json
 {"id":1,"method":"heal","params":{"primary_selector":"...","original_signature":{},"dom_snapshot":{},"min_confidence":0.85}}

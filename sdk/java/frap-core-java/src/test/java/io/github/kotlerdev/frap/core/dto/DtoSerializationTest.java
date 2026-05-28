@@ -97,7 +97,8 @@ class DtoSerializationTest {
             "button",
             Map.of("data-testid", "btn"),
             "Click me",
-            List.of("button:action")
+            List.of("button:action"),
+            null
         );
 
         DOMSnapshot snapshot = new DOMSnapshot(
@@ -126,7 +127,8 @@ class DtoSerializationTest {
             "button",
             Map.of("data-testid", "checkout-pay"),
             "Pay",
-            List.of("button:submit")
+            List.of("button:submit"),
+            null
         );
 
         DOMSnapshot snapshot = new DOMSnapshot(

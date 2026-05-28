@@ -17,7 +17,8 @@ public record DOMElementInfo(
     @JsonProperty("tag") String tag,
     @JsonProperty("attributes") Map<String, String> attributes,
     @JsonProperty("text_content") String textContent,
-    @JsonProperty("path") List<String> path
+    @JsonProperty("path") List<String> path,
+    @JsonProperty("position_in_parent") Integer positionInParent
 ) {
     public DOMElementInfo {
         if (selector == null || selector.isBlank()) {

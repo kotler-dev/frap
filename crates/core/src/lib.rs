@@ -3,7 +3,19 @@
 //! Language SDKs (TypeScript WASM, future FFI/JSON-RPC) should depend on this crate,
 //! not on the algorithm crates directly.
 
+mod element_map;
 mod error;
+mod page_object;
+
+pub use element_map::{
+    build_element_map, build_element_map_json, filter_element_map, filter_element_map_json,
+    recommend_locator, Cluster, ClusterType, ElementMap, ElementNode, FilterSpec,
+    LocatorRecommendation, MapMetadata, MapOptions,
+};
+pub use page_object::{
+    generate_page_object, generate_page_object_json, GenerateOptions, GeneratedArtifact,
+    GeneratedFile,
+};
 
 #[cfg(feature = "wasm")]
 pub mod wasm;
@@ -21,7 +33,8 @@ pub use frap_rca::{
 };
 pub use healing::{DOMElementInfo, DOMSnapshot, HealingEngine, HealingOrchestrator};
 pub use signature::{
-    calculate_attribute_bonus, calculate_confidence, calculate_path_similarity,
+    calculate_attribute_bonus, calculate_confidence, calculate_identifier_conflict_penalty,
+    calculate_identifier_migration_bonus, calculate_path_similarity,
     calculate_structural_similarity, calculate_token_similarity, extract_stable_attrs,
     levenshtein_distance, longest_common_subsequence_len, looks_like_generated,
     looks_like_semantic, Candidate, DOMToken, HealResult, Signature, DEFAULT_MIN_CONFIDENCE,
@@ -145,6 +158,7 @@ mod tests {
                 attributes: [("data-testid".to_string(), "checkout-pay".to_string())].into(),
                 text_content: Some("Pay".to_string()),
                 path: vec!["button:submit".to_string()],
+                position_in_parent: None,
             }],
         }
     }
@@ -223,6 +237,7 @@ mod tests {
                         "div:-".to_string(),
                         "a:-".to_string(),
                     ],
+                    position_in_parent: None,
                 }],
             },
             min_confidence: Some(0.7),
@@ -298,6 +313,7 @@ mod tests {
                     attributes: [("data-testid".to_string(), "pay-a".to_string())].into(),
                     text_content: Some("Pay".to_string()),
                     path: vec!["button:submit".to_string()],
+                    position_in_parent: None,
                 },
                 DOMElementInfo {
                     selector: "[data-testid='pay-b']".to_string(),
@@ -305,6 +321,7 @@ mod tests {
                     attributes: [("data-testid".to_string(), "pay-b".to_string())].into(),
                     text_content: Some("Pay".to_string()),
                     path: vec!["button:submit".to_string()],
+                    position_in_parent: None,
                 },
             ],
         };

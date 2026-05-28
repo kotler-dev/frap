@@ -1,0 +1,6 @@
+{
+  "min_elements": 4,
+  "min_list_clusters": 1,
+  "min_cluster_size": 2,
+  "description": "Similar article cards share a list cluster"
+}

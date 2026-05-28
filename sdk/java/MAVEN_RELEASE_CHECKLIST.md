@@ -31,6 +31,8 @@ Add to https://github.com/kotler-dev/frap/settings/secrets/actions:
 
 ### 4. Release Scope for 1.0.0
 
+API surface in `frap-core-rpc`: `heal`, `analyze_rca`, `build_element_map`, `filter_element_map`, `generate_page_object`.
+
 Publish to Maven Central:
 
 - [ ] `io.github.kotlerdev.frap:frap-core-java:1.0.0`
@@ -104,6 +106,14 @@ curl "https://repo1.maven.org/maven2/io/github/kotlerdev/frap/frap-playwright/1.
 
 # Or use in test project
 mvn dependency:resolve -DincludeArtifactIds=frap-core-java
+```
+
+### 5b. Smoke (local, no Central)
+
+```bash
+cd sdk/java && mvn install -pl frap-core-java -DskipTests
+cd smoke-consumer && mvn compile exec:java
+# or: FRAP_CORE_BIN=../../crates/target/release/frap-core-rpc mvn compile exec:java
 ```
 
 ### 6. Post-Release

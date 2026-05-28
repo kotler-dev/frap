@@ -11,7 +11,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -29,8 +28,7 @@ class FrapCoreClientTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        String binaryPath = findBinaryPath();
-        client = new FrapRpcClient(binaryPath);
+        client = new FrapRpcClient(FrapCoreBinaryResolver.resolve());
         assertThat(client.isAlive()).isTrue();
     }
 
@@ -39,36 +37,6 @@ class FrapCoreClientTest {
         if (client != null) {
             client.close();
         }
-    }
-
-    private String findBinaryPath() {
-        // Try env var first
-        String envPath = System.getenv("FRAP_CORE_BIN");
-        if (envPath != null) {
-            return envPath;
-        }
-
-        // Try common locations relative to repo root
-        String[] candidates = {
-            "crates/target/release/frap-core-rpc",
-            "crates/target/debug/frap-core-rpc",
-            "../crates/target/release/frap-core-rpc",
-            "../crates/target/debug/frap-core-rpc",
-            "../../crates/target/release/frap-core-rpc",
-            "../../crates/target/debug/frap-core-rpc",
-        };
-
-        for (String candidate : candidates) {
-            File f = new File(candidate);
-            if (f.exists() && f.canExecute()) {
-                return candidate;
-            }
-        }
-
-        throw new RuntimeException(
-            "frap-core-rpc binary not found. Set FRAP_CORE_BIN env var or build with: " +
-            "cargo build --release -p frap-core --bin frap-core-rpc"
-        );
     }
 
     @Test
@@ -87,7 +55,8 @@ class FrapCoreClientTest {
             "button",
             Map.of("data-testid", "checkout-pay"),
             "Pay",
-            List.of("button:submit")
+            List.of("button:submit"),
+            null
         );
 
         DOMSnapshot snapshot = new DOMSnapshot(
@@ -126,7 +95,8 @@ class FrapCoreClientTest {
             "button",
             Map.of("data-testid", "pay-btn"),
             "Pay",
-            List.of("button:submit")
+            List.of("button:submit"),
+            null
         );
 
         DOMSnapshot snapshot = new DOMSnapshot(

@@ -2,10 +2,10 @@
 
 Core Java SDK with JSON-RPC client for Frap self-healing selectors.
 
-## Quick Start
+## Quick Start (healing)
 
 ```java
-// Create client (auto-detects FRAP_CORE_BIN or uses default path)
+// Maven Central users: no Rust/Cargo required — frap-core-rpc is bundled in the JAR
 try (FrapCoreClient client = FrapRpcClient.create()) {
     // Build DOM snapshot from your test framework
     DOMSnapshot snapshot = captureSnapshot(page);
@@ -27,6 +27,35 @@ try (FrapCoreClient client = FrapRpcClient.create()) {
     }
 }
 ```
+
+## Discovery and Page Object generation
+
+```java
+try (FrapCoreClient client = FrapRpcClient.create()) {
+    DOMSnapshot snapshot = ...; // from Playwright SnapshotBuilder or your framework
+
+    ElementMap map = client.buildElementMap(snapshot, MapOptions.defaults());
+    ElementMap filtered = client.filterElementMap(map,
+        new FilterSpec(true, 2, List.of("button", "a", "input")));
+
+    GeneratedArtifact po = client.generatePageObject(filtered,
+        GenerateOptions.javaPlaywright("CatalogPage", "com.example.pages"));
+
+    Files.writeString(Path.of("target/generated/" + po.files().get(0).path()),
+        po.files().get(0).content());
+}
+```
+
+Persist snapshots locally with `SnapshotStore` (optional).
+
+## Platform support (bundled RPC)
+
+| OS | Architecture |
+|----|----------------|
+| Linux | x86_64 |
+| macOS | x86_64, aarch64 |
+
+Windows is not supported in 1.0.0 (set `FRAP_CORE_BIN` to a custom build if needed).
 
 ## Maven Coordinates
 

@@ -1,0 +1,72 @@
+{
+  "primary_selector": "ul[data-testid=\"participants\"] > li[id=\"2\"]",
+  "original_signature": {
+    "path": [
+      {
+        "tag": "html",
+        "role": null,
+        "semantic_type": null,
+        "structural_class": null,
+        "depth": 0
+      },
+      {
+        "tag": "ul",
+        "role": null,
+        "semantic_type": null,
+        "structural_class": null,
+        "depth": 1
+      },
+      {
+        "tag": "li",
+        "role": null,
+        "semantic_type": null,
+        "structural_class": null,
+        "depth": 2
+      }
+    ],
+    "prefix": "html:->ul:->li:-",
+    "stable_attrs": {
+      "id": "2"
+    },
+    "text_content": "second",
+    "position_in_parent": 1,
+    "children_hash": 0,
+    "depth": 3
+  },
+  "dom_snapshot": {
+    "html": "<ul data-testid=\"participants\"><li id=\"1\">first</li><li data-id=\"2\">second</li></ul>",
+    "elements": [
+      {
+        "selector": "[data-testid=\"participants\"]",
+        "tag": "ul",
+        "attributes": {
+          "data-testid": "participants"
+        },
+        "text_content": "firstsecond",
+        "path": ["html:-", "ul:-"],
+        "position_in_parent": null
+      },
+      {
+        "selector": "li[id=\"1\"]",
+        "tag": "li",
+        "attributes": {
+          "id": "1"
+        },
+        "text_content": "first",
+        "path": ["html:-", "ul:-", "li:-"],
+        "position_in_parent": 0
+      },
+      {
+        "selector": "li[data-id=\"2\"]",
+        "tag": "li",
+        "attributes": {
+          "data-id": "2"
+        },
+        "text_content": "second",
+        "path": ["html:-", "ul:-", "li:-"],
+        "position_in_parent": 1
+      }
+    ]
+  },
+  "min_confidence": 0.7
+}

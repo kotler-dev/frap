@@ -14,7 +14,10 @@
 //! {"id":2,"error":{"code":"...","message":"..."}}
 //! ```
 
-use frap_core::{analyze_rca_json, FlettaCore};
+use frap_core::{
+    analyze_rca_json, build_element_map_json, filter_element_map_json, generate_page_object_json,
+    FlettaCore,
+};
 use serde::{Deserialize, Serialize};
 use std::io::{self, BufRead, Write};
 
@@ -101,6 +104,9 @@ fn handle_request(line: &str, core: &mut FlettaCore) -> Response {
     match request.method.as_str() {
         "heal" => handle_heal(request, core),
         "analyze_rca" => handle_analyze_rca(request),
+        "build_element_map" => handle_build_element_map(request),
+        "filter_element_map" => handle_filter_element_map(request),
+        "generate_page_object" => handle_generate_page_object(request),
         _ => Response {
             id: request.id,
             result: None,
@@ -169,6 +175,120 @@ fn handle_heal(request: Request, core: &mut FlettaCore) -> Response {
                 message: format!("{}", e),
             }),
         },
+    }
+}
+
+fn handle_build_element_map(request: Request) -> Response {
+    let params = &request.params;
+    let snapshot = match params.get("dom_snapshot") {
+        Some(s) => match serde_json::to_string(s) {
+            Ok(j) => j,
+            Err(e) => {
+                return rpc_error(&request.id, "SERIALIZE_ERROR", &format!("{e}"));
+            }
+        },
+        None => {
+            return rpc_error(
+                &request.id,
+                "INVALID_PARAMS",
+                "Missing 'dom_snapshot' in params",
+            );
+        }
+    };
+    let options = params
+        .get("options")
+        .map(|o| serde_json::to_string(o).unwrap_or_default())
+        .unwrap_or_default();
+
+    match build_element_map_json(&snapshot, &options) {
+        Ok(result) => Response {
+            id: request.id,
+            result: Some(result),
+            error: None,
+        },
+        Err(e) => rpc_error(&request.id, "BUILD_MAP_ERROR", &format!("{e}")),
+    }
+}
+
+fn handle_filter_element_map(request: Request) -> Response {
+    let params = &request.params;
+    let map = match params.get("element_map") {
+        Some(m) => match serde_json::to_string(m) {
+            Ok(j) => j,
+            Err(e) => {
+                return rpc_error(&request.id, "SERIALIZE_ERROR", &format!("{e}"));
+            }
+        },
+        None => {
+            return rpc_error(
+                &request.id,
+                "INVALID_PARAMS",
+                "Missing 'element_map' in params",
+            );
+        }
+    };
+    let spec = match params.get("filter") {
+        Some(f) => match serde_json::to_string(f) {
+            Ok(j) => j,
+            Err(e) => {
+                return rpc_error(&request.id, "SERIALIZE_ERROR", &format!("{e}"));
+            }
+        },
+        None => {
+            return rpc_error(&request.id, "INVALID_PARAMS", "Missing 'filter' in params");
+        }
+    };
+
+    match filter_element_map_json(&map, &spec) {
+        Ok(result) => Response {
+            id: request.id,
+            result: Some(result),
+            error: None,
+        },
+        Err(e) => rpc_error(&request.id, "FILTER_MAP_ERROR", &format!("{e}")),
+    }
+}
+
+fn rpc_error(id: &serde_json::Value, code: &str, message: &str) -> Response {
+    Response {
+        id: id.clone(),
+        result: None,
+        error: Some(ErrorDetail {
+            code: code.to_string(),
+            message: message.to_string(),
+        }),
+    }
+}
+
+fn handle_generate_page_object(request: Request) -> Response {
+    let params = &request.params;
+    let map = match params.get("element_map") {
+        Some(m) => match serde_json::to_string(m) {
+            Ok(j) => j,
+            Err(e) => {
+                return rpc_error(&request.id, "SERIALIZE_ERROR", &format!("{e}"));
+            }
+        },
+        None => {
+            return rpc_error(
+                &request.id,
+                "INVALID_PARAMS",
+                "Missing 'element_map' in params",
+            );
+        }
+    };
+    let options = params
+        .get("options")
+        .map(|o| serde_json::to_string(o).unwrap_or_default())
+        .unwrap_or_default();
+
+    match generate_page_object_json(&map, &options) {
+        Ok(result) => Response {
+            id: request.id,
+            result: Some(result),
+            error: None,
+        },
+        Err(e) => rpc_error(&request.id, "GENERATE_ERROR", &format!("{e}")),
     }
 }
 
@@ -307,6 +427,28 @@ mod tests {
     }
 
     #[test]
+    fn test_handle_build_element_map() {
+        let request = Request {
+            id: json!(4),
+            method: "build_element_map".to_string(),
+            params: json!({
+                "dom_snapshot": {
+                    "html": "",
+                    "elements": [{
+                        "selector": "[data-testid='x']",
+                        "tag": "button",
+                        "attributes": {"data-testid": "x"},
+                        "path": ["button:-"]
+                    }]
+                },
+                "options": {}
+            }),
+        };
+        let response = handle_build_element_map(request);
+        assert!(response.error.is_none());
+        assert!(response.result.unwrap().contains("elements"));
+    }
+
     fn test_handle_unknown_method() {
         let request = Request {
             id: json!(4),

@@ -1,3 +1,6 @@
+# Bundled frap-core-rpc (built in CI before Maven release)
+sdk/java/frap-core-java/src/main/resources/META-INF/native/frap-core-rpc-*
+
 # Rust
 target/
 Cargo.lock
