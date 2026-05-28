@@ -8,7 +8,7 @@ This guide covers releasing and using the Frap Java SDK from Maven Central.
 <dependency>
     <groupId>io.github.kotlerdev.frap</groupId>
     <artifactId>frap-core-java</artifactId>
-    <version>1.1.0</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
@@ -19,7 +19,7 @@ This guide covers releasing and using the Frap Java SDK from Maven Central.
 | Linux | x86_64 | ✅ Bundled | `frap-core-rpc-linux-x86_64` |
 | macOS | x86_64 | ✅ Bundled | `frap-core-rpc-macos-x86_64` |
 | macOS | aarch64 (Apple Silicon) | ✅ Bundled | `frap-core-rpc-macos-aarch64` |
-| Windows | x86_64 | 🚧 Planned | - |
+| Windows | x86_64 | 🚧 Not bundled in 1.0.0 | Use `FRAP_CORE_BIN` |
 
 The native binary (`frap-core-rpc`) is **automatically extracted** from the JAR on first use.
 
@@ -33,14 +33,14 @@ The native binary (`frap-core-rpc`) is **automatically extracted** from the JAR 
     <dependency>
         <groupId>io.github.kotlerdev.frap</groupId>
         <artifactId>frap-core-java</artifactId>
-        <version>1.1.0</version>
+        <version>1.0.0</version>
     </dependency>
     
     <!-- Playwright integration (optional) -->
     <dependency>
         <groupId>io.github.kotlerdev.frap</groupId>
         <artifactId>frap-playwright</artifactId>
-        <version>1.1.0</version>
+        <version>1.0.0</version>
         <scope>test</scope>
     </dependency>
 </dependencies>
@@ -87,6 +87,23 @@ if (Frap.isHealed(button)) {
 }
 ```
 
+### 4. Discovery and Page Object Generation
+
+```java
+import io.github.kotlerdev.frap.playwright.wrapper.Frap;
+import io.github.kotlerdev.frap.core.dto.*;
+
+// Build element map from page DOM
+ElementMap map = Frap.discover(page);
+
+// Generate Page Object Java source files
+List<Path> paths = Frap.generatePageObject(
+    page,
+    Path.of("target/generated"),
+    GenerateOptions.javaPlaywright("CatalogPage", "com.example.pages")
+);
+```
+
 ## How It Works
 
 ### Auto-Extract
@@ -127,9 +144,18 @@ cargo build --release -p frap-core --bin frap-core-rpc
 IOException: Bundled binary not found: /META-INF/native/frap-core-rpc-linux-x86_64
 ```
 
-**Cause**: Your platform is not supported (e.g., Windows, Linux ARM64).
+**Cause**: Your platform is not supported (e.g., Windows, Linux ARM64) or the binary for your platform is not bundled in this release.
 
-**Solution**: Build binary locally:
+**Solution for Windows (not bundled in 1.0.0)**:
+
+```bash
+# Build binary locally
+cd crates
+cargo build --release -p frap-core --bin frap-core-rpc
+set FRAP_CORE_BIN=target\release\frap-core-rpc.exe
+```
+
+**Solution for other platforms**:
 
 ```bash
 cd crates

@@ -67,6 +67,7 @@
 - [x] Бинарь `frap-core-rpc` (stdin/stdout NDJSON)
 - [x] Methods: `heal`, `analyze_rca`, `build_element_map`, `filter_element_map`, `generate_page_object`
 - [x] Integration tests: Rust contracts + Java `FrapCoreClientTest`
+- [x] Documentation: [java-sdk-rpc.md](../../docs/en/java-sdk-rpc.md), [java-api-reference.md](../../docs/en/java-api-reference.md)
 
 ### P3 — позже (отложено)
 

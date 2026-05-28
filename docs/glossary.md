@@ -100,29 +100,42 @@ struct Signature {
 ---
 
 ### Cluster
-**Определение:** Группа элементов с похожими signatures, идентифицируемая как повторяющаяся структура (например, карточки товаров, пункты меню).
+**Определение:** Группа элементов с похожей **структурной сигнатурой** — один DOM-шаблон (например, карточки товара, строки таблицы, пункты меню).
 
-**Пример:**
+**Зачем:** отличить повторяющийся блок (LIST) от уникального элемента (SINGLE); сгенерировать один метод Page Object на шаблон; сузить healing и drift к структурному контексту. Подробнее: [clustering.md](./clustering.md).
+
+**Пример (element map v1.0.0):**
 ```typescript
 interface Cluster {
   id: string;
-  type: 'list' | 'grid' | 'navigation' | 'form' | 'other';
-  elements: string[];           // Element IDs
-  pattern: SignaturePattern;   // Общая signature элементов
-  count: number;
+  cluster_type: 'single' | 'list' | 'unknown';
+  element_ids: string[];
+  prefix_signature: string;   // общий префикс пути элементов кластера
 }
 
-// Пример: cluster "product-cards" с 12 элементами
+// 12 карточек товара — один LIST-кластер
 {
   id: "cl-7f3a9b",
-  type: "grid",
-  elements: ["el-1", "el-2", ..., "el-12"],
-  pattern: { role: "link", has: ["image", "heading", "price"] },
-  count: 12
+  cluster_type: "list",
+  element_ids: ["el-1", "el-2", ..., "el-12"],
+  prefix_signature: "div:main:div:products:list:div:product:card"
 }
 ```
 
-**Алгоритм:** Hierarchical clustering на основе Drain3 (token-based similarity).
+**Алгоритм:** детерминированная кластеризация по token-based similarity (Drain3-подход). Discover сначала сужает выборку (`SnapshotBuilder`: интерактив + `data-testid` и т.п.), затем Core группирует по сигнатурам.
+
+---
+
+### ClusterType
+**Определение:** Классификация кластера в element map (v1.0.0).
+
+| Значение | Условие | Пример |
+|----------|---------|--------|
+| `single` | 1 элемент в кластере | Уникальная кнопка Submit |
+| `list` | ≥ 2 элемента с похожей сигнатурой | Карточки каталога, строки таблицы |
+| `unknown` | резерв | — |
+
+**Использование:** фильтрация при PO generation (`filter(c -> c.clusterType() == LIST)`), `FilterSpec.min_cluster_size` для отбора только повторяющихся блоков.
 
 ---
 

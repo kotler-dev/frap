@@ -29,6 +29,7 @@ docs/
 | Кого целим (банк, команды) | [audience.md](./audience.md) |
 | PoC за неделю | [benchmark.md](./benchmark.md) |
 | Playwright / JUnit | [integrations.md](./integrations.md) |
+| Кластеризация, ClusterType | [clustering.md](./clustering.md) |
 | Деньги / enterprise | [monetization.md](./monetization.md) |
 | Карта фич и кейсов | [index.md](./index.md) |
 

@@ -188,11 +188,21 @@ ls build/frap-reports/
 
 ## Related docs
 
-- [integrations-selenium-java.md](../../docs/integrations-selenium-java.md)
+### User Documentation (1.0.0)
+- [sdk/java/README.md](../../sdk/java/README.md) — Java SDK entry point
+- [docs/en/java-getting-started.md](../../docs/en/java-getting-started.md) — 5-minute quick start
+- [docs/en/java-api-reference.md](../../docs/en/java-api-reference.md) — Complete API reference
+- [docs/en/java-maven-central.md](../../docs/en/java-maven-central.md) — Maven Central usage
+- [docs/en/java-sdk-rpc.md](../../docs/en/java-sdk-rpc.md) — JSON-RPC protocol
+
+### Maintainer / Roadmap
 - [sdk/java/IMPLEMENTATION_STATUS.md](../../sdk/java/IMPLEMENTATION_STATUS.md)
-- [docs/en/java-sdk-rpc.md](../../docs/en/java-sdk-rpc.md)
+- [sdk/java/VERIFICATION.md](../../sdk/java/VERIFICATION.md) — Test matrix
+- [sdk/java/MAVEN_RELEASE_CHECKLIST.md](../../sdk/java/MAVEN_RELEASE_CHECKLIST.md)
+- [integrations-selenium-java.md](../../docs/integrations-selenium-java.md) — WebDriver roadmap
 - [sdk-strategy.md](../architecture/sdk-strategy.md)
-- [audience.md](../../docs/audience.md) — сегмент S1
+
+### Related Features
 - [F000: Core Platform API](./F000-core-platform-api.md)
 - [F008: Playwright Adapter](./F008-playwright-adapter.md)
 - [F013: TypeScript SDK](./F013-typescript-sdk.md)

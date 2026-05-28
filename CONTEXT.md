@@ -61,8 +61,9 @@ frap/
 | Целевая аудитория | `docs/audience.md` |
 | PoC gates и метрики | `docs/benchmark.md` |
 | Интеграции | `docs/integrations.md` |
-| Selenium/Java (банк) | `docs/integrations-selenium-java.md` |
-| SDK (Java, TS, Python) | `project/architecture/sdk-strategy.md` |
+| **Java SDK** | `sdk/java/README.md`, `docs/en/java-getting-started.md` |
+| Selenium/Java (банк roadmap) | `docs/integrations-selenium-java.md` |
+| SDK стратегия (Java, TS, Python) | `project/architecture/sdk-strategy.md` |
 | Монетизация | `docs/monetization.md` |
 
 ## Принципы

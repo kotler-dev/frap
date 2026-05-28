@@ -436,6 +436,33 @@ LocatorExport export = map.export(ExportOptions.builder()
 
         <section class="slide" data-slide="6">
             <div class="status-pill info">Кластеризация</div>
+            <h2>Что такое кластер и зачем он нужен</h2>
+            <div class="split">
+                <div class="panel">
+                    <h3>ClusterType (v1.0.0)</h3>
+                    <ul class="list">
+                        <li><strong>Кластер</strong> — группа элементов с одной структурной сигнатурой (один шаблон: карточки, строки списка).</li>
+                        <li><span class="highlight">SINGLE</span> — один элемент (уникальная кнопка, поле).</li>
+                        <li><span class="highlight">LIST</span> — ≥ 2 похожих (повторяющийся блок).</li>
+                        <li>5 одинаковых карточек → один метод <code>items(int index)</code>, а не 5 копий.</li>
+                    </ul>
+                </div>
+                <div class="panel">
+                    <h3>Почему не querySelector('*')</h3>
+                    <ul class="list">
+                        <li>Тысячи узлов: шум (div, обёртки), не только интерактив.</li>
+                        <li>Нет семантики «список vs уникальная кнопка».</li>
+                        <li>Нет рекомендованных локаторов и confidence.</li>
+                        <li><strong>Discover</strong> сужает выборку (интерактив + data-testid в SnapshotBuilder).</li>
+                        <li><strong>Кластеризация</strong> группирует похожее для PO, heal и filter (<code>min_cluster_size</code>, LIST).</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="caption">Подробнее: <code>docs/clustering.md</code> · алгоритм Drain3: <code>project/architecture/clustering.md</code></p>
+        </section>
+
+        <section class="slide" data-slide="7">
+            <div class="status-pill info">Кластеризация</div>
             <h2>Пример: id мигрирует в data-id внутри одного списка</h2>
             <div class="split">
                 <div class="panel">
@@ -460,7 +487,7 @@ LocatorExport export = map.export(ExportOptions.builder()
             <p class="caption">Контракт в <code>fixtures/contract/clustering-id-migration</code> проверяется в Rust/TS/Java: кластер списка сохраняется, heal выбирает <code>li[data-id='2']</code> при потере <code>li#2</code>.</p>
         </section>
 
-        <section class="slide" data-slide="7">
+        <section class="slide" data-slide="8">
             <div class="status-pill warning">Healing</div>
             <h2>Heal: как библиотека восстанавливает локатор</h2>
             <div class="timeline">
@@ -472,7 +499,7 @@ LocatorExport export = map.export(ExportOptions.builder()
             <p class="caption">Heal — это управляемое восстановление локатора, а не угадывание.</p>
         </section>
 
-        <section class="slide" data-slide="8">
+        <section class="slide" data-slide="9">
             <div class="status-pill success">UX автоматизатора</div>
             <h2>Фрагменты кода из Conference demo (Java + отчет)</h2>
             <div class="code"><span class="w">// ScheduleHealingTest.java</span>
@@ -490,7 +517,7 @@ assertThat(result.confidence()).isGreaterThanOrEqualTo(0.7);</div>
             <p class="caption">Показываем в демо связку: `schedule-heal.html` -> `ScheduleHealingTest` -> `frap-debug.html` (DOM clusters, лучшие кандидаты, решение).</p>
         </section>
 
-        <section class="slide" data-slide="9">
+        <section class="slide" data-slide="10">
             <div class="status-pill info">PageObject</div>
             <h2>Быстрый старт первых тестов</h2>
             <div class="card-grid">
@@ -503,7 +530,7 @@ assertThat(result.confidence()).isGreaterThanOrEqualTo(0.7);</div>
             </div>
         </section>
 
-        <section class="slide" data-slide="10">
+        <section class="slide" data-slide="11">
             <div class="status-pill warning">Крупные проекты</div>
             <h2>Что критично для больших проектов (тысячи тестов)</h2>
             <div class="split">
@@ -528,7 +555,7 @@ assertThat(result.confidence()).isGreaterThanOrEqualTo(0.7);</div>
             </div>
         </section>
 
-        <section class="slide" data-slide="11">
+        <section class="slide" data-slide="12">
             <div class="status-pill success">Выбор архитектуры</div>
             <h2>Rust-ядро + SDK под стек: зачем так, а не копии алгоритмов</h2>
             <div class="split">
@@ -551,7 +578,7 @@ assertThat(result.confidence()).isGreaterThanOrEqualTo(0.7);</div>
             </div>
         </section>
 
-        <section class="slide" data-slide="12">
+        <section class="slide" data-slide="13">
             <div class="status-pill info">План развития</div>
             <h2>Финальное видение</h2>
             <p><strong>Frap = детерминированный движок жизненного цикла локаторов</strong>: обнаружение структуры -> стабильные идентификаторы -> управляемый heal -> аналитика изменений интерфейса.</p>
@@ -568,7 +595,7 @@ assertThat(result.confidence()).isGreaterThanOrEqualTo(0.7);</div>
         <button class="theme-btn" id="themeBtn" aria-label="Переключить тему">Тема</button>
         <button class="nav-btn" id="prevBtn" aria-label="Назад">←</button>
         <div class="nav-dots" id="dots"></div>
-        <span class="slide-counter" id="counter">1 / 12</span>
+        <span class="slide-counter" id="counter">1 / 13</span>
         <button class="nav-btn" id="nextBtn" aria-label="Вперёд">→</button>
     </nav>
 
