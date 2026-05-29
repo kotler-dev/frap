@@ -5,7 +5,7 @@ edition.workspace = true
 authors.workspace = true
 license.workspace = true
 repository.workspace = true
-description = "Fletta Core — public API aggregation (signature, clustering, healing)"
+description = "Frap Core — public API aggregation (signature, clustering, healing)"
 
 [lib]
 name = "frap_core"

@@ -50,7 +50,7 @@ try (FrapNativeClient client = FrapNativeClient.create()) {
 
 ```xml
 <dependency>
-    <groupId>io.github.kotlerdev.frap</groupId>
+    <groupId>io.github.kotler-dev</groupId>
     <artifactId>frap-core-native</artifactId>
     <version>1.0.0</version>
 </dependency>

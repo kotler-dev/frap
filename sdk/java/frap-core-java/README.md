@@ -62,14 +62,14 @@ Windows is not supported in 1.0.0 (set `FRAP_CORE_BIN` to a custom build if need
 ```xml
 <!-- RPC client (subprocess) - Available on Maven Central -->
 <dependency>
-    <groupId>io.github.kotlerdev.frap</groupId>
+    <groupId>io.github.kotler-dev</groupId>
     <artifactId>frap-core-java</artifactId>
     <version>1.0.0</version>
 </dependency>
 
 <!-- Playwright adapter - Available on Maven Central -->
 <dependency>
-    <groupId>io.github.kotlerdev.frap</groupId>
+    <groupId>io.github.kotler-dev</groupId>
     <artifactId>frap-playwright</artifactId>
     <version>1.0.0</version>
     <scope>test</scope>

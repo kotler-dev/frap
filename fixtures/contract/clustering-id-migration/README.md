@@ -18,4 +18,4 @@ Language-agnostic fixture for the scenario:
 - **Rust:** `crates/core/tests/contract_clustering_id_migration.rs`
 - **Java:** `sdk/java/frap-core-java/src/test/java/.../ClusteringIdMigrationContractTest.java`
 - **TypeScript:** `sdk/typescript/src/contract/clustering-id-migration.test.ts`
-- **Playwright e2e:** `internal/testing/conference/clustering-id-migration.spec.ts`
+- **Playwright e2e:** `e2e/conference/clustering-id-migration.spec.ts`

@@ -112,7 +112,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <!-- Unit tests only; browser + RPC E2E live in internal/demo/showcase/java-playwright -->
+                    <!-- Unit tests only; browser + RPC E2E live in examples/java/playwright -->
                     <excludedGroups>e2e</excludedGroups>
                 </configuration>
             </plugin>

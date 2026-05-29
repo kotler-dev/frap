@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
-import { attachFlettaContext, recordContextUiEvent } from '@frap/playwright';
+import { attachFrapContext, recordContextUiEvent } from '@frap/playwright';
 import { CONTEXT_PATH, CONTEXT_REPORT_DIR } from './helpers';
 
 test.describe('C003 Flaky Cart Diagnosis', () => {
   test('fast cart load shows ready marker', async ({ page }, testInfo) => {
-    attachFlettaContext(page, {
+    attachFrapContext(page, {
       reportDir: CONTEXT_REPORT_DIR,
       testId: `${testInfo.title}-fast`,
     });
@@ -13,7 +13,7 @@ test.describe('C003 Flaky Cart Diagnosis', () => {
   });
 
   test.fail('slow cart exceeds visibility threshold', async ({ page }, testInfo) => {
-    attachFlettaContext(page, {
+    attachFrapContext(page, {
       reportDir: CONTEXT_REPORT_DIR,
       testId: `${testInfo.title}-slow`,
     });

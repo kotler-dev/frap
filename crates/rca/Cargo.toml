@@ -5,7 +5,7 @@ edition.workspace = true
 authors.workspace = true
 license.workspace = true
 repository.workspace = true
-description = "Fletta root cause analysis — classify test failures from unified context timelines"
+description = "Frap root cause analysis — classify test failures from unified context timelines"
 
 [lib]
 name = "frap_rca"

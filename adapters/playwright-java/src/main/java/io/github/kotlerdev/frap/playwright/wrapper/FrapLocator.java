@@ -7,7 +7,7 @@ import io.github.kotlerdev.frap.core.client.FrapCoreClient;
 
 /**
  * Extended Locator with Frap healing metadata.
- * Mirrors TypeScript {@code FlettaLocator} from wrapper.ts.
+ * Mirrors TypeScript {@code FrapLocator} from wrapper.ts.
  */
 public interface FrapLocator extends Locator {
 

@@ -1,5 +1,5 @@
 {
-  "name": "@frap/frap-playwright",
+  "name": "@frap/playwright",
   "version": "1.1.1",
   "description": "Playwright adapter for Frap self-healing selectors",
   "main": "dist/index.js",
@@ -26,7 +26,7 @@
     "@playwright/test": ">=1.40.0"
   },
   "devDependencies": {
-    "@frap/frap": "file:../../sdk/typescript",
+    "@frap/sdk": "file:../../sdk/typescript",
     "@playwright/test": "^1.44.0",
     "@types/node": "^20.0.0",
     "typescript": "^5.4.0",
@@ -35,6 +35,6 @@
     "@typescript-eslint/parser": "^7.0.0"
   },
   "dependencies": {
-    "@frap/frap": "1.1.1"
+    "@frap/sdk": "1.1.1"
   }
 }

@@ -14,4 +14,4 @@ if [ ! -d "$PROJECT_ROOT/adapters/playwright/dist" ]; then
 fi
 
 cd "$PROJECT_ROOT/e2e"
-FLETTA_BENCH_OVERHEAD=1 npx playwright test --config=playwright.context.config.ts context/overhead.spec.ts
+FRAP_BENCH_OVERHEAD=1 npx playwright test --config=playwright.context.config.ts context/overhead.spec.ts
