@@ -16,6 +16,8 @@ pub struct DOMElementInfo {
     pub attributes: HashMap<String, String>,
     pub text_content: Option<String>,
     pub path: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub position_in_parent: Option<usize>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -47,7 +49,7 @@ impl HealingEngine {
             return HealResult::success(element.selector.clone());
         }
 
-        let candidates = self.find_candidates(original_signature, dom_snapshot);
+        let candidates = self.find_candidates(original_signature, dom_snapshot, true);
 
         if candidates.is_empty() {
             return HealResult::failed(vec![], original_signature.clone());
@@ -88,11 +90,30 @@ impl HealingEngine {
         snapshot.elements.iter().find(|e| e.selector == selector)
     }
 
-    fn find_candidates(&self, original: &Signature, snapshot: &DOMSnapshot) -> Vec<Candidate> {
+    fn find_candidates(
+        &mut self,
+        original: &Signature,
+        snapshot: &DOMSnapshot,
+        cluster_only: bool,
+    ) -> Vec<Candidate> {
+        self.rebuild_clusterer(snapshot);
+
+        let cluster_selectors: std::collections::HashSet<String> = self
+            .clusterer
+            .find_elements_in_cluster(original)
+            .into_iter()
+            .map(|e| e.selector.clone())
+            .collect();
+
+        let restrict = cluster_only && !cluster_selectors.is_empty();
         let mut candidates = Vec::new();
 
         for element_info in &snapshot.elements {
-            let candidate_sig = self.extract_signature_from_element(element_info);
+            if restrict && !cluster_selectors.contains(&element_info.selector) {
+                continue;
+            }
+
+            let candidate_sig = Self::signature_from_element(element_info);
             let confidence = calculate_confidence(original, &candidate_sig);
 
             if confidence >= 0.5 {
@@ -104,6 +125,10 @@ impl HealingEngine {
             }
         }
 
+        if candidates.is_empty() && restrict {
+            return self.find_candidates(original, snapshot, false);
+        }
+
         candidates.sort_by(|a, b| {
             b.confidence
                 .partial_cmp(&a.confidence)
@@ -112,7 +137,21 @@ impl HealingEngine {
         candidates
     }
 
-    fn extract_signature_from_element(&self, element: &DOMElementInfo) -> Signature {
+    fn rebuild_clusterer(&mut self, snapshot: &DOMSnapshot) {
+        self.clusterer = DOMElementClusterer::new();
+        for element_info in &snapshot.elements {
+            let sig = Self::signature_from_element(element_info);
+            self.clusterer
+                .add_element(element_info.selector.clone(), sig);
+        }
+    }
+
+    /// Extract a structural signature from a captured DOM element (shared with element-map discovery).
+    pub fn signature_from_element(element: &DOMElementInfo) -> Signature {
+        Self::build_signature_from_element(element)
+    }
+
+    fn build_signature_from_element(element: &DOMElementInfo) -> Signature {
         use signature::{extract_stable_attrs, DOMToken};
 
         let mut tokens = Vec::new();
@@ -146,13 +185,19 @@ impl HealingEngine {
         if let Some(testid) = element.attributes.get("data-testid") {
             stable_attrs.insert("data-testid".to_string(), testid.clone());
         }
+        if let Some(id) = element.attributes.get("id") {
+            stable_attrs.insert("id".to_string(), id.clone());
+        }
+        if let Some(data_id) = element.attributes.get("data-id") {
+            stable_attrs.insert("data-id".to_string(), data_id.clone());
+        }
 
         Signature {
             path: tokens,
             prefix,
             stable_attrs,
             text_content: element.text_content.clone(),
-            position_in_parent: None,
+            position_in_parent: element.position_in_parent,
             children_hash: 0,
             depth: element.path.len() as u8,
         }
@@ -248,6 +293,7 @@ mod tests {
                 attributes: [("data-testid".to_string(), "checkout-pay".to_string())].into(),
                 text_content: Some("Pay".to_string()),
                 path: vec!["button:submit".to_string()],
+                position_in_parent: None,
             }],
         }
     }
@@ -269,6 +315,7 @@ mod tests {
                 attributes: HashMap::new(),
                 text_content: Some("Pay".to_string()),
                 path: vec!["button:-".to_string()],
+                position_in_parent: None,
             }],
         };
 

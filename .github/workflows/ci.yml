@@ -35,6 +35,76 @@ jobs:
       - name: Run Rust tests
         run: cd crates && cargo test --workspace
 
+      - name: Build frap-core-rpc binary
+        run: cd crates && cargo build --release -p frap-core --bin frap-core-rpc
+
+      - name: Run frap-core-rpc smoke tests
+        run: ./scripts/smoke-frap-core-rpc.sh ./crates/target/release/frap-core-rpc
+
+      - name: Build frap-core FFI library
+        run: cd crates && cargo build --release -p frap-core --features ffi
+
+      - name: Test FFI bindings
+        run: cd crates && cargo test -p frap-core ffi
+
+  java-sdk:
+    name: Java SDK (Maven + RPC)
+    runs-on: ubuntu-latest
+    needs: [rust-core]
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Build frap-core-rpc binary
+        run: cd crates && cargo build --release -p frap-core --bin frap-core-rpc
+
+      - name: Run frap-core-rpc smoke tests
+        run: ./scripts/smoke-frap-core-rpc.sh ./crates/target/release/frap-core-rpc
+
+      - name: Run Java SDK tests
+        run: mvn -B clean test -f sdk/java/pom.xml
+        env:
+          FRAP_CORE_BIN: ${{ github.workspace }}/crates/target/release/frap-core-rpc
+
+  java-playwright-e2e:
+    name: Java Playwright E2E (L4 demo)
+    runs-on: ubuntu-latest
+    needs: [rust-core]
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Setup Node.js (test-app)
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+
+      - name: Run Java E2E suite
+        run: ./scripts/run-java-e2e.sh
+
+      - name: Upload Java conference reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: java-frap-conference-reports
+          path: |
+            internal/demo/showcase/java-playwright/target/frap-reports/conference/**
+          retention-days: 14
+
   typescript-sdk:
     name: TypeScript SDK (WASM + build)
     runs-on: ubuntu-latest
@@ -135,20 +205,25 @@ jobs:
 
       - name: Start test server
         run: |
-          cd test-app
+          cd internal/demo/site
           node server.js &
           sleep 2
           curl -sf http://localhost:3000
 
+      - name: Install conference testing deps
+        run: |
+          cd internal/testing
+          npm install
+
       - name: Run Conference E2E
         run: |
-          cd e2e
+          cd internal/testing
           npx playwright test --config=playwright.conference.config.ts
         env:
           FLETTA_TS_FALLBACK: 1
 
       - name: Verify CP005 report artifacts (CONF-RPT-RUN-PASS)
-        run: node e2e/conference/verify-reports.mjs
+        run: node internal/testing/conference/verify-reports.mjs
 
       - name: Upload frap reports (JUnit + JSON)
         uses: actions/upload-artifact@v4
@@ -156,10 +231,10 @@ jobs:
         with:
           name: frap-conference-reports
           path: |
-            e2e/frap-reports/conference/junit.xml
-            e2e/frap-reports/conference/frap-report.json
-            e2e/frap-reports/conference/frap-events.jsonl
-            e2e/frap-reports/conference/frap-debug.html
+            internal/testing/frap-reports/conference/junit.xml
+            internal/testing/frap-reports/conference/frap-report.json
+            internal/testing/frap-reports/conference/frap-events.jsonl
+            internal/testing/frap-reports/conference/frap-debug.html
           retention-days: 30
 
       - name: Upload Playwright test results
@@ -169,7 +244,7 @@ jobs:
           name: playwright-test-results
           path: |
             e2e/test-results/
-            e2e/conference-results.json
+            internal/testing/conference-results.json
           retention-days: 14
 
   e2e-context:
@@ -207,7 +282,7 @@ jobs:
 
       - name: Start test server
         run: |
-          cd test-app
+          cd internal/demo/site
           node server.js &
           sleep 2
           curl -sf http://localhost:3000

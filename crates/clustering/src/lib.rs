@@ -104,62 +104,68 @@ impl ParseTree {
     }
 
     pub fn find_or_create_cluster(&mut self, signature: &Signature) -> &mut ClusterNode {
-        let mut current = &mut self.root;
-        let mut current_node_key: Option<String> = None;
         let token_count = signature.path.len().min(MAX_DEPTH);
+        if token_count == 0 {
+            panic!("Could not find or create cluster: empty signature path");
+        }
+
+        let node = self.find_or_create_leaf_node(signature, token_count);
+
+        let best_cluster = Self::find_best_cluster(node, signature);
+
+        if let Some(idx) = best_cluster {
+            return &mut node.clusters[idx];
+        }
+
+        let new_cluster = ClusterNode::new(signature.prefix.clone());
+        node.add_cluster(new_cluster);
+        let idx = node.clusters.len() - 1;
+        &mut node.clusters[idx]
+    }
+
+    fn find_or_create_leaf_node(
+        &mut self,
+        signature: &Signature,
+        token_count: usize,
+    ) -> &mut ParseTreeNode {
+        let mut current_map = &mut self.root;
 
         for i in 0..token_count {
             let token = &signature.path[i];
             let key = format!("{}:{}", token.tag, token.role.as_deref().unwrap_or("-"));
 
-            if !current.contains_key(&key) {
-                current.insert(key.clone(), ParseTreeNode::new(key.clone(), i as u8));
+            if !current_map.contains_key(&key) {
+                current_map.insert(key.clone(), ParseTreeNode::new(key.clone(), i as u8));
             }
 
-            current_node_key = Some(key.clone());
+            let node = current_map.get_mut(&key).unwrap();
 
-            if i < token_count - 1 {
-                let node = current.get_mut(&key).unwrap();
-                let next_key = if i + 1 < signature.path.len() {
-                    let next_token = &signature.path[i + 1];
-                    format!(
-                        "{}:{}",
-                        next_token.tag,
-                        next_token.role.as_deref().unwrap_or("-")
-                    )
-                } else {
-                    break;
-                };
-
-                if !node.has_child(&next_key) {
-                    node.add_child(
-                        next_key.clone(),
-                        ParseTreeNode::new(next_key.clone(), (i + 1) as u8),
-                    );
-                }
-
-                let next_node = node.get_child_mut(&next_key).unwrap();
-                let children_ref: *mut HashMap<String, ParseTreeNode> = &mut next_node.children;
-                current = unsafe { &mut *children_ref };
+            if i == token_count - 1 {
+                return node;
             }
+
+            if i + 1 >= signature.path.len() {
+                break;
+            }
+
+            let next_token = &signature.path[i + 1];
+            let next_key = format!(
+                "{}:{}",
+                next_token.tag,
+                next_token.role.as_deref().unwrap_or("-")
+            );
+
+            if !node.has_child(&next_key) {
+                node.add_child(
+                    next_key.clone(),
+                    ParseTreeNode::new(next_key.clone(), (i + 1) as u8),
+                );
+            }
+
+            current_map = &mut node.get_child_mut(&next_key).unwrap().children;
         }
 
-        if let Some(key) = current_node_key {
-            let node = self.root.get_mut(&key).unwrap();
-
-            let best_cluster = Self::find_best_cluster(node, signature);
-
-            if let Some(idx) = best_cluster {
-                return &mut node.clusters[idx];
-            } else {
-                let new_cluster = ClusterNode::new(signature.prefix.clone());
-                node.add_cluster(new_cluster);
-                let idx = node.clusters.len() - 1;
-                return &mut node.clusters[idx];
-            }
-        }
-
-        panic!("Could not find or create cluster");
+        panic!("Could not find or create cluster: invalid path traversal");
     }
 
     fn find_best_cluster(node: &ParseTreeNode, signature: &Signature) -> Option<usize> {

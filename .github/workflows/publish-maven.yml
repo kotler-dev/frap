@@ -1,0 +1,69 @@
+name: Publish to Maven Central
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-native:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: linux-x86_64
+          - os: macos-13
+            target: macos-x86_64
+          - os: macos-latest
+            target: macos-aarch64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: crates
+      - run: cd crates && cargo build --release -p frap-core --bin frap-core-rpc
+      - run: |
+          mkdir -p sdk/java/frap-core-java/src/main/resources/META-INF/native
+          cp crates/target/release/frap-core-rpc \
+             sdk/java/frap-core-java/src/main/resources/META-INF/native/frap-core-rpc-${{ matrix.target }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-binaries-${{ matrix.target }}
+          path: sdk/java/frap-core-java/src/main/resources/META-INF/native/
+
+  publish:
+    needs: build-native
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+          server-id: central
+          server-username: CENTRAL_USERNAME
+          server-password: CENTRAL_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: GPG_PASSPHRASE
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: native-binaries-*
+          merge-multiple: true
+          path: sdk/java/frap-core-java/src/main/resources/META-INF/native/
+      - name: Make binaries executable
+        run: chmod +x sdk/java/frap-core-java/src/main/resources/META-INF/native/*
+      - name: Publish to Maven Central
+        run: |
+          cd sdk/java
+          mvn -P release -pl frap-core-java,../../adapters/playwright-java -am \
+            -Dgpg.passphrase="${GPG_PASSPHRASE}" \
+            deploy --batch-mode
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}

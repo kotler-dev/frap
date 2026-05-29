@@ -3,7 +3,7 @@
 Каталог сценариев для демонстрации, тестирования и разработки.
 Каждый кейс имеет ID, привязан к фичам, содержит пошаговый сценарий.
 
-**Conference demo (E2E):** [e2e/conference/README.md](../e2e/conference/README.md) · кейсы `CONF-*` · [CASES.md](../project/cases/conference/CASES.md)  
+**Conference demo (E2E):** [internal/testing/conference/README.md](../internal/testing/conference/README.md) · кейсы `CONF-*` · [CASES.md](../project/cases/conference/CASES.md)  
 **PoC / benchmark:** CP001–CP005 (исторические ID) — см. [benchmark.md](./benchmark.md).  
 **Полные демо:** C001–C008 ниже.
 

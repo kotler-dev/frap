@@ -1,0 +1,42 @@
+{
+  "dom_snapshot": {
+    "html": "<div class=\"catalog\"><article data-testid=\"product-card\"><h3>Phone</h3><button class=\"buy\">Buy</button></article><article data-testid=\"product-card\"><h3>Tablet</h3><button class=\"buy\">Buy</button></article></div>",
+    "elements": [
+      {
+        "selector": "[data-testid=\"product-card\"]",
+        "tag": "article",
+        "attributes": { "data-testid": "product-card" },
+        "text_content": "Phone",
+        "path": ["div:-", "article:-"],
+        "position_in_parent": 0
+      },
+      {
+        "selector": "[data-testid=\"product-card\"]",
+        "tag": "article",
+        "attributes": { "data-testid": "product-card" },
+        "text_content": "Tablet",
+        "path": ["div:-", "article:-"],
+        "position_in_parent": 1
+      },
+      {
+        "selector": "button.buy",
+        "tag": "button",
+        "attributes": { "class": "buy" },
+        "text_content": "Buy",
+        "path": ["div:-", "article:-", "button:-"],
+        "position_in_parent": null
+      },
+      {
+        "selector": "button.buy",
+        "tag": "button",
+        "attributes": { "class": "buy" },
+        "text_content": "Buy",
+        "path": ["div:-", "article:-", "button:-"],
+        "position_in_parent": null
+      }
+    ]
+  },
+  "options": {
+    "include_non_interactive": true
+  }
+}

@@ -1,3 +1,6 @@
+# Bundled frap-core-rpc (built in CI before Maven release)
+sdk/java/frap-core-java/src/main/resources/META-INF/native/frap-core-rpc-*
+
 # Rust
 target/
 Cargo.lock
@@ -38,8 +41,21 @@ Thumbs.db
 coverage/
 e2e/test-results/
 e2e/results.json
-e2e/conference-results.json
 e2e/frap-reports/
+e2e/conference-results.json
+internal/testing/frap-reports/
+internal/testing/conference-results.json
+internal/testing/**/test-results/
+
+# Demo / showcase build output
+internal/demo/showcase/**/target/
+internal/demo/site/**/tmp/
+internal/demo/site/**/*.log
+
+# Presentation local exports (not for publish)
+internal/demo/presentation/export/
+internal/demo/presentation/**/*.pdf
+internal/demo/presentation/**/*.pptx
 
 # Runtime
 .server.pid
