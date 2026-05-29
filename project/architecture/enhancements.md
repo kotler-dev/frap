@@ -5,7 +5,7 @@ Accepted
 
 ## Context
 
-Fletta core is deterministic (NO ML). However, users may want optional ML/LLM enhancements:
+Frap core is deterministic (NO ML). However, users may want optional ML/LLM enhancements:
 - Semantic naming for PageObject methods (LLM)
 - Visual element matching (OpenCV/ML)
 - AI-guided test step generation (LLM)
@@ -24,7 +24,7 @@ Enhancements live in separate packages (`frap-enhancements`), implement trait in
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Fletta Core (NO ML)                     │
+│                    Frap Core (NO ML)                     │
 │                                                              │
 │  ┌─────────────────────────────────────────────────────────┐│
 │  │         EnhancementProvider Trait (optional)            ││
@@ -206,7 +206,7 @@ pub fn create_llm_client(config: &LLMConfig) -> Box<dyn LLMClient> {
 
 ## Managed Tier (Enterprise)
 
-Enterprise customers can use Fletta-managed LLM access:
+Enterprise customers can use Frap-managed LLM access:
 
 ```yaml
 # frap.enterprise.yml (managed tier)
@@ -214,7 +214,7 @@ enhancements:
   semantic_naming:
     enabled: true
     provider: frap_managed
-    api_key: null  # Managed by Fletta
+    api_key: null  # Managed by Frap
     
     # Enterprise features
     caching:
@@ -254,11 +254,11 @@ enhancements:
 
 **BYO-Key:**
 - Keys stored in environment variables or secret management
-- Never logged or persisted by Fletta
+- Never logged or persisted by Frap
 - Rotatable by user at any time
 
 **Managed:**
-- Keys stored in Fletta's secure vault (HashiCorp Vault, AWS KMS)
+- Keys stored in Frap's secure vault (HashiCorp Vault, AWS KMS)
 - Access audited, rotated automatically
 - User never sees actual API key
 
@@ -286,7 +286,7 @@ fn test_page_object_generation_with_naming() {
         ("link-1-sig", "checkoutLink"),
     ]);
     
-    let engine = FlettaEngine::with_extensions(
+    let engine = FrapEngine::with_extensions(
         Arc::new(PermissivePolicy),
         Arc::new(ConsoleAuditLogger),
         Arc::new(mock_namer),

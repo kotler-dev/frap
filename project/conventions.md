@@ -1,113 +1,85 @@
 # Конвенции проекта frap
 
+См. также [project/README.md](./README.md) — карта раздела `project/`.
+
 ## Именование
 
 ### Фичи
-- ID: `F001`, `F002`, ... `F011`
+- ID: `F000`, `F001`, … `F017` (расширять по мере добавления)
 - Файлы: `F001-self-healing.md`, `F002-unified-context.md`
+- Карточка: YAML frontmatter + секции из [_template.md](./feature/_template.md)
 
 ### Кейсы
-- PoC: `CP001`–`CP005`
-- Демо: `C001`–`C008`
-- Файлы: `C001-payment-button.md`
+- PoC (legacy): `CP001`–`CP005` → реализация в `CONF-*`
+- Conference E2E: `CONF-<FEAT>-<AREA>-<OUTCOME>` — матрица [cases/conference/CASES.md](./cases/conference/CASES.md)
+- Scenario: `C001`–`C010`
+- Файлы: `C002-api-timeout.md` (плоско в [cases/](./cases/))
 
 ### Релизы
-- `v1.0.0` — MVP
-- `v1.1.0` — Context Layer
-- `v1.2.0` — AI Integration
-- `v2.0.0` — Scale
-- `v3.0.0` — Future
+- Product tags: `v1.0.0`, `v1.1.0`, … — см. [FEATURES.md](./FEATURES.md)
+- Registry versions: npm `@frap/*`, Maven `1.0.0`, Rust core `0.1.0` — см. [release/README.md](./release/README.md)
 
 ## Статусы
 
-### Фичи
-- `draft` — проектирование
-- `in-progress` — в разработке
-- `done` — реализовано
-- `frozen` — заморожено
-- `cancelled` — отменено
+### Фичи (карточка + FEATURES.md)
+
+| Symbol / word | Meaning |
+|---------------|---------|
+| ✅ / `done` | Shipped per FEATURES rule |
+| ⚠️ / `in-progress` | Partial |
+| ❌ / `draft` | Not started or design only |
+| ⏸️ / `frozen` | Paused |
+| 🚫 / `cancelled` | Dropped |
+
+**SSOT for release status:** [FEATURES.md](./FEATURES.md) only. `docs/roadmap.md` — narrative, not status.
 
 ### Кейсы
-- `concept` — идея
-- `script-ready` — скрипт готов
-- `demo-recorded` — демо записано
-- `validated` — проверено
 
-### Общие
-- ❌ — не реализовано
-- ⚠️ — частично
-- ✅ — полностью
+| Status | Meaning |
+|--------|---------|
+| `concept` | Spec only |
+| `script-ready` | Manual script exists |
+| `validated` | E2E + fixtures green |
 
 ## Git
 
 ### Коммиты
-- Формат: `type(scope): message`
+- Формат: `type(scope): message` (English)
 - Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`
-- Примеры:
-  - `feat(signature): add path extraction`
-  - `fix(healing): correct confidence calculation`
-  - `docs(readme): update installation guide`
 
 ### Ветки
-- `main` — стабильная версия
-- `develop` — разработка
-- `feature/F001-*` — фичи
-- `fix/*` — багфиксы
+- `main` — stable
+- `feature/F001-*` — feature work
 
 ## Код
 
 ### Rust
-- `snake_case` для функций
-- `PascalCase` для типов
-- `SCREAMING_SNAKE_CASE` для констант
-- Нет `unwrap()` в production
+- `snake_case` functions, `PascalCase` types
+- No `unwrap()` in production paths
+- Healing/scoring/clustering **only in Core** ([ADR-001](./architecture/ADR-001-core-language-strategy.md))
 
 ### TypeScript
-- `camelCase` для функций
-- `PascalCase` для классов/типов
-- `kebab-case` для файлов
-- Строгий TypeScript, нет `any`
-
-### Документация
-- Rust: `///` для публичных API
-- TypeScript: TSDoc
-- Фичи: шаблон `_template.md`
-
-## Тесты
-
-### Покрытие
-- Unit: каждый публичный метод
-- Integration: каждая фича
-- E2E: каждый кейс (CP*, C*)
-
-### Нейминг
-- Unit: `test_<function>_<scenario>`
-- Integration: `test_<feature>_<case>`
-- E2E: `test_<case_id>`
+- Strict TS, no `any` without reason
+- SDK stays thin: transport, hooks, config — no algorithm duplication
 
 ## Документация
 
-### Файлы
-- `CONTEXT.md` — точка входа
-- `project/FEATURES.md` — трекер фич
-- `project/feature/*.md` — карточки фич
-- `docs/*.md` — исходные материалы
+| Layer | Path |
+|-------|------|
+| Agent entry | [CONTEXT.md](../CONTEXT.md) |
+| Engineering SSOT | [project/FEATURES.md](./FEATURES.md), [traceability.md](./traceability.md) |
+| Feature cards | [project/feature/](./feature/) |
+| Case specs | [project/cases/](./cases/) |
+| Public indexes | [docs/features.md](../docs/features.md), [docs/cases.md](../docs/cases.md) |
+| Market / pitch | [docs/](../docs/) |
 
-### Обновление
-- При изменении фичи — обновить её карточку
-- При добавлении фичи — добавить в `FEATURES.md`
-- При изменении статуса — обновить статистику
+### При изменении фичи
+1. Update feature card in [feature/](./feature/)
+2. Update [FEATURES.md](./FEATURES.md) status
+3. Update [traceability.md](./traceability.md) if E2E/fixture paths change
+4. Update public index in `docs/` if needed
 
-## Код-ревью
+## Тесты
 
-### Чеклист
-- [ ] Код компилируется
-- [ ] Тесты проходят
-- [ ] Документация обновлена
-- [ ] Соответствует конвенциям
-- [ ] Нет `unwrap()`/`any` без причины
-
-### Кто ревьюит
-- Core (Rust) — tech lead
-- SDK (TS) — frontend lead
-- Фичи — product owner
+- E2E naming: `CONF-*` in conference specs; `c00N-*` in context
+- Gate scripts: [scripts/test.sh](../scripts/test.sh), [run-java-e2e.sh](../scripts/run-java-e2e.sh)

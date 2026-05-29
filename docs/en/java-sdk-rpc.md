@@ -215,7 +215,7 @@ public class FrapRpcClient implements FrapCoreClient {
 
 | Transport | Use Case | Status | Availability |
 |-----------|----------|--------|--------------|
-| WASM | TypeScript/Node.js in browser or Node | ✅ Ready | npm `@frap/frap-sdk` |
+| WASM | TypeScript/Node.js in browser or Node | ✅ Ready | npm `@frap/sdk` |
 | JSON-RPC (this doc) | Java, Python, any subprocess-capable language | ✅ Ready | Maven Central 1.0.0 |
 | JNI (FFI) | Production Java on-prem, minimal latency | 🚧 Experimental | Repo only, not on Central |
 

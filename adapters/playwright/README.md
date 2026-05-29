@@ -1,11 +1,11 @@
-# @frap/frap-playwright
+# @frap/playwright
 
 Playwright adapter for frap self-healing selectors.
 
 ## Installation
 
 ```bash
-npm install @frap/frap-playwright
+npm install @frap/playwright
 ```
 
 ## Quick Start
@@ -15,7 +15,7 @@ npm install @frap/frap-playwright
 ```typescript
 // playwright.config.ts
 import { defineConfig } from '@playwright/test';
-import { frapPlaywright, registerFrapSelector } from '@frap/frap-playwright';
+import { frapPlaywright, registerFrapSelector } from '@frap/playwright';
 
 export default defineConfig({
   ...frapPlaywright({
@@ -45,7 +45,7 @@ test('payment flow', async ({ page }) => {
 ```typescript
 // test.spec.ts
 import { test, expect } from '@playwright/test';
-import { withFrap } from '@frap/frap-playwright';
+import { withFrap } from '@frap/playwright';
 
 test('payment flow', async ({ page }) => {
   // Wrap existing locator with frap healing
@@ -71,7 +71,7 @@ test('payment flow', async ({ page }) => {
 ## Unified context (F002)
 
 ```typescript
-import { attachFrapContext } from '@frap/frap-playwright';
+import { attachFrapContext } from '@frap/playwright';
 
 test.beforeEach(async ({ page }) => {
   attachFrapContext(page, { reportDir: './frap-reports', traceId: 'run-1' });

@@ -5,7 +5,7 @@ Accepted
 
 ## Context
 
-Fletta core provides deterministic structure discovery. However, enterprise users need additional capabilities:
+Frap core provides deterministic structure discovery. However, enterprise users need additional capabilities:
 - Policy enforcement (approve/reject resolutions)
 - Audit logging (compliance requirements)
 - Custom integrations (internal systems)
@@ -242,13 +242,13 @@ Extension points are composed into the core engine:
 ```rust
 // crates/core/src/engine.rs
 
-pub struct FlettaEngine {
+pub struct FrapEngine {
     policy_checker: Arc<dyn PolicyChecker>,
     audit_logger: Arc<dyn AuditLogger>,
     enhancement: Arc<dyn EnhancementProvider>,
 }
 
-impl FlettaEngine {
+impl FrapEngine {
     /// Create with defaults (OSS)
     pub fn default() -> Self {
         Self {

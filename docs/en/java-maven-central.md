@@ -6,7 +6,7 @@ This guide covers releasing and using the Frap Java SDK from Maven Central.
 
 ```xml
 <dependency>
-    <groupId>io.github.kotlerdev.frap</groupId>
+    <groupId>io.github.kotler-dev</groupId>
     <artifactId>frap-core-java</artifactId>
     <version>1.0.0</version>
 </dependency>
@@ -16,9 +16,10 @@ This guide covers releasing and using the Frap Java SDK from Maven Central.
 
 | OS | Architecture | Status | Binary |
 |----|--------------|--------|--------|
-| Linux | x86_64 | ✅ Bundled | `frap-core-rpc-linux-x86_64` |
-| macOS | x86_64 | ✅ Bundled | `frap-core-rpc-macos-x86_64` |
+| Linux | x86_64 (glibc) | ✅ Bundled | `frap-core-rpc-linux-x86_64` |
+| Linux | x86_64 (musl/Alpine) | ✅ Bundled | `frap-core-rpc-linux-x86_64-musl` |
 | macOS | aarch64 (Apple Silicon) | ✅ Bundled | `frap-core-rpc-macos-aarch64` |
+| macOS | x86_64 (Intel) | 🚧 Not bundled in 1.0.0 | Use `FRAP_CORE_BIN` |
 | Windows | x86_64 | 🚧 Not bundled in 1.0.0 | Use `FRAP_CORE_BIN` |
 
 The native binary (`frap-core-rpc`) is **automatically extracted** from the JAR on first use.
@@ -31,14 +32,14 @@ The native binary (`frap-core-rpc`) is **automatically extracted** from the JAR 
 <dependencies>
     <!-- Core SDK -->
     <dependency>
-        <groupId>io.github.kotlerdev.frap</groupId>
+        <groupId>io.github.kotler-dev</groupId>
         <artifactId>frap-core-java</artifactId>
         <version>1.0.0</version>
     </dependency>
     
     <!-- Playwright integration (optional) -->
     <dependency>
-        <groupId>io.github.kotlerdev.frap</groupId>
+        <groupId>io.github.kotler-dev</groupId>
         <artifactId>frap-playwright</artifactId>
         <version>1.0.0</version>
         <scope>test</scope>

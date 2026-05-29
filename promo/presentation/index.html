@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frap — Project Vision</title>
+    <script>
+        (function () {
+            var stored = localStorage.getItem('Frap-theme');
+            if (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                stored = 'dark';
+            }
+            document.documentElement.setAttribute('data-theme', stored || 'light');
+        })();
+    </script>
+    <link rel="stylesheet" href="assets/tokens.css">
+    <link rel="stylesheet" href="assets/theme-light.css">
+    <link rel="stylesheet" href="assets/theme-dark.css">
+    <link rel="stylesheet" href="assets/deck.css">
+</head>
+<body>
+    <div class="presentation">
+        <section class="slide active" data-slide="1">
+            <div class="status-pill info">Vision</div>
+            <h1>Frap</h1>
+            <p class="subtitle">Deterministic library for locators in test automation</p>
+            <div class="metric-row">
+                <div class="metric"><div class="metric-value">Discover</div><div class="metric-label">Page map in seconds</div></div>
+                <div class="metric"><div class="metric-value">Stability</div><div class="metric-label">Signatures and controlled heal</div></div>
+                <div class="metric"><div class="metric-value">Explainability</div><div class="metric-label">Clear diffs, scores, and audit</div></div>
+            </div>
+        </section>
+
+        <section class="slide" data-slide="2">
+            <div class="status-pill warning">Problem</div>
+            <h2>The UI changes faster than tests are updated</h2>
+            <div class="split">
+                <div class="panel">
+                    <h3>What teams struggle with</h3>
+                    <ul class="list">
+                        <li>Hours of manual DOM inspection on new pages.</li>
+                        <li>Frontend refactors cause mass selector failures in CI.</li>
+                        <li>Unclear why auto-healing picked a new element.</li>
+                        <li>Opaque cloud tools often fail enterprise security requirements.</li>
+                    </ul>
+                </div>
+                <div class="panel">
+                    <h3>What automators expect</h3>
+                    <ul class="list">
+                        <li>Snapshot a page and get <span class="highlight">all available locators</span>.</li>
+                        <li>Group elements by structure and business zones.</li>
+                        <li>Start Page Objects quickly without manual routine.</li>
+                        <li>Reduce flaky failures with deterministic logic.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide" data-slide="3">
+            <div class="status-pill success">Positioning</div>
+            <h2>Frap — a layer of structure and stable identifiers</h2>
+            <div class="architecture">
+                <div class="arch-row">
+                    <div class="arch-box">Playwright</div>
+                    <div class="arch-box">Selenium</div>
+                    <div class="arch-box">JUnit / TestNG</div>
+                </div>
+                <div class="arrow">↓ integration</div>
+                <div class="arch-row"><div class="arch-box">TypeScript SDK</div><div class="arch-box">Java SDK</div><div class="arch-box">JSON-RPC / Native</div></div>
+                <div class="arrow">↓ deterministic core</div>
+                <div class="arch-row">
+                    <div class="arch-box arch-core">Signatures</div>
+                    <div class="arch-box arch-core">Clustering</div>
+                    <div class="arch-box arch-core">Recovery / resolution</div>
+                    <div class="arch-box arch-core">Context + reports</div>
+                </div>
+            </div>
+            <p class="caption">Principle: <strong>Integration, not replacement</strong>.</p>
+        </section>
+
+        <section class="slide" data-slide="4">
+            <div class="status-pill info">Core loop</div>
+            <h2>One locator lifecycle</h2>
+            <div class="timeline">
+                <div class="step"><div class="step-title">1. Snapshot the page</div><div class="step-desc">Build an element map: tags, attributes, path, role, text.</div></div>
+                <div class="step"><div class="step-title">2. Build a signature</div><div class="step-desc">Capture stable traits and a structural prefix.</div></div>
+                <div class="step"><div class="step-title">3. Match and resolve</div><div class="step-desc">Pick the best candidate by confidence and policy rules.</div></div>
+                <div class="step success"><div class="step-title">4. Report</div><div class="step-desc">Explain the outcome: healed, confidence, top candidates.</div></div>
+            </div>
+        </section>
+
+        <section class="slide" data-slide="5">
+            <div class="status-pill success">Structure discovery</div>
+            <h2>MVP to start: all page locators in one pass</h2>
+            <p>Scenario “new product, zero tests”: discover → filter → Page Object generation → baseline.</p>
+            <div class="code"><span class="w">// Java example: discover structure and generate PO</span>
+ElementMap map = Frap.discover(page, MapOptions.defaults());
+
+<span class="w">// Access elements and their locators</span>
+for (ElementNode el : map.elements()) {
+  System.out.println(el.recommendedSelector()); <span class="w">// css/data-testid/...</span>
+  System.out.println(el.confidence());            <span class="w">// 0.0–1.0</span>
+}
+
+<span class="w">// Filter: interactive only, min cluster size 2</span>
+ElementMap filtered = client.filterElementMap(map,
+  new FilterSpec(<span class="k">true</span>, 2, List.of(<span class="s">"button"</span>, <span class="s">"a"</span>)));
+
+<span class="w">// Generate Page Object</span>
+List&lt;Path&gt; files = Frap.generatePageObject(page, outputDir,
+  GenerateOptions.javaPlaywright(<span class="s">"CatalogPage"</span>, <span class="s">"com.example.pages"</span>));</div>
+        </section>
+
+        <section class="slide" data-slide="6">
+            <div class="status-pill info">Clustering</div>
+            <h2>What a cluster is and why it matters</h2>
+            <div class="split">
+                <div class="panel">
+                    <h3>ClusterType (v1.0.0)</h3>
+                    <ul class="list">
+                        <li><strong>Cluster</strong> — elements sharing one structural signature (cards, list rows).</li>
+                        <li><span class="highlight">SINGLE</span> — one element (unique button, field).</li>
+                        <li><span class="highlight">LIST</span> — ≥ 2 similar items (repeating block).</li>
+                        <li>5 identical cards → one <code>items(int index)</code> method, not 5 copies.</li>
+                    </ul>
+                </div>
+                <div class="panel">
+                    <h3>Why not querySelector('*')</h3>
+                    <ul class="list">
+                        <li>Thousands of nodes: noise (divs, wrappers), not just interactive.</li>
+                        <li>No semantics for “list vs unique button”.</li>
+                        <li>No recommended locators or confidence scores.</li>
+                        <li><strong>Discover</strong> narrows the set (interactive + data-testid in SnapshotBuilder).</li>
+                        <li><strong>Clustering</strong> groups similar items for PO, heal, and filter (<code>min_cluster_size</code>, LIST).</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="caption">Details: <code>docs/clustering.md</code> · Drain3 algorithm: <code>project/architecture/clustering.md</code></p>
+        </section>
+
+        <section class="slide" data-slide="7">
+            <div class="status-pill info">Clustering</div>
+            <h2>Example: id migrates to data-id inside one list</h2>
+            <div class="split">
+                <div class="panel">
+                    <h3>Before DOM change</h3>
+                    <ul class="list">
+                        <li><code>ul &gt; li#1</code></li>
+                        <li><code>ul &gt; li#2</code></li>
+                        <li>Both elements in the same container and sibling set.</li>
+                        <li>Matching relies on structure + attributes.</li>
+                    </ul>
+                </div>
+                <div class="panel">
+                    <h3>After DOM change</h3>
+                    <ul class="list">
+                        <li><code>ul &gt; li#1</code> stays unchanged.</li>
+                        <li><code>ul &gt; li[data-id='2']</code> replaces old <code>li#2</code>.</li>
+                        <li>The cluster should stay the same: it is still one list.</li>
+                        <li>Expected result: best candidate — <code>li[data-id='2']</code>.</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="caption">Contract in <code>fixtures/contract/clustering-id-migration</code> is verified in Rust/TS/Java: list cluster preserved, heal picks <code>li[data-id='2']</code> when <code>li#2</code> is lost.</p>
+        </section>
+
+        <section class="slide" data-slide="8">
+            <div class="status-pill info">Element Map</div>
+            <h2>Element map: flat catalog, not a DOM tree</h2>
+            <div class="split">
+                <div class="panel">
+                    <h3>What discover returns</h3>
+                    <ul class="list">
+                        <li><strong>elements</strong> — flat list of <code>ElementNode</code>.</li>
+                        <li><strong>clusters</strong> — groups linked via <code>cluster_id</code>.</li>
+                        <li>No <code>parent_id</code> / <code>children</code> — traverse via filter/stream only.</li>
+                        <li><code>el-N</code> — catalog key for one run, not a permanent element ID.</li>
+                    </ul>
+                </div>
+                <div class="panel">
+                    <h3>How to recognize “the same” element without links</h3>
+                    <ul class="list">
+                        <li>Structure lives in <code>signature.path</code> (<code>tag:role</code> chain to <code>body</code>).</li>
+                        <li><code>position_in_parent</code> — index among siblings with the same tag (not <code>:nth-child()</code> in the locator).</li>
+                        <li>After an <code>id</code> change, heal compares signature with a new snapshot; cluster narrows search.</li>
+                        <li>Bonus for <code>id</code> → <code>data-id</code> migration with the same value.</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="caption">Element Map is a catalog for PO and baseline; cross-run identity uses <strong>Signature</strong>, not a tree in JSON. See <code>docs/glossary.md</code>.</p>
+        </section>
+
+        <section class="slide" data-slide="9">
+            <div class="status-pill warning">Healing</div>
+            <h2>Heal: how the library restores a locator</h2>
+            <div class="timeline">
+                <div class="step failed"><div class="step-title">1. Locator not found</div><div class="step-desc"><code>[data-testid='talk-open-healing']</code> missing after markup change.</div></div>
+                <div class="step"><div class="step-title">2. Match signature to current page</div><div class="step-desc">Frap compares the saved signature with candidates in the new snapshot.</div></div>
+                <div class="step"><div class="step-title">3. Pick best candidate by confidence</div><div class="step-desc">Best candidate: <code>[data-testid='talk-card-open-healing']</code> (e.g. confidence 0.94).</div></div>
+                <div class="step success"><div class="step-title">4. Outcome</div><div class="step-desc">If confidence exceeds threshold — <code>healed=true</code>; otherwise safe <code>fail</code> with a report.</div></div>
+            </div>
+            <p class="caption">Heal is controlled locator recovery, not guessing.</p>
+        </section>
+
+        <section class="slide" data-slide="10">
+            <div class="status-pill info">Context Layer</div>
+            <h2>Tri-plane context: UI + network + logs → RCA</h2>
+            <div class="split">
+                <div class="panel">
+                    <h3>Aggregation (F002)</h3>
+                    <ul class="list">
+                        <li><strong>ContextTimeline</strong> — unified event timeline.</li>
+                        <li>UI: clicks, locator failures.</li>
+                        <li>Network: HTTP, timings, errors.</li>
+                        <li>Logs: console, page errors; correlation via <code>trace_id</code>.</li>
+                        <li>Playwright: <code>captureAll(true)</code> in the adapter.</li>
+                    </ul>
+                </div>
+                <div class="panel">
+                    <h3>RCA — <code>analyze_rca</code> (F003)</h3>
+                    <ul class="list">
+                        <li><strong>Root Cause Analysis</strong> — post-mortem around the failure moment.</li>
+                        <li>Core classifies: UI / network / timing / unknown.</li>
+                        <li>Response: <code>RcaReport</code> (cause, confidence, excerpt, recommendation).</li>
+                        <li>This is <strong>not</strong> heal and <strong>not</strong> discover.</li>
+                        <li>Example: API timeout → do not “heal” the selector. Case C002.</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="caption">Observability layer: explain <em>why</em> it failed, not only <em>which</em> locator to pick.</p>
+        </section>
+
+        <section class="slide" data-slide="11">
+            <div class="status-pill warning">Discover vs CDP</div>
+            <h2><code>Frap.discover</code> today and CDP on the roadmap</h2>
+            <div class="split">
+                <div class="panel">
+                    <h3>Today (Playwright)</h3>
+                    <ul class="list">
+                        <li><code>Frap.discover(page)</code></li>
+                        <li>→ <code>SnapshotBuilder.build()</code></li>
+                        <li>→ <code>page.evaluate(...)</code> in-page JS</li>
+                        <li>→ <code>client.buildElementMap(...)</code></li>
+                        <li><strong>CDP is not used on this path.</strong></li>
+                    </ul>
+                </div>
+                <div class="panel">
+                    <h3>Planned (CDP source)</h3>
+                    <ul class="list">
+                        <li>Standalone Chrome: URL or CDP session.</li>
+                        <li>Scenario recording via Chrome DevTools Protocol (C009).</li>
+                        <li>Separate transport — same Core pipeline.</li>
+                        <li>Discover / element map / clustering without contract changes.</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="caption">CDP is a future way to <em>deliver</em> DOM to Core; algorithms stay in the Rust core.</p>
+        </section>
+
+        <section class="slide" data-slide="12">
+            <div class="status-pill success">Automator UX</div>
+            <h2>Conference demo: smart heal and safe refusal</h2>
+            <div class="split">
+                <div class="panel">
+                    <h3>✅ PASS: schedule-heal</h3>
+                    <p class="subtitle" style="font-size: 0.95rem; color: var(--text-muted);">One clear candidate — heal accepted</p>
+                    <div class="code" style="font-size: 0.85rem; padding: 12px;"><span class="w">// ScheduleHealingTest.java</span>
+FrapLocator openLink = Frap.withFrap(
+  page.locator(<span class="s">"[data-testid='talk-open-healing']"</span>),
+  page,
+  options.minConfidence(0.7).healPolicy(<span class="s">"expect_heal"</span>)
+);
+openLink.click();
+
+<span class="w">// Verify heal</span>
+HealResult result = Frap.getLastHealResult(openLink);
+assertThat(result.healed()).isTrue();
+assertThat(result.confidence()).isGreaterThanOrEqualTo(0.7);</div>
+                </div>
+                <div class="panel">
+                    <h3>❌ FAIL: CFP ambiguous</h3>
+                    <p class="subtitle" style="font-size: 0.95rem; color: var(--text-muted);">Two similar candidates — refused for safety</p>
+                    <div class="code" style="font-size: 0.85rem; padding: 12px;"><span class="w">// CfpAmbiguousHealTest.java</span>
+FrapLocator submit = Frap.withFrap(
+  page.locator(<span class="s">"[data-testid='cfp-submit-missing']"</span>),
+  page,
+  options.minConfidence(0.85)
+);
+
+<span class="w">// Throws — we do not click the wrong button</span>
+try {
+  submit.click();  <span class="w">// PlaywrightException</span>
+} catch (Exception e) {
+  HealResult r = Frap.getLastHealResult(submit);
+  assertThat(r.healed()).isFalse();
+  assertThat(r.topCandidates()).hasSizeGreaterThanOrEqualTo(2);
+}</div>
+                </div>
+            </div>
+            <p class="caption">Two scenarios: clear heal accepted, ambiguous one rejected. Report: `frap-debug.html` with DOM clusters and top candidates.</p>
+        </section>
+
+        <section class="slide" data-slide="13">
+            <div class="status-pill info">PageObject</div>
+            <h2>Fast path to first tests</h2>
+            <div class="card-grid">
+                <article class="card"><h4>1. Discover structure</h4><p>Snapshot the page and get an interactive element map.</p></article>
+                <article class="card"><h4>2. Group</h4><p>Pick clusters (LIST/SINGLE) and key business zones.</p></article>
+                <article class="card"><h4>3. Locators</h4><p>Read <code>recommended_selector</code> and <code>confidence</code> from ElementMap.</p></article>
+                <article class="card"><h4>4. Generate</h4><p><code>Frap.generatePageObject()</code> — class skeleton with heal-ready selectors.</p></article>
+                <article class="card"><h4>5. Filter</h4><p><code>filterElementMap()</code> — interactive only, minimum cluster size.</p></article>
+                <article class="card"><h4>6. Evolve</h4><p>Signature baseline + drift detection; heal on DOM changes.</p></article>
+            </div>
+            <p class="caption">API: ElementMap.elements() → recommendedSelector, confidence, cluster; FilterSpec; GenerateOptions.javaPlaywright()</p>
+        </section>
+
+        <section class="slide" data-slide="14">
+            <div class="status-pill warning">Large projects</div>
+            <h2>What matters at scale (thousands of tests)</h2>
+            <div class="split">
+                <div class="panel">
+                    <h3>Technical requirements</h3>
+                    <ul class="list">
+                        <li>Snapshot caching and incremental refresh.</li>
+                        <li>Policy modes: strict fail / controlled heal.</li>
+                        <li>Deterministic behavior without cloud dependencies.</li>
+                        <li>Integration with CI artifacts and reports.</li>
+                    </ul>
+                </div>
+                <div class="panel">
+                    <h3>Value metrics</h3>
+                    <ul class="list">
+                        <li>Heal rate and share of ambiguous failures.</li>
+                        <li>UI change dynamics by page and team.</li>
+                        <li>Average selector recovery time.</li>
+                        <li>Share of manual DOM fixes eliminated.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide" data-slide="15">
+            <div class="status-pill success">Architecture choice</div>
+            <h2>Rust core + stack SDKs: why not duplicate algorithms</h2>
+            <div class="split">
+                <div class="panel">
+                    <h3>Benefits of one core</h3>
+                    <ul class="list">
+                        <li>Single source of truth for signature/heal/clustering.</li>
+                        <li>Same behavior in Java, TypeScript, and other SDKs.</li>
+                        <li>Performance and determinism without drift.</li>
+                    </ul>
+                </div>
+                <div class="panel">
+                    <h3>Reducing vendor lock-in</h3>
+                    <ul class="list">
+                        <li>Explicit JSON-RPC contract and DTO schema.</li>
+                        <li>Contract tests for every SDK.</li>
+                        <li>Thin adapters: API ergonomics without copied logic.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide" data-slide="16">
+            <div class="status-pill info">Roadmap</div>
+            <h2>Java SDK 1.0.0 — what already works</h2>
+            <p><strong>Frap = deterministic locator lifecycle engine</strong>: discover → signatures → heal → context/RCA → UI change analytics.</p>
+            <div class="metric-row">
+                <div class="metric"><div class="metric-value">1.0.0</div><div class="metric-label">Discover + heal + reports + context/RCA + PO gen</div></div>
+                <div class="metric"><div class="metric-value">1.4+</div><div class="metric-label">CDP source, WebDriver/Selenide, drift gate</div></div>
+                <div class="metric"><div class="metric-value">2.0+</div><div class="metric-label">Visual fingerprints, health score, structural contracts</div></div>
+            </div>
+            <p class="caption">Already on Maven Central: <code>io.github.kotlerdev:frap-playwright:1.0.0</code></p>
+        </section>
+    </div>
+
+
+    <nav class="nav">
+        <a class="lang-switch" href="index.ru.html" hreflang="ru" rel="alternate">RU</a>
+        <button class="theme-btn" id="themeBtn" aria-label="Theme">Theme</button>
+        <button class="nav-btn" id="prevBtn" aria-label="Previous">←</button>
+        <div class="nav-dots" id="dots"></div>
+        <span class="slide-counter" id="counter">1 / 16</span>
+        <button class="nav-btn" id="nextBtn" aria-label="Next">→</button>
+    </nav>
+
+    <script src="assets/deck.js"></script>
+</body>
+</html>

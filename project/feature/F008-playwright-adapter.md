@@ -15,9 +15,9 @@
 
 ## User workflow
 
-1. Пользователь устанавливает `@frap/frap-playwright`
+1. Пользователь устанавливает `@frap/playwright`
 2. Добавляет frap в playwright.config.ts
-3. В тесте использует `frap:` prefix или `withFletta()` обёртку
+3. В тесте использует `frap:` prefix или `withFrap()` обёртку
 4. При изменении UI frap активирует self-healing
 5. Результат: отчёт в JUnit/JSON формате
 
@@ -25,7 +25,7 @@
 
 ### In
 - Playwright custom selector engine `frap:`
-- Обертка `withFletta()` для существующих локаторов
+- Обертка `withFrap()` для существующих локаторов
 - Конфигурация: minConfidence, reportDir, policy
 - Экспорт отчётов: JUnit XML, JSON
 - Интеграция с Playwright trace viewer
@@ -37,13 +37,13 @@
 
 ## Acceptance criteria
 
-- [x] Установка: `npm install @frap/frap-playwright` работает (local)
+- [x] Установка: `npm install @frap/playwright` работает (local)
 - [x] Конфигурация через playwright.config.ts
 - [x] Custom selector: `page.locator('frap:pay-btn')` работает
-- [x] Wrapper: `withFletta(page.getByTestId('pay-btn'))` работает
+- [x] Wrapper: `withFrap(page.getByTestId('pay-btn'))` работает
 - [x] CP001 проходит: stable тест без healing
 - [x] CP002 проходит: heal при смене testid
-- [x] CP005 проходит: JUnit XML артефакт в CI (`internal/testing/conference/verify-reports.mjs`, artifact `frap-conference-reports`)
+- [x] CP005 проходит: JUnit XML артефакт в CI (`e2e/conference/verify-reports.mjs`, artifact `frap-conference-reports`)
 - [x] Документация: quick start < 15 минут
 
 ### Implementation Status
@@ -58,10 +58,10 @@
 
 ### Usage Example
 ```typescript
-import { withFletta } from '@frap/frap-playwright';
+import { withFrap } from '@frap/playwright';
 
 test('payment', async ({ page }) => {
-  const button = await withFletta(page.getByTestId('pay-btn'), page);
+  const button = await withFrap(page.getByTestId('pay-btn'), page);
   await button.click();
 });
 ```
@@ -74,7 +74,7 @@ adapters/playwright/
 ├── src/
 │   ├── index.ts           # основной экспорт
 │   ├── selector-engine.ts # регистрация custom selector
-│   ├── wrapper.ts         # withFletta() обёртка
+│   ├── wrapper.ts         # withFrap() обёртка
 │   ├── config.ts          # типы конфигурации
 │   └── reporter.ts        # JUnit/JSON export
 ├── package.json
@@ -84,7 +84,7 @@ adapters/playwright/
 ### Custom selector engine
 ```typescript
 // playwright.config.ts
-import { frapPlaywright } from '@frap/frap-playwright';
+import { frapPlaywright } from '@frap/playwright';
 
 export default defineConfig({
   ...frapPlaywright({
@@ -103,7 +103,7 @@ test('payment', async ({ page }) => {
 
 // Вариант B: обёртка существующего
 test('payment', async ({ page }) => {
-  await withFletta(page.getByTestId('pay-btn')).click();
+  await withFrap(page.getByTestId('pay-btn')).click();
 });
 ```
 
@@ -128,7 +128,7 @@ Playwright adapter — тонкая обёртка: DOM snapshot → SDK/Core.he
 ```bash
 # Установка и настройка
 cd demo-app
-npm install @frap/frap-playwright
+npm install @frap/playwright
 
 # Конфигурация
 # playwright.config.ts — добавить frapPlaywright()

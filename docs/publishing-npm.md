@@ -8,7 +8,7 @@ For GitHub Packages (`npm.pkg.github.com`), see [Working with the npm registry (
 
 ### 1. Create the `@frap` scope on npm
 
-Scoped names like `@frap/frap-sdk` require an **npm organization** (or a user account literally named `frap`).
+Scoped names like `@frap/sdk` require an **npm organization** (or a user account literally named `frap`).
 
 1. Log in at [npmjs.com](https://www.npmjs.com/) as the account that will own releases.
 2. Create an org: [Create an organization](https://www.npmjs.com/org/create) → name **`frap`** (lowercase).
@@ -33,6 +33,19 @@ Publishing runs on **git tag** `v*` or manual **Publish to npm** workflow.
 
 The tagged commit must include `.github/workflows/publish.yml` (tags on old commits without that file do not publish).
 
+### 4. Local publish (optional)
+
+CI publishes via `NODE_AUTH_TOKEN`. For manual `npm publish` from your machine:
+
+```bash
+cp sdk/typescript/.npmrc.example sdk/typescript/.npmrc
+# paste automation token into .npmrc (file is gitignored)
+cd sdk/typescript && npm publish --access public
+cd adapters/playwright && npm publish --access public
+```
+
+Same token works for both packages; only `@frap/sdk` must be published before `@frap/playwright`.
+
 ## Release checklist
 
 ```bash
@@ -44,13 +57,13 @@ git push origin v1.1.2
 
 Or: **Actions → Publish to npm → Run workflow**.
 
-Order in CI: `@frap/frap-sdk` first, then `@frap/frap-playwright` (depends on published SDK version).
+Order in CI: `@frap/sdk` first, then `@frap/playwright` (depends on published SDK version).
 
 ## Verify
 
 ```bash
-npm view @frap/frap-sdk version
-npm view @frap/frap-playwright version
+npm view @frap/sdk version
+npm view @frap/playwright version
 ```
 
 ## Common errors

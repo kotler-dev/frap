@@ -6,8 +6,8 @@ Complete reference for Frap Java SDK public API.
 
 | Module | Maven Coordinates | Description |
 |--------|-------------------|-------------|
-| `frap-core-java` | `io.github.kotlerdev.frap:frap-core-java:1.0.0` | Core client with JSON-RPC transport |
-| `frap-playwright` | `io.github.kotlerdev.frap:frap-playwright:1.0.0` | Playwright adapter with healing, discovery, PO generation |
+| `frap-core-java` | `io.github.kotler-dev:frap-core-java:1.0.0` | Core client with JSON-RPC transport |
+| `frap-playwright` | `io.github.kotler-dev:frap-playwright:1.0.0` | Playwright adapter with healing, discovery, PO generation |
 
 ---
 
@@ -45,11 +45,11 @@ JSON-RPC implementation with bundled binary auto-extraction.
 3. Bundled binary extracted from JAR to temp directory
 
 **Bundled Binaries (1.0.0):**
-- Linux x86_64: `META-INF/native/frap-core-rpc-linux-x86_64`
-- macOS x86_64: `META-INF/native/frap-core-rpc-macos-x86_64`
+- Linux x86_64 (glibc): `META-INF/native/frap-core-rpc-linux-x86_64`
+- Linux x86_64 (musl): `META-INF/native/frap-core-rpc-linux-x86_64-musl`
 - macOS aarch64: `META-INF/native/frap-core-rpc-macos-aarch64`
 
-**Windows:** Not bundled in 1.0.0 — build locally and set `FRAP_CORE_BIN`.
+**Not bundled:** macOS x86_64 (Intel), Windows — set `FRAP_CORE_BIN`.
 
 ---
 

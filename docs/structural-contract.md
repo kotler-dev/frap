@@ -120,7 +120,7 @@ scopes:
 - [docs/glossary.md](./glossary.md) — drift, element map, signature;
 - [Frap.md](../Frap.md) — концепция структурной регрессии UI (terminology);
 - [docs/positioning.md](./positioning.md) — общее позиционирование продукта;
-- [project/cases/C006-structural-regression.md](../project/cases/C006-structural-regression.md) — сценарий checkout.
+- [project/cases/C010-structural-regression.md](../project/cases/C010-structural-regression.md) — сценарий checkout.
 
 ---
 

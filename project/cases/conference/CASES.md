@@ -1,6 +1,6 @@
 # Conference demo — каталог кейсов (CONF-*)
 
-Проект: **FixtureConf 2026 Spring** · отчёты: `internal/testing/frap-reports/conference/`
+Проект: **FixtureConf 2026 Spring** · отчёты: `e2e/frap-reports/conference/`
 
 Миграция PoC: CP001 → `CONF-PW-REG-PASS`, CP002 → `CONF-SH-SCHED-PASS`, CP003 → `CONF-SH-CFP-FAIL`.
 

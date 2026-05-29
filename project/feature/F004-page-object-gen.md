@@ -82,7 +82,7 @@ impl CDPRecorder {
         let script = r#"
             (function() {
                 document.addEventListener('click', function(e) {
-                    console.log('__FLETTA_ACTION__', JSON.stringify({
+                    console.log('__FRAP_ACTION__', JSON.stringify({
                         type: 'click',
                         target: extractInfo(e.target),
                         timestamp: Date.now()
@@ -91,7 +91,7 @@ impl CDPRecorder {
                 
                 document.addEventListener('input', function(e) {
                     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-                        console.log('__FLETTA_ACTION__', JSON.stringify({
+                        console.log('__FRAP_ACTION__', JSON.stringify({
                             type: 'fill',
                             target: extractInfo(e.target),
                             value: e.target.value,

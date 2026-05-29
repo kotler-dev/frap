@@ -79,14 +79,14 @@ enum Event {
 - HTTP: `page.on('request'|'response'|'requestfailed')`
 - WebSocket: `page.on('websocket')` → open/message/close
 - Консоль: `page.on('console')`, `page.on('pageerror')`
-- Объединение в единый timeline через `attachFlettaContext`
+- Объединение в единый timeline через `attachFrapContext`
 
 ## Subtasks
 
 ### F002.0 — Cases & fixtures (C002, C003)
 
 - **Цель**: воспроизводимые сценарии API timeout и flaky cart.
-- **Файлы**: `internal/demo/site/context/`, `e2e/context/`, `project/cases/`
+- **Файлы**: `fixtures/fixtureconf/context/`, `e2e/context/`, `project/cases/`
 - **Готово когда**: C002/C003 статус `validated`.
 
 ### F002.1 — Event model + `crates/context`
@@ -120,7 +120,7 @@ enum Event {
 ### F002.6 — WebSocket capture
 
 - **Цель**: WebSocket open/message/close в timeline с `protocol: websocket`.
-- **Файлы**: `network.rs`, `capture.ts`, `internal/demo/site/context/ws-cart.html`, `e2e/context/c004-websocket.spec.ts`
+- **Файлы**: `network.rs`, `capture.ts`, `fixtures/fixtureconf/context/ws-cart.html`, `e2e/context/c004-websocket.spec.ts`
 - **Готово когда**: C004 e2e проходит; WS events в `frap-context.json`.
 
 | ID | Зависит от | Release |

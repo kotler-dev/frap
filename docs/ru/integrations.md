@@ -5,7 +5,7 @@
 ### Установка
 
 ```bash
-npm install @frap/frap @frap/frap-playwright
+npm install @frap/sdk @frap/playwright
 ```
 
 ### Кастомный движок селекторов
@@ -13,7 +13,7 @@ npm install @frap/frap @frap/frap-playwright
 Рекомендуется для новых проектов:
 
 ```typescript
-import { frapPlaywright, registerFrapSelector } from '@frap/frap-playwright';
+import { frapPlaywright, registerFrapSelector } from '@frap/playwright';
 
 export default defineConfig({
   ...frapPlaywright({
@@ -41,7 +41,7 @@ await page.locator('frap:[data-testid="submit"]').click();
 Для существующих тестов — обёртка локаторов:
 
 ```typescript
-import { withFrap } from '@frap/frap-playwright';
+import { withFrap } from '@frap/playwright';
 
 const button = await withFrap(page.getByTestId('submit'), page);
 await button.click();

@@ -3,7 +3,7 @@
 Установка Frap для Playwright:
 
 ```bash
-npm install @frap/frap @frap/frap-playwright
+npm install @frap/sdk @frap/playwright
 ```
 
 ## Настройка Playwright
@@ -11,7 +11,7 @@ npm install @frap/frap @frap/frap-playwright
 ```typescript
 // playwright.config.ts
 import { defineConfig } from '@playwright/test';
-import { frapPlaywright, registerFrapSelector } from '@frap/frap-playwright';
+import { frapPlaywright, registerFrapSelector } from '@frap/playwright';
 
 export default defineConfig({
   ...frapPlaywright({

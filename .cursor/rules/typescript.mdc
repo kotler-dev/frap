@@ -69,8 +69,8 @@ export const frapSelectorEngine: SelectorEngine = {
 };
 
 // Wrapper для существующих локаторов
-export function withFletta<T extends Locator>(locator: T): FlettaLocator<T> {
-  return new FlettaLocator(locator);
+export function withFrap<T extends Locator>(locator: T): FrapLocator<T> {
+  return new FrapLocator(locator);
 }
 ```
 
@@ -80,7 +80,7 @@ export function withFletta<T extends Locator>(locator: T): FlettaLocator<T> {
 - Дружелюбные сообщения для пользователя
 
 ```typescript
-class FlettaError extends Error {
+class FrapError extends Error {
   constructor(
     message: string,
     public readonly code: string,
@@ -109,7 +109,7 @@ class FlettaError extends Error {
 ```typescript
 let wasmModule: WasmModule | null = null;
 
-export async function initFletta(): Promise<void> {
+export async function initFrap(): Promise<void> {
   if (wasmModule) return;
   wasmModule = await import('./frap_core.wasm');
   await wasmModule.default();

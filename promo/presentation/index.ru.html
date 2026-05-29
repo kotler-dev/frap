@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frap — Видение проекта</title>
+    <script>
+        (function () {
+            var stored = localStorage.getItem('Frap-theme');
+            if (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                stored = 'dark';
+            }
+            document.documentElement.setAttribute('data-theme', stored || 'light');
+        })();
+    </script>
+    <link rel="stylesheet" href="assets/tokens.css">
+    <link rel="stylesheet" href="assets/theme-light.css">
+    <link rel="stylesheet" href="assets/theme-dark.css">
+    <link rel="stylesheet" href="assets/deck.css">
+</head>
+<body>
+<div class="presentation">
+        <section class="slide active" data-slide="1">
+            <div class="status-pill info">Видение</div>
+            <h1>Frap</h1>
+            <p class="subtitle">Детерминированная библиотека для работы с локаторами в автоматизации тестирования</p>
+            <div class="metric-row">
+                <div class="metric"><div class="metric-value">Поиск</div><div class="metric-label">Карта элементов за секунды</div></div>
+                <div class="metric"><div class="metric-value">Стабильность</div><div class="metric-label">Сигнатуры и управляемый heal</div></div>
+                <div class="metric"><div class="metric-value">Прозрачность</div><div class="metric-label">Понятные отличия, оценки и аудит</div></div>
+            </div>
+        </section>
+
+        <section class="slide" data-slide="2">
+            <div class="status-pill warning">Проблема</div>
+            <h2>Интерфейс меняется быстрее, чем обновляются тесты</h2>
+            <div class="split">
+                <div class="panel">
+                    <h3>Что болит у команд</h3>
+                    <ul class="list">
+                        <li>Часы ручного разбора DOM на новых страницах.</li>
+                        <li>Рефакторинг фронта вызывает массовые падения селекторов в CI.</li>
+                        <li>Непонятно, почему автолечение выбрало новый элемент.</li>
+                        <li>Непрозрачные облачные инструменты часто не проходят требования безопасности enterprise.</li>
+                    </ul>
+                </div>
+                <div class="panel">
+                    <h3>Чего ждут автоматизаторы</h3>
+                    <ul class="list">
+                        <li>Снять снимок страницы и получить <span class="highlight">все доступные локаторы</span>.</li>
+                        <li>Группировать элементы по структуре и бизнес-зонам.</li>
+                        <li>Быстро стартовать PageObject без ручной рутины.</li>
+                        <li>Снижать нестабильные падения (flaky) за счет детерминированной логики.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide" data-slide="3">
+            <div class="status-pill success">Позиционирование</div>
+            <h2>Frap — слой структуры и стабильных идентификаторов</h2>
+            <div class="architecture">
+                <div class="arch-row">
+                    <div class="arch-box">Playwright</div>
+                    <div class="arch-box">Selenium</div>
+                    <div class="arch-box">JUnit / TestNG</div>
+                </div>
+                <div class="arrow">↓ интеграция</div>
+                <div class="arch-row"><div class="arch-box">TypeScript SDK</div><div class="arch-box">Java SDK</div><div class="arch-box">JSON-RPC / Native</div></div>
+                <div class="arrow">↓ детерминированное ядро</div>
+                <div class="arch-row">
+                    <div class="arch-box arch-core">Сигнатуры</div>
+                    <div class="arch-box arch-core">Кластеризация</div>
+                    <div class="arch-box arch-core">Восстановление / разрешение</div>
+                    <div class="arch-box arch-core">Контекст + отчеты</div>
+                </div>
+            </div>
+            <p class="caption">Принцип: <strong>Интеграция, а не замена</strong>.</p>
+        </section>
+
+        <section class="slide" data-slide="4">
+            <div class="status-pill info">Основной цикл</div>
+            <h2>Один жизненный цикл локатора</h2>
+            <div class="timeline">
+                <div class="step"><div class="step-title">1. Снять снимок страницы</div><div class="step-desc">Собираем карту элементов: теги, атрибуты, путь, роль, текст.</div></div>
+                <div class="step"><div class="step-title">2. Построить сигнатуру</div><div class="step-desc">Фиксируем устойчивые признаки и структурный префикс.</div></div>
+                <div class="step"><div class="step-title">3. Поиск и разрешение</div><div class="step-desc">Ищем лучшего кандидата по confidence и правилам выбора.</div></div>
+                <div class="step success"><div class="step-title">4. Отчет</div><div class="step-desc">Формируем объяснимые отличия: healed, confidence, топ кандидатов.</div></div>
+            </div>
+        </section>
+
+        <section class="slide" data-slide="5">
+            <div class="status-pill success">Поиск структуры</div>
+            <h2>MVP для старта: получить все локаторы страницы за один проход</h2>
+            <p>Сценарий "новый продукт, ноль тестов": discover → фильтрация → генерация Page Object → baseline.</p>
+            <div class="code"><span class="w">// Java пример: поиск структуры и генерация PO</span>
+ElementMap map = Frap.discover(page, MapOptions.defaults());
+
+<span class="w">// Доступ к элементам и их локаторам</span>
+for (ElementNode el : map.elements()) {
+  System.out.println(el.recommendedSelector()); <span class="w">// css/data-testid/...</span>
+  System.out.println(el.confidence());            <span class="w">// 0.0–1.0</span>
+}
+
+<span class="w">// Фильтрация: только интерактивные, минимум 2 в кластере</span>
+ElementMap filtered = client.filterElementMap(map,
+  new FilterSpec(<span class="k">true</span>, 2, List.of(<span class="s">"button"</span>, <span class="s">"a"</span>)));
+
+<span class="w">// Генерация Page Object</span>
+List&lt;Path&gt; files = Frap.generatePageObject(page, outputDir,
+  GenerateOptions.javaPlaywright(<span class="s">"CatalogPage"</span>, <span class="s">"com.example.pages"</span>));</div>
+        </section>
+
+        <section class="slide" data-slide="6">
+            <div class="status-pill info">Кластеризация</div>
+            <h2>Что такое кластер и зачем он нужен</h2>
+            <div class="split">
+                <div class="panel">
+                    <h3>ClusterType (v1.0.0)</h3>
+                    <ul class="list">
+                        <li><strong>Кластер</strong> — группа элементов с одной структурной сигнатурой (один шаблон: карточки, строки списка).</li>
+                        <li><span class="highlight">SINGLE</span> — один элемент (уникальная кнопка, поле).</li>
+                        <li><span class="highlight">LIST</span> — ≥ 2 похожих (повторяющийся блок).</li>
+                        <li>5 одинаковых карточек → один метод <code>items(int index)</code>, а не 5 копий.</li>
+                    </ul>
+                </div>
+                <div class="panel">
+                    <h3>Почему не querySelector('*')</h3>
+                    <ul class="list">
+                        <li>Тысячи узлов: шум (div, обёртки), не только интерактив.</li>
+                        <li>Нет семантики «список vs уникальная кнопка».</li>
+                        <li>Нет рекомендованных локаторов и confidence.</li>
+                        <li><strong>Discover</strong> сужает выборку (интерактив + data-testid в SnapshotBuilder).</li>
+                        <li><strong>Кластеризация</strong> группирует похожее для PO, heal и filter (<code>min_cluster_size</code>, LIST).</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="caption">Подробнее: <code>docs/clustering.md</code> · алгоритм Drain3: <code>project/architecture/clustering.md</code></p>
+        </section>
+
+        <section class="slide" data-slide="7">
+            <div class="status-pill info">Кластеризация</div>
+            <h2>Пример: id мигрирует в data-id внутри одного списка</h2>
+            <div class="split">
+                <div class="panel">
+                    <h3>До изменения DOM</h3>
+                    <ul class="list">
+                        <li><code>ul &gt; li#1</code></li>
+                        <li><code>ul &gt; li#2</code></li>
+                        <li>Оба элемента в одном контейнере и одном sibling-наборе.</li>
+                        <li>Матчинг обычно опирается на структуру + атрибуты.</li>
+                    </ul>
+                </div>
+                <div class="panel">
+                    <h3>После изменения DOM</h3>
+                    <ul class="list">
+                        <li><code>ul &gt; li#1</code> остается без изменений.</li>
+                        <li><code>ul &gt; li[data-id='2']</code> заменяет старый <code>li#2</code>.</li>
+                        <li>Кластер должен остаться тем же: это тот же список.</li>
+                        <li>Ожидаемый результат: лучший кандидат — <code>li[data-id='2']</code>.</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="caption">Контракт в <code>fixtures/contract/clustering-id-migration</code> проверяется в Rust/TS/Java: кластер списка сохраняется, heal выбирает <code>li[data-id='2']</code> при потере <code>li#2</code>.</p>
+        </section>
+
+        <section class="slide" data-slide="8">
+            <div class="status-pill info">Element Map</div>
+            <h2>Карта элементов: плоский каталог, не дерево DOM</h2>
+            <div class="split">
+                <div class="panel">
+                    <h3>Что в ответе discover</h3>
+                    <ul class="list">
+                        <li><strong>elements</strong> — плоский список <code>ElementNode</code>.</li>
+                        <li><strong>clusters</strong> — группы; связь через <code>cluster_id</code>.</li>
+                        <li>Нет <code>parent_id</code> / <code>children</code> — обход только filter/stream.</li>
+                        <li><code>el-N</code> — ключ каталога одного прогона, не «вечный» ID элемента.</li>
+                    </ul>
+                </div>
+                <div class="panel">
+                    <h3>Как узнать «тот же» элемент без ссылок</h3>
+                    <ul class="list">
+                        <li>Структура уже в <code>signature.path</code> (цепочка <code>tag:role</code> до <code>body</code>).</li>
+                        <li><code>position_in_parent</code> — индекс среди siblings с тем же tag (не <code>:nth-child()</code> в локаторе).</li>
+                        <li>После смены <code>id</code> heal сравнивает сигнатуру с новым snapshot + кластер сужает поиск.</li>
+                        <li>Бонус за миграцию <code>id</code> → <code>data-id</code> с тем же значением.</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="caption">Element Map — каталог для PO и baseline; cross-run идентичность — через <strong>Signature</strong>, не через дерево в JSON. См. <code>docs/glossary.md</code>.</p>
+        </section>
+
+        <section class="slide" data-slide="9">
+            <div class="status-pill warning">Healing</div>
+            <h2>Heal: как библиотека восстанавливает локатор</h2>
+            <div class="timeline">
+                <div class="step failed"><div class="step-title">1. Локатор не найден</div><div class="step-desc"><code>[data-testid='talk-open-healing']</code> не найден после изменения разметки.</div></div>
+                <div class="step"><div class="step-title">2. Сопоставление сигнатуры с текущей страницей</div><div class="step-desc">Frap берет сохраненную сигнатуру элемента и сравнивает с кандидатами в новом snapshot.</div></div>
+                <div class="step"><div class="step-title">3. Выбор лучшего кандидата по confidence</div><div class="step-desc">Лучший кандидат: <code>[data-testid='talk-card-open-healing']</code> (например, confidence 0.94).</div></div>
+                <div class="step success"><div class="step-title">4. Результат</div><div class="step-desc">Если confidence выше порога — <code>healed=true</code>, иначе безопасный <code>fail</code> с отчетом.</div></div>
+            </div>
+            <p class="caption">Heal — это управляемое восстановление локатора, а не угадывание.</p>
+        </section>
+
+        <section class="slide" data-slide="10">
+            <div class="status-pill info">Context Layer</div>
+            <h2>Tri-plane context: UI + network + logs → RCA</h2>
+            <div class="split">
+                <div class="panel">
+                    <h3>Агрегация (F002)</h3>
+                    <ul class="list">
+                        <li><strong>ContextTimeline</strong> — единый временной ряд событий.</li>
+                        <li>UI: клики, failures локаторов.</li>
+                        <li>Network: HTTP, тайминги, ошибки.</li>
+                        <li>Logs: console, page errors; корреляция по <code>trace_id</code>.</li>
+                        <li>Playwright: <code>captureAll(true)</code> в adapter.</li>
+                    </ul>
+                </div>
+                <div class="panel">
+                    <h3>RCA — <code>analyze_rca</code> (F003)</h3>
+                    <ul class="list">
+                        <li><strong>Root Cause Analysis</strong> — post-mortem вокруг момента падения.</li>
+                        <li>Core классифицирует: UI / network / timing / unknown.</li>
+                        <li>Ответ: <code>RcaReport</code> (cause, confidence, excerpt, recommendation).</li>
+                        <li>Это <strong>не</strong> heal и <strong>не</strong> discover.</li>
+                        <li>Пример: API timeout → не «лечить» селектор. Кейс C002.</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="caption">Слой наблюдаемости: объяснимое «почему упало», а не только «какой локатор подобрать».</p>
+        </section>
+
+        <section class="slide" data-slide="11">
+            <div class="status-pill warning">Discover vs CDP</div>
+            <h2><code>Frap.discover</code> сегодня и CDP в roadmap</h2>
+            <div class="split">
+                <div class="panel">
+                    <h3>Сейчас (Playwright)</h3>
+                    <ul class="list">
+                        <li><code>Frap.discover(page)</code></li>
+                        <li>→ <code>SnapshotBuilder.build()</code></li>
+                        <li>→ <code>page.evaluate(...)</code> in-page JS</li>
+                        <li>→ <code>client.buildElementMap(...)</code></li>
+                        <li><strong>CDP в этом пути не используется.</strong></li>
+                    </ul>
+                </div>
+                <div class="panel">
+                    <h3>Запланировано (CDP source)</h3>
+                    <ul class="list">
+                        <li>Standalone Chrome: URL или CDP session.</li>
+                        <li>Запись сценариев через Chrome DevTools Protocol (C009).</li>
+                        <li>Отдельный transport — тот же Core pipeline.</li>
+                        <li>Discover / element map / clustering без смены контракта.</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="caption">CDP — будущий способ <em>доставить</em> DOM в Core; алгоритмы остаются в Rust-ядре.</p>
+        </section>
+
+        <section class="slide" data-slide="12">
+            <div class="status-pill success">UX автоматизатора</div>
+            <h2>Conference demo: умный heal и безопасный отказ</h2>
+            <div class="split">
+                <div class="panel">
+                    <h3>✅ PASS: schedule-heal</h3>
+                    <p class="subtitle" style="font-size: 0.95rem; color: var(--text-muted);">Один четкий кандидат — heal принят</p>
+                    <div class="code" style="font-size: 0.85rem; padding: 12px;"><span class="w">// ScheduleHealingTest.java</span>
+FrapLocator openLink = Frap.withFrap(
+  page.locator(<span class="s">"[data-testid='talk-open-healing']"</span>),
+  page,
+  options.minConfidence(0.7).healPolicy(<span class="s">"expect_heal"</span>)
+);
+openLink.click();
+
+<span class="w">// Проверяем heal</span>
+HealResult result = Frap.getLastHealResult(openLink);
+assertThat(result.healed()).isTrue();
+assertThat(result.confidence()).isGreaterThanOrEqualTo(0.7);</div>
+                </div>
+                <div class="panel">
+                    <h3>❌ FAIL: CFP ambiguous</h3>
+                    <p class="subtitle" style="font-size: 0.95rem; color: var(--text-muted);">Два похожих кандидата — отказ для безопасности</p>
+                    <div class="code" style="font-size: 0.85rem; padding: 12px;"><span class="w">// CfpAmbiguousHealTest.java</span>
+FrapLocator submit = Frap.withFrap(
+  page.locator(<span class="s">"[data-testid='cfp-submit-missing']"</span>),
+  page,
+  options.minConfidence(0.85)
+);
+
+<span class="w">// Бросает исключение — не кликаем не туда</span>
+try {
+  submit.click();  <span class="w">// PlaywrightException</span>
+} catch (Exception e) {
+  HealResult r = Frap.getLastHealResult(submit);
+  assertThat(r.healed()).isFalse();
+  assertThat(r.topCandidates()).hasSizeGreaterThanOrEqualTo(2);
+}</div>
+                </div>
+            </div>
+            <p class="caption">Пара сценариев: четкий heal принят, неоднозначный — отклонен. Отчет: `frap-debug.html` с DOM clusters и топ кандидатами.</p>
+        </section>
+
+        <section class="slide" data-slide="13">
+            <div class="status-pill info">PageObject</div>
+            <h2>Быстрый старт первых тестов</h2>
+            <div class="card-grid">
+                <article class="card"><h4>1. Поиск структуры</h4><p>Снять снимок страницы и получить интерактивную карту элементов.</p></article>
+                <article class="card"><h4>2. Группировка</h4><p>Выбрать кластеры (LIST/SINGLE) и важные бизнес-зоны страницы.</p></article>
+                <article class="card"><h4>3. Локаторы</h4><p>Читать <code>recommended_selector</code> и <code>confidence</code> из ElementMap.</p></article>
+                <article class="card"><h4>4. Генерация</h4><p><code>Frap.generatePageObject()</code> — скелет класса с self-healing-готовыми селекторами.</p></article>
+                <article class="card"><h4>5. Фильтрация</h4><p><code>filterElementMap()</code> — только интерактивные, минимальный размер кластера.</p></article>
+                <article class="card"><h4>6. Развитие</h4><p>Baseline сигнатур + drift detection; heal при изменениях DOM.</p></article>
+            </div>
+            <p class="caption">API: ElementMap.elements() → recommendedSelector, confidence, cluster; FilterSpec; GenerateOptions.javaPlaywright()</p>
+        </section>
+
+        <section class="slide" data-slide="14">
+            <div class="status-pill warning">Крупные проекты</div>
+            <h2>Что критично для больших проектов (тысячи тестов)</h2>
+            <div class="split">
+                <div class="panel">
+                    <h3>Технические требования</h3>
+                    <ul class="list">
+                        <li>Snapshot caching и инкрементальный refresh.</li>
+                        <li>Policy-режимы: strict fail / controlled heal.</li>
+                        <li>Детерминированное поведение без облачных зависимостей.</li>
+                        <li>Интеграция с CI артефактами и отчетами.</li>
+                    </ul>
+                </div>
+                <div class="panel">
+                    <h3>Метрики ценности</h3>
+                    <ul class="list">
+                        <li>Heal rate и доля ambiguous failures.</li>
+                        <li>Динамика изменений интерфейса по страницам и командам.</li>
+                        <li>Среднее время восстановления селектора.</li>
+                        <li>Доля "ручных DOM правок", которую удалось убрать.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide" data-slide="15">
+            <div class="status-pill success">Выбор архитектуры</div>
+            <h2>Rust-ядро + SDK под стек: зачем так, а не копии алгоритмов</h2>
+            <div class="split">
+                <div class="panel">
+                    <h3>Плюсы единого ядра</h3>
+                    <ul class="list">
+                        <li>Единый источник истины для signature/heal/clustering.</li>
+                        <li>Одинаковое поведение в Java, TypeScript и других SDK.</li>
+                        <li>Производительность и детерминизм без расхождений.</li>
+                    </ul>
+                </div>
+                <div class="panel">
+                    <h3>Как снизить vendor lock-in</h3>
+                    <ul class="list">
+                        <li>Явный JSON-RPC контракт и DTO-схема.</li>
+                        <li>Тесты проверки соответствия для каждого SDK.</li>
+                        <li>Тонкие адаптеры: API-удобство без копирования логики.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide" data-slide="16">
+            <div class="status-pill info">План развития</div>
+            <h2>Java SDK 1.0.0 — что уже работает</h2>
+            <p><strong>Frap = детерминированный движок жизненного цикла локаторов</strong>: discover → сигнатуры → heal → context/RCA → аналитика изменений интерфейса.</p>
+            <div class="metric-row">
+                <div class="metric"><div class="metric-value">1.0.0</div><div class="metric-label">Discover + heal + reports + context/RCA + PO gen</div></div>
+                <div class="metric"><div class="metric-value">1.4+</div><div class="metric-label">CDP source, WebDriver/Selenide, drift gate</div></div>
+                <div class="metric"><div class="metric-value">2.0+</div><div class="metric-label">Visual fingerprints, health score, structural contracts</div></div>
+            </div>
+            <p class="caption">Всё для Maven Central уже в релизе: <code>io.github.kotlerdev:frap-playwright:1.0.0</code></p>
+        </section>
+    </div>
+
+    <nav class="nav">
+        <a class="lang-switch" href="index.html" hreflang="en" rel="alternate">EN</a>
+        <button class="theme-btn" id="themeBtn" aria-label="Тема">Тема</button>
+        <button class="nav-btn" id="prevBtn" aria-label="Назад">←</button>
+        <div class="nav-dots" id="dots"></div>
+        <span class="slide-counter" id="counter">1 / 16</span>
+        <button class="nav-btn" id="nextBtn" aria-label="Вперёд">→</button>
+    </nav>
+
+    <script src="assets/deck.js"></script>
+</body>
+</html>

@@ -15,14 +15,14 @@ Add to your `pom.xml`:
 <dependencies>
     <!-- Core SDK (required) -->
     <dependency>
-        <groupId>io.github.kotlerdev.frap</groupId>
+        <groupId>io.github.kotler-dev</groupId>
         <artifactId>frap-core-java</artifactId>
         <version>1.0.0</version>
     </dependency>
     
     <!-- Playwright adapter (for browser tests) -->
     <dependency>
-        <groupId>io.github.kotlerdev.frap</groupId>
+        <groupId>io.github.kotler-dev</groupId>
         <artifactId>frap-playwright</artifactId>
         <version>1.0.0</version>
         <scope>test</scope>
@@ -201,7 +201,7 @@ try {
 }
 ```
 
-See full example: `CfpAmbiguousHealTest` in the [demo showcase](../../internal/demo/showcase/java-playwright).
+See full example: `CfpAmbiguousHealTest` in the [demo showcase](../../examples/java/playwright).
 
 ---
 
@@ -322,7 +322,7 @@ For standalone use without Playwright:
 
 ```xml
 <dependency>
-    <groupId>io.github.kotlerdev.frap</groupId>
+    <groupId>io.github.kotler-dev</groupId>
     <artifactId>frap-core-java</artifactId>
     <version>1.0.0</version>
 </dependency>
@@ -449,8 +449,8 @@ Frap.withFrap(locator, page, options).click();
 - **API Reference:** [java-api-reference.md](./java-api-reference.md)
 - **Maven Central Guide:** [java-maven-central.md](./java-maven-central.md)
 - **RPC Protocol:** [java-sdk-rpc.md](./java-sdk-rpc.md)
-- **Capability Matrix:** [java-sdk-1.0.0-matrix.md](../../project/release/java-sdk-1.0.0-matrix.md) — Full coverage of code, tests, docs, and demo
-- **Demo Project:** See `internal/demo/showcase/java-playwright` in the repository for full examples including conference tests and context capture.
+- **Capability Matrix:** [java/java-sdk-1.0.0-matrix.md](../../project/release/java/java-sdk-1.0.0-matrix.md) — Full coverage of code, tests, docs, and demo
+- **Demo Project:** See `examples/java/playwright` in the repository for full examples including conference tests and context capture.
 
 ---
 

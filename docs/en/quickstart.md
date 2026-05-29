@@ -3,7 +3,7 @@
 Install Frap for Playwright:
 
 ```bash
-npm install @frap/frap @frap/frap-playwright
+npm install @frap/sdk @frap/playwright
 ```
 
 ## Configure Playwright
@@ -11,7 +11,7 @@ npm install @frap/frap @frap/frap-playwright
 ```typescript
 // playwright.config.ts
 import { defineConfig } from '@playwright/test';
-import { frapPlaywright, registerFrapSelector } from '@frap/frap-playwright';
+import { frapPlaywright, registerFrapSelector } from '@frap/playwright';
 
 export default defineConfig({
   ...frapPlaywright({
@@ -49,5 +49,6 @@ After running tests, find reports in `frap-reports/`:
 
 ## More
 
+- [Examples](../../examples/) — runnable projects by language
 - [Integrations](integrations.md) — full configuration reference
 - [Adapter README](../../adapters/playwright/README.md) — detailed API

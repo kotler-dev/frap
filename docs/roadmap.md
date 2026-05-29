@@ -2,6 +2,8 @@
 
 Детальный план разработки с учётом AI/LLM-ускорения и стратегии выхода на рынок.
 
+> **Статусы фич (SSOT):** только [project/FEATURES.md](../project/FEATURES.md). Этот файл — narrative и приоритеты; не дублируйте ✅/❌ здесь без синхронизации с FEATURES.
+
 ---
 
 ## Принципы приоритизации
@@ -26,7 +28,7 @@
 
 **Чек-лист успеха MVP:** (полный список gates: [benchmark.md](./benchmark.md))
 
-- [ ] `npm install @frap/frap-playwright` работает
+- [ ] `npm install @frap/playwright` работает
 - [ ] Код на GitHub с README + [positioning.md](./positioning.md) one-liner
 - [ ] **CP001–CP003** проходят на demo app (0 false positive на CP003)
 - [ ] **CP005** — JUnit/артефакт в CI

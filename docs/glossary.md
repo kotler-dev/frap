@@ -22,7 +22,7 @@ SnapshotBuilder.build() → page.evaluate(...) → client.buildElementMap(...)
 
 Снимок собирается in-page JavaScript (интерактивные элементы, path, атрибуты); Core получает `DOMSnapshot` и строит element map.
 
-**CDP (roadmap):** standalone Chrome source (URL или CDP endpoint), запись сценариев через Chrome DevTools Protocol (F004, C009) — **отдельный transport**, тот же Core pipeline (`build_element_map`). См. [project/cases/demo/C009-recording-cdp.md](../project/cases/demo/C009-recording-cdp.md).
+**CDP (roadmap):** standalone Chrome source (URL или CDP endpoint), запись сценариев через Chrome DevTools Protocol (F004, C009) — **отдельный transport**, тот же Core pipeline (`build_element_map`). См. [project/cases/C009-recording-cdp.md](../project/cases/C009-recording-cdp.md).
 
 **Пример:**
 ```java

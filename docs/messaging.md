@@ -13,7 +13,7 @@
 | **Elevator (RU)** | Движок для извлечения структуры UI: парсит, кластеризует детерминированно, генерирует стабильные локаторы для PageObject — без ML в core, AI-ready через MCP |
 | **Elevator (EN)** | Deterministic engine for UI structure extraction: parses element trees, clusters components, generates stable locators for PageObject — NO ML in core, AI-ready via MCP |
 | **GitHub README** | Structure discovery engine + deterministic element resolution. Core (Rust/WASM): NO ML, NO LLM. AI-Ready: element maps via MCP for LLM grounding |
-| **Официальный** | Fletta — deterministic engine для автоматического извлечения структуры UI: парсит деревья элементов, кластеризует компоненты детерминированными алгоритмами, генерирует устойчивые идентификаторы для PageObject и тестов. Без ML в core, без облачных API — bank-grade deterministic. AI-ready через MCP: даёт LLM структурированные element maps. |
+| **Официальный** | Frap — deterministic engine для автоматического извлечения структуры UI: парсит деревья элементов, кластеризует компоненты детерминированными алгоритмами, генерирует устойчивые идентификаторы для PageObject и тестов. Без ML в core, без облачных API — bank-grade deterministic. AI-ready через MCP: даёт LLM структурированные element maps. |
 
 ---
 
@@ -42,13 +42,13 @@
 
 ### S3: AI-native QA (LLM agents, MCP)
 
-**Главное сообщение:** «Дай LLM структурированный доступ к UI — Fletta даёт AI-агенту надёжные руки и глаза»
+**Главное сообщение:** «Дай LLM структурированный доступ к UI — Frap даёт AI-агенту надёжные руки и глаза»
 
 **Ключевые тезисы:**
 - **Глаза:** element map вместо raw DOM — структурированное зрение для LLM
 - **Руки:** deterministic resolution при изменении UI — стабильные действия
 - MCP tools: `frap/discover`, `frap/analyze`, `frap/resolve`
-- Fletta не генерирует тесты — даёт grounding layer для надёжной генерации
+- Frap не генерирует тесты — даёт grounding layer для надёжной генерации
 
 ---
 
@@ -134,10 +134,10 @@ frap analyze --url https://shop.example.com/catalog \
 > Core на Rust компилируется в нативный код для Java через FFI. `frap discover` — CLI tool, работает с любым фреймворком. Element map → generated PageObject для вашего стека.
 
 **"Это замена Playwright/Selenium?"**
-> Нет. frap — structure discovery engine. Playwright/Selenium остаются execution layer. Fletta даёт: (1) быстрый discovery, (2) stable identifiers, (3) drift detection.
+> Нет. frap — structure discovery engine. Playwright/Selenium остаются execution layer. Frap даёт: (1) быстрый discovery, (2) stable identifiers, (3) drift detection.
 
 **"Как это работает с AI-агентами?"**
-> Fletta — grounding layer: даёт LLM структурированный element map через MCP. Агент использует эту структуру для надёжных действий. Метафора: **Fletta даёт AI-агенту надёжные руки и глаза**.
+> Frap — grounding layer: даёт LLM структурированный element map через MCP. Агент использует эту структуру для надёжных действий. Метафора: **Frap даёт AI-агенту надёжные руки и глаза**.
 
 ---
 
@@ -157,16 +157,16 @@ frap analyze --url https://shop.example.com/catalog \
 ## Сообщения для разных каналов
 
 ### Twitter/X (280 chars)
-> Fletta: deterministic UI structure discovery. NO ML in core. Parse DOM → element maps with confidence scores → stable locators for PageObject. AI-ready via MCP: gives LLMs reliable hands & eyes for testing. Open source, bank-grade, on-prem.
+> Frap: deterministic UI structure discovery. NO ML in core. Parse DOM → element maps with confidence scores → stable locators for PageObject. AI-ready via MCP: gives LLMs reliable hands & eyes for testing. Open source, bank-grade, on-prem.
 
 ### LinkedIn (professional)
-> Introducing Fletta: a deterministic engine for UI structure extraction. Unlike ML-based solutions, Fletta uses algorithmic clustering to generate stable element identifiers — perfect for regulated environments requiring audit trails. AI-ready through MCP for LLM agent grounding.
+> Introducing Frap: a deterministic engine for UI structure extraction. Unlike ML-based solutions, Frap uses algorithmic clustering to generate stable element identifiers — perfect for regulated environments requiring audit trails. AI-ready through MCP for LLM agent grounding.
 
 ### Hacker News (technical)
-> Show HN: Fletta — deterministic UI structure analysis in Rust/WASM. No ML, no cloud calls. Extracts element trees, clusters components (Drain3), generates stable IDs. Useful for: (1) quick PageObject generation, (2) CI drift detection, (3) LLM grounding layer via MCP.
+> Show HN: Frap — deterministic UI structure analysis in Rust/WASM. No ML, no cloud calls. Extracts element trees, clusters components (Drain3), generates stable IDs. Useful for: (1) quick PageObject generation, (2) CI drift detection, (3) LLM grounding layer via MCP.
 
 ### Dev.to / Medium (educational)
-> From "self-healing tests" to "structure discovery": why we built a deterministic engine for UI analysis. Explaining Fletta's approach to stable identifiers without ML dependencies, and how it serves as a grounding layer for AI agents through MCP.
+> From "self-healing tests" to "structure discovery": why we built a deterministic engine for UI analysis. Explaining Frap's approach to stable identifiers without ML dependencies, and how it serves as a grounding layer for AI agents through MCP.
 
 ---
 

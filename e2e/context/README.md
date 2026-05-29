@@ -48,7 +48,7 @@ Located in `e2e/frap-reports/context/` (not committed to git):
 | `frap-context.json` | Full timeline: HTTP, WebSocket, console, UI events | version: 1, timeline.events[] |
 | `frap-context-events.jsonl` | Raw events line-by-line (pre-aggregation) | JSONL |
 | `frap-rca.json` | Root Cause Analysis v2 | version: 2, suite + by_test[] |
-| `frap-report.json` | Fletta summary with context_summary | summary (healing) + context_summary + context_tests[] + rca |
+| `frap-report.json` | Frap summary with context_summary | summary (healing) + context_summary + context_tests[] + rca |
 | `junit.xml` | JUnit XML with frap-context suite | 5 testcases (3 passed, 2 failed with RCA) |
 
 **Note:** Artifacts are in `.gitignore`. Run `./scripts/test.sh context` to generate fresh reports locally.

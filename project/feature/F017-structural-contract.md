@@ -49,7 +49,7 @@
 
 | ID | Содержание | Release | Зависимости | Статус |
 |----|------------|---------|-------------|--------|
-| F017.0 | Документация + матрица доступности + кейс C006 concept | v1.2.0 docs | — | 🔄 |
+| F017.0 | Документация + матрица доступности + кейс C010 concept | v1.2.0 docs | — | 🔄 |
 | F017.1 | **Element-level contract**: bind baseline signatures, CI `locate` + `confidence`, fail on heal (`healStrategy: fail`), diff в отчётах | v1.2.0 / v1.4.0 | F001, F008, F012 | ❌ |
 | F017.2 | **Page-level contract**: `discover` → element map; `analyze --against`; `drift-report.json` | v2.0.0 | F004 pipeline (shared), core | ❌ |
 | F017.3 | **Policy DSL**: `structural-contract.yaml`, scopes, invariants (cluster count, must-exist) | v2.0.0+ | F017.2 | ❌ |
@@ -60,7 +60,7 @@
 ### F017.0 (docs)
 - [x] Карточка фичи заполнена (этот файл);
 - [x] Матрица доступности в `docs/structural-contract.md`;
-- [x] Кейс C006 описан в `project/cases/`;
+- [x] Кейс C010 описан в `project/cases/`;
 - [x] Cross-links: pains.md P07, glossary, positioning.md, Frap.md.
 
 ### F017.1 (element-level)
@@ -111,7 +111,7 @@ sdk/typescript/
   src/discover.ts         # discover(), analyzeAgainst()
   src/contract.ts         # assertStructuralContract()
 
-e2e/structural/           # C006 demo
+e2e/structural/           # C010 demo
   structural-gate.spec.ts
   verify-drift.mjs        # Gate script по аналогии с context/
 ```
@@ -183,7 +183,7 @@ node e2e/structural/verify-drift.mjs --report drift-report.json --max-severity w
 - [docs/structural-contract.md](../../docs/structural-contract.md) — матрица доступности, anti-pitch;
 - [docs/glossary.md](../../docs/glossary.md) — drift, element map, signature;
 - [docs/pains.md](../../docs/pains.md) — P07 drift UI незаметен до массового падения;
-- [project/cases/C006-structural-regression.md](../cases/C006-structural-regression.md) — сценарий checkout;
+- [project/cases/C010-structural-regression.md](../cases/C010-structural-regression.md) — сценарий checkout;
 - [Frap.md](../../Frap.md) — структурная регрессия UI (базовая концепция);
 - [F004-page-object-gen.md](./F004-page-object-gen.md) — shared discover pipeline;
 - [F007-visual-fingerprint.md](./F007-visual-fingerprint.md) — geometry baseline;

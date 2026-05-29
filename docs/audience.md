@@ -52,7 +52,7 @@
 
 **Что даёт frap:**
 
-- `@frap/frap-playwright` — custom selector `frap:` + отчёты.
+- `@frap/playwright` — custom selector `frap:` + отчёты.
 - PoC за неделю, минимальный порог входа.
 
 **Сообщение:** «Добавьте одну строку в конфиг — healing в CI с explainable diff.»

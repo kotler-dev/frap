@@ -1,244 +1,45 @@
 # Features
 
-Краткий каталог возможностей frap. Каждая фича имеет ID для связи с кейсами.
-
----
-
-## F001: Self-Healing Selectors
-
-**Суть:** Автоматическое восстановление селекторов при изменении UI без ML.
-
-**Как работает:**
-- Элемент описывается сигнатурой пути (устойчивые атрибуты + структура)
-- При несовпадении ищется элемент с наиболее похожей сигнатурой
-- Веса сигнатур обучаются на обратной связи от пользователя
-
-**Ключевые термины:** signature matching, path fingerprint, fallback chain, confidence score
-
-**Статус:** core | MVP | приоритет высокий
-
----
-
-## F002: Unified Context (UI + Logs + Network)
-
-**Суть:** Объединение трёх источников данных в единый временной ряд событий.
-
-**Компоненты:**
-- UI: DOM-события, клики, ввод
-- Logs: агрегация из приложения и инфраструктуры
-- Network: HTTP-запросы/ответы, WebSocket
-
-**Выход:** timeline событий с корреляцией по времени и trace_id
-
-**Статус:** core | v2 | приоритет высокий
-
----
-
-## F003: Root Cause Analysis (RCA)
-
-**Суть:** Автоматическое определение первопричины падения теста на основе Unified Context.
-
-**Алгоритм:**
-1. Падение UI-теста
-2. Поиск ближайших событий в timeline (±5 сек)
-3. Классификация: UI-изменение | API-ошибка | Инфраструктура | Flaky
-
-**Для LLM-агентов:** структурированный RCA-репорт для принятия решений
-
-**Статус:** feature | v2 | зависит от F002
-
----
-
-## F004: Page Object Generator
-
-**Суть:** Автоматическая генерация Page Object из структуры приложения.
-
-**Вход:** URL или сессия браузера
-**Выход:** Класс/модуль со сгенерированными селекторами и методами
-
-**Особенность:** Генерирует сразу self-healing-селекторы, не статические
-
-**Статус:** feature | MVP | приоритет средний
-
----
-
-## F005: MCP/A2A Integration
-
-**Суть:** Интерфейс для вызова frap из LLM-агентов.
-
-**Команды:**
-- `record`: начать запись сценария
-- `replay`: воспроизвести сценарий
-- `analyze`: RCA для упавшего теста
-- `generate`: создать тест из текстового описания
-
-**Формат:** JSON-RPC через Model Context Protocol
-
-**Статус:** integration | v2 | приоритет средний
-
----
-
-## F006: Multi-Platform Core
-
-**Суть:** Единое ядро на Rust для веб, Android, iOS.
-
-**Архитектура:**
-- Rust core (кластеризация, сигнатуры)
-- WASM-сборка для веб/Node.js
-- FFI для нативных SDK (Java, Swift)
-
-**Статус:** architecture | v3 | приоритет низкий (начинаем с веб)
-
----
-
-## F007: Visual Fingerprint
-
-**Суть:** Добавление визуальных признаков в сигнатуру элемента.
-
-**Признаки:**
-- Относительный размер (не абсолютный)
-- Положение в контейнере
-- Стили: цвет фона, рамки (стабильные)
-
-**Цель:** Улучшить точность при полной смене атрибутов DOM
-
-**Статус:** enhancement | v3 | зависит от F001
-
----
-
-## F008: Playwright Adapter
-
-**Суть:** Интеграция frap с Playwright через custom selectors API. **Интеграция, не замена** — см. [integrations.md](./integrations.md).
-
-**Зачем:**
-- Playwright — самый быстрорастущий фреймворк для e2e тестирования
-- Минимальный порог входа: не требуется миграция существующих тестов
-- Просто добавляем `frap` в selector chain
-- Отличие от Playwright MCP: MCP действует в браузере; frap стабилизирует тесты в CI — [positioning.md](./positioning.md)
-
-**Как работает:**
-```typescript
-// Стандартный Playwright селектор
-await page.click('[data-testid="pay-btn"]');
-
-// С frap adapter
-await page.click('frap:pay-btn'); // fallback на сигнатуры при failure
-```
-
-**Статус:** integration | MVP | приоритет высокий
-
----
-
-## F009: Feedback Loop (обучение на ошибках)
-
-**Суть:** Система обновления весов сигнатур на основе исправлений пользователя.
-
-**Сценарий:**
-1. Кластеризация находит не тот элемент
-2. Пользователь указывает правильный (drag-and-drop или selector)
-3. Система пересчитывает веса сигнатур для данного сценария
-4. Следующий запуск использует обновлённые веса
-
-**Статус:** enhancement | v2 | зависит от F001
-
----
-
-## F010: Test Health Score
-
-**Суть:** Метрика стабильности теста на основе истории self-healing.
-
-**Расчёт:**
-- Количество healing событий за последние N запусков
-- Частота изменений UI в данном flow
-- Время поиска fallback элемента
-
-**Выход:**
-- Dashboard с health score (0-100%)
-- Алерты при деградации
-- Рекомендации по стабилизации
-
-**Статус:** feature | v2 | зависит от F001
-
----
-
-## F011: AI-Agent Testing & Audit
-
-**Суть:** Тестирование и аудит AI-агентов, MCP инструментов и A2A взаимодействий.
-
-**Проблема:**
-- AI-агенты вызывают MCP инструменты — как убедиться что они делают это правильно?
-- Мультиагентные системы (рои) взаимодействуют через A2A — как тестировать эти потоки?
-- Регрессии в поведении агентов при обновлении промптов или моделей
-
-**Решение:**
-```
-AI-Agent Testing = Record agent sessions → Assert expected tool calls → Replay variations
-```
-
-**Компоненты:**
-
-1. **MCP Tool Call Capture**
-   - Перехват вызовов `tools/call` от агента
-   - Сериализация аргументов и результатов
-   - Сопоставление с UI/Network контекстом
-
-2. **Agent Behavior Assertion**
-   - "Агент должен вызвать `frap/replay` перед `frap/analyze`"
-   - "При ошибке API агент должен запросить подтверждение у пользователя"
-
-3. **A2A Flow Testing**
-   - Запись диалогов между агентами
-   - Проверка что агент-кординатор делегирует правильно
-   - Тестирование failure scenarios (агент недоступен, таймаут)
-
-4. **Prompt Regression Testing**
-   - Тесты привязаны к версии промпта
-   - Сравнение behavior при обновлении system prompt
-   - A/B тестирование моделей (GPT-4 vs Claude vs локальные)
-
-**Пример сценария:**
-```typescript
-// Записываем сессию агента
-frap agent:record --agent-id "checkout-assistant" --session-id "sess-123"
-
-// Агент выполняет: "Оформи заказ для пользователя"
-// Захвачено:
-// 1. LLM call: generate steps
-// 2. MCP: frap/replay --scenario "add-to-cart"
-// 3. MCP: frap/replay --scenario "checkout"
-// 4. LLM call: summarize result
-
-// Проверяем expected behavior
-frap agent:assert --session "sess-123" \
-  --expect "frap/replay called 2 times" \
-  --expect "checkout completed within 30s"
-
-// Воспроизводим с другой моделью
-frap agent:replay --session "sess-123" --model "claude-sonnet-4"
-```
-
-**Применения:**
-- **Tool Developers:** Тестируем что инструменты вызываются с правильными аргументами
-- **Agent Builders:** Проверяем consistency поведения агентов
-- **Multi-Agent Systems:** Тестируем A2A коммуникацию
-- **Enterprise:** Аудит действий агентов для compliance
-
-**Статус:** integration | v3 | зависит от F005 (MCP)
-
----
-
-## Legend
-
-| Статус | Значение |
-|--------|----------|
-| core | Ядро продукта, обязательно для MVP |
-| feature | Функциональность для пользователя |
-| integration | Внешние связи и API |
-| architecture | Техническая основа |
-| enhancement | Улучшение существующего |
-
-| Приоритет | Когда реализуем |
-|-----------|-----------------|
-| высокий | MVP (0-3 мес) |
-| средний | v2 (3-6 мес) |
-| низкий | v3 (6-12 мес) |
+Public index of capabilities. **Status SSOT:** [project/FEATURES.md](../project/FEATURES.md) · traceability: [project/traceability.md](../project/traceability.md).
+
+## By release
+
+| Release | Features | Card |
+|---------|----------|------|
+| v1.0.0 MVP | F000, F001, F008, F012, F013 | [FEATURES.md § MVP](../project/FEATURES.md) |
+| v1.1.0 Context | F002, F003 | [FEATURES.md § v1.1.0](../project/FEATURES.md) |
+| v1.2.0 AI | F004, F005, F009 | [FEATURES.md § v1.2.0](../project/FEATURES.md) |
+| v1.4.0 Java | F014 | [FEATURES.md § Java](../project/FEATURES.md) |
+| v2.0.0 Scale | F006, F007, F010, F017 | [FEATURES.md § v2.0.0](../project/FEATURES.md) |
+| v3.0.0 | F011 | [FEATURES.md § v3.0.0](../project/FEATURES.md) |
+| backlog | F015 | [FEATURES.md](../project/FEATURES.md) |
+
+## All feature cards
+
+| ID | Title | Card |
+|----|-------|------|
+| F000 | Core Platform API | [F000-core-platform-api.md](../project/feature/F000-core-platform-api.md) |
+| F001 | Self-Healing Selectors | [F001-self-healing.md](../project/feature/F001-self-healing.md) |
+| F002 | Unified Context | [F002-unified-context.md](../project/feature/F002-unified-context.md) |
+| F003 | Root Cause Analysis | [F003-rca.md](../project/feature/F003-rca.md) |
+| F004 | Page Object Generator | [F004-page-object-gen.md](../project/feature/F004-page-object-gen.md) |
+| F005 | MCP/A2A Integration | [F005-mcp-integration.md](../project/feature/F005-mcp-integration.md) |
+| F006 | Multi-Platform | [F006-multi-platform.md](../project/feature/F006-multi-platform.md) |
+| F007 | Visual Fingerprint | [F007-visual-fingerprint.md](../project/feature/F007-visual-fingerprint.md) |
+| F008 | Playwright Adapter | [F008-playwright-adapter.md](../project/feature/F008-playwright-adapter.md) |
+| F009 | Feedback Loop | [F009-feedback-loop.md](../project/feature/F009-feedback-loop.md) |
+| F010 | Test Health | [F010-test-health.md](../project/feature/F010-test-health.md) |
+| F011 | AI-Agent Testing | [F011-ai-agent-testing.md](../project/feature/F011-ai-agent-testing.md) |
+| F012 | Debug Trace Mode | [F012-debug-trace-mode.md](../project/feature/F012-debug-trace-mode.md) |
+| F013 | TypeScript SDK | [F013-typescript-sdk.md](../project/feature/F013-typescript-sdk.md) |
+| F014 | Java SDK & UI Adapters | [F014-java-sdk-ui-adapters.md](../project/feature/F014-java-sdk-ui-adapters.md) |
+| F015 | Python SDK | [F015-python-sdk-adapters.md](../project/feature/F015-python-sdk-adapters.md) |
+| F017 | Structural Contract | [F017-structural-contract.md](../project/feature/F017-structural-contract.md) |
+
+New feature: copy [project/feature/_template.md](../project/feature/_template.md), add row to [FEATURES.md](../project/FEATURES.md).
+
+## Related
+
+- Cases: [cases.md](./cases.md) · [project/cases/](../project/cases/)
+- Architecture: [project/architecture/](../project/architecture/)
+- Releases: [project/release/](../project/release/)

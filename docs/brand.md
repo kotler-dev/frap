@@ -1,6 +1,6 @@
-# Fletta Brand & Domain Strategy
+# Frap Brand & Domain Strategy
 
-Стратегия доменных имен, брендинга и digital presence для Fletta.
+Стратегия доменных имен, брендинга и digital presence для Frap.
 
 ---
 
@@ -240,7 +240,7 @@ github.com/frap/
 
 ### Organization Profile
 
-**Display name:** Fletta
+**Display name:** Frap
 **Description:** Deterministic UI structure discovery engine. NO ML in core. AI-ready via MCP.
 **URL:** https://frap.dev
 **Email:** hi@frap.dev
@@ -254,8 +254,8 @@ github.com/frap/
 | Channel | Handle | Priority | Content |
 |---------|--------|----------|---------|
 | **Twitter/X** | @frapdev | P0 | Release notes, tips, community |
-| **LinkedIn** | Fletta | P1 | Enterprise, case studies |
-| **YouTube** | Fletta | P2 | Tutorials, demos |
+| **LinkedIn** | Frap | P1 | Enterprise, case studies |
+| **YouTube** | Frap | P2 | Tutorials, demos |
 | **Dev.to** | @frap | P2 | Technical deep-dives |
 
 ### Handle Consistency
@@ -270,14 +270,14 @@ github.com/frap/
 
 **Week 1-2:**
 - Twitter: "We're building..." teaser
-- Blog: Introducing Fletta post
+- Blog: Introducing Frap post
 
 **Week 3-4:**
 - Twitter: Architecture thread (NO ML explanation)
 - Dev.to: Technical deep-dive
 
 **Week 5-8:**
-- Twitter: Weekly tips (#FlettaFriday)
+- Twitter: Weekly tips (#FrapFriday)
 - YouTube: Demo videos
 
 ---
@@ -286,7 +286,7 @@ github.com/frap/
 
 ### Trademark
 
-**Recommendation:** Register trademark for "Fletta" in:
+**Recommendation:** Register trademark for "Frap" in:
 1. US (USPTO) — primary market
 2. EU (EUIPO) — secondary market
 3. Russia (Rospatent) — if frap.ru launched
@@ -298,7 +298,7 @@ github.com/frap/
 All source files should include:
 
 ```rust
-// Copyright (c) 2026 Fletta Contributors
+// Copyright (c) 2026 Frap Contributors
 // SPDX-License-Identifier: Apache-2.0
 ```
 

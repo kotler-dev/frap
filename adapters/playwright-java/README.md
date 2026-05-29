@@ -7,7 +7,7 @@ Playwright adapter for Frap self-healing selectors.
 | Suite | Location | Command |
 |-------|----------|---------|
 | **Unit** | this module (`src/test`) | `mvn test` |
-| **E2E** (browser + `frap-core-rpc` + test-app) | `internal/demo/showcase/java-playwright` | `./scripts/run-java-e2e.sh` from repo root |
+| **E2E** (browser + `frap-core-rpc` + test-app) | `examples/java/playwright` | `./scripts/run-java-e2e.sh` from repo root |
 
 ## Discovery and Page Object generation
 
@@ -109,7 +109,7 @@ var button = Frap.withFrap(
 
 ```xml
 <dependency>
-    <groupId>io.github.kotlerdev.frap</groupId>
+    <groupId>io.github.kotler-dev</groupId>
     <artifactId>frap-playwright</artifactId>
     <version>1.0.0</version>
     <scope>test</scope>

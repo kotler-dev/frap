@@ -14,34 +14,23 @@
 ```
 frap/
 ├── CONTEXT.md              # Этот файл — точка входа
-├── project/                # Планирование, фичи, архитектура
-│   ├── FEATURES.md         # Главная таблица фич F001–F011
-│   ├── feature/            # Карточки фич
-│   │   ├── _template.md
-│   │   ├── F001-self-healing.md
-│   │   ├── F002-unified-context.md
-│   │   ├── F003-rca.md
-│   │   ├── F004-page-object-gen.md
-│   │   ├── F005-mcp-integration.md
-│   │   ├── F006-multi-platform.md
-│   │   ├── F007-visual-fingerprint.md
-│   │   ├── F008-playwright-adapter.md
-│   │   ├── F013-typescript-sdk.md
-│   │   ├── F014-java-sdk-ui-adapters.md
-│   │   ├── F015-python-sdk-adapters.md
-│   │   ├── F009-feedback-loop.md
-│   │   ├── F010-test-health.md
-│   │   ├── F011-ai-agent-testing.md
-│   │   └── F017-structural-contract.md
-│   ├── cases/              # Сценарии (C001–C008, CP001–CP005)
-│   ├── architecture/       # Архитектурные документы
-│   └── conventions.md      # Соглашения по коду
-├── crates/                 # Rust core (workspace: signature, core, context, …)
-├── sdk/                    # SDK разных языков
-│   └── typescript/
-├── adapters/               # Интеграции с фреймворками
-│   └── playwright/
-├── docs/                   # Исходные материалы (positioning, audience и т.д.)
+├── project/                # Планирование (engineering SSOT)
+│   ├── README.md           # Карта project/
+│   ├── FEATURES.md         # Статусы фич
+│   ├── traceability.md     # Feature ↔ case ↔ E2E
+│   ├── feature/            # Карточки F*
+│   ├── cases/              # Спеки C*, CONF-*
+│   ├── architecture/       # ADR + design
+│   ├── release/            # Версии, matrices
+│   └── conventions.md
+├── examples/               # Runnable consumer projects
+├── fixtures/               # Demo AUT (FixtureConf)
+├── e2e/                    # Playwright gates
+├── promo/                  # Slides
+├── crates/                 # Rust core
+├── sdk/                    # SDK по языкам
+├── adapters/               # Playwright и др.
+├── docs/                   # Публичная база (pitch, indexes)
 └── .cursor/
     ├── rules/              # Правила Cursor
     └── skills/             # Переиспользуемые навыки
@@ -52,7 +41,11 @@ frap/
 | Что нужно | Файл |
 |-----------|------|
 | Таблица фич, статусы, релизы | `project/FEATURES.md` |
-| **Java SDK 1.0.0** — capability matrix (Maven Central) | [`project/release/java-sdk-1.0.0-matrix.md`](./project/release/java-sdk-1.0.0-matrix.md) |
+| Карта project/ | `project/README.md` |
+| Feature ↔ E2E ↔ fixtures | `project/traceability.md` |
+| **Release Index** — все текущие версии и координаты | [`project/release/README.md`](./project/release/README.md) |
+| **Java SDK 1.0.0** — capability matrix (Maven Central) | [`project/release/java/java-sdk-1.0.0-matrix.md`](./project/release/java/java-sdk-1.0.0-matrix.md) |
+| **npm 1.1.1** — capability matrix | [`project/release/typescript/npm-1.1.1-matrix.md`](./project/release/typescript/npm-1.1.1-matrix.md) |
 | Карточка фичи | `project/feature/FXXX-*.md` |
 | Сценарии и кейсы | `project/cases/` |
 | Архитектура ядра | `project/architecture/` |

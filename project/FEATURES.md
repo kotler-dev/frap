@@ -2,6 +2,8 @@
 
 **Главная страница проекта** — единый источник правды по статусам фич, статистике и планированию релизов.
 
+**Traceability:** [traceability.md](./traceability.md) — feature ↔ case ↔ E2E ↔ fixtures.
+
 Статусы: ✅ Реализовано / ⚠️ Частично / ❌ Не реализовано / ⏸️ Заморожено / 🚫 Отменено
 
 **Правило**: Фича считается реализованной только если есть работающий код + тесты + документация + минимум один проходящий кейс.
@@ -34,7 +36,7 @@
 - **release=v1.4.0** — Java SDK & UI adapters (bank S1)
 - **release=backlog** — пока не запланировано (в т.ч. Python SDK)
 
-> **Note on Java SDK 1.0.0:** Maven Central release (`frap-core-java`, `frap-playwright`) is a **self-contained surface** with discover, healing, context/RCA, and Page Object generation. It does not follow the npm product versioning timeline (v1.0.0 MVP / v1.1.0 context). See [Java SDK 1.0.0 Matrix](./release/java-sdk-1.0.0-matrix.md) for capabilities × surfaces coverage.
+> **Note on Java SDK 1.0.0:** Maven Central release (`frap-core-java`, `frap-playwright`) is a **self-contained surface** with discover, healing, context/RCA, and Page Object generation. It does not follow the npm product versioning timeline (v1.0.0 MVP / v1.1.0 context). See [Java SDK 1.0.0 Matrix](./release/java/java-sdk-1.0.0-matrix.md) and [Release Index](./release/README.md) for capabilities × surfaces coverage.
 
 ---
 
@@ -113,8 +115,8 @@ Self-contained release for Java automation. Includes all capabilities from produ
 | Windows bundled binary | ❌ | — | Troubleshooting workaround | — |
 
 **Verification:** `./scripts/run-java-e2e.sh` (13 tests, conference + context gates).  
-**Coordinates:** `io.github.kotlerdev.frap:frap-core-java:1.0.0`, `io.github.kotlerdev.frap:frap-playwright:1.0.0`  
-**Detailed matrix:** [java-sdk-1.0.0-matrix.md](./release/java-sdk-1.0.0-matrix.md)
+**Coordinates:** `io.github.kotler-dev:frap-core-java:1.0.0`, `io.github.kotler-dev:frap-playwright:1.0.0`  
+**Detailed matrix:** [java/java-sdk-1.0.0-matrix.md](./release/java/java-sdk-1.0.0-matrix.md)
 
 ---
 
@@ -147,7 +149,7 @@ Self-contained release for Java automation. Includes all capabilities from produ
 - [ ] F014: Java SDK & UI Adapters — **Playwright Java PoC ✅** (RPC + demo E2E); WebDriver + Selenide P1 — в работе
 
 ### v2.0.0 Scale (Structural Contract F017)
-- [ ] F017.0: Documentation + availability matrix + case C006 — v1.2.0 docs
+- [ ] F017.0: Documentation + availability matrix + case C010 — v1.2.0 docs
 - [ ] F017.1: Element-level contract — signatures baseline, `healStrategy: fail`, CI gate
 - [ ] F017.2: Page-level contract — `discover` element map, `drift-report.json`
 - [ ] F017.3: Policy DSL — `structural-contract.yaml`, scopes, invariants
@@ -201,7 +203,7 @@ Self-contained release for Java automation. Includes all capabilities from produ
 | v2.0.0 | 4 | 0 | 0 | 4 | 0% |
 | v3.0.0 | 1 | 0 | 0 | 1 | 0% |
 | **Всего** | **17** | **7** | **1** | **9** | **44%** |
-| **Java SDK 1.0.0** | **11** | **9** | **2** | **0** | **91%** | — See [matrix](./release/java-sdk-1.0.0-matrix.md)
+| **Java SDK 1.0.0** | **12** | **12** | **0** | **0** | **100%** | — See [matrix](./release/java/java-sdk-1.0.0-matrix.md)
 
 ---
 
@@ -217,8 +219,8 @@ frap/
 ├── crates/              # Rust core (signature, clustering, healing, frap-core)
 ├── sdk/typescript/      # TypeScript SDK
 ├── adapters/playwright/ # Playwright adapter
-├── internal/demo/site/           # FixtureConf pages (Conference demo)
-├── internal/testing/conference/     # PoC gates CP001–CP005 (CONF-*)
+├── fixtures/fixtureconf/           # FixtureConf pages (Conference demo)
+├── e2e/conference/     # PoC gates CP001–CP005 (CONF-*)
 ├── e2e/context/        # C002/C003/C004 context layer demos + verify-context.mjs
 ├── crates/context/     # frap-context (timeline, correlation, WebSocket model)
 ├── crates/rca/         # frap-rca (classifier, report, MCP stub)
@@ -233,7 +235,7 @@ frap/
 - [x] Conference E2E (CP001–CP005 gates) + `verify-reports.mjs`
 - [x] CI: Rust tests, WASM build, Conference E2E, Context Layer E2E + RCA verify, JUnit artifact upload
 - [x] Java SDK (JSON-RPC): `sdk/java/frap-core-java`, `frap-core-rpc` smoke in CI
-- [x] Playwright Java adapter + L4 demo E2E (`internal/demo/showcase/java-playwright`, `./scripts/run-java-e2e.sh`, CI job `java-playwright-e2e`)
+- [x] Playwright Java adapter + L4 demo E2E (`examples/java/playwright`, `./scripts/run-java-e2e.sh`, CI job `java-playwright-e2e`)
 
 ### Ожидает (v1.0.1 / v1.4.0)
 

@@ -18,7 +18,7 @@
 ./scripts/test.sh conference
 ```
 
-Кейсы `CONF-*`, отчёт: `internal/testing/frap-reports/conference/`. См. [internal/testing/conference/README.md](../internal/testing/conference/README.md) и [project/cases/conference/CASES.md](../project/cases/conference/CASES.md).
+Кейсы `CONF-*`, отчёт: `e2e/frap-reports/conference/`. См. [e2e/conference/README.md](../e2e/conference/README.md) и [project/cases/conference/CASES.md](../project/cases/conference/CASES.md).
 
 ---
 
@@ -247,17 +247,40 @@ Docker Compose:
 
 ## Процесс прогона benchmark в CI
 
-```yaml
-# Псевдо-пipeline
-- run: docker compose up -d checkout-v1
-- run: npx playwright test
-- run: docker compose up -d checkout-v2
-- run: npx playwright test  # with @frap/frap-playwright
-- run: node scripts/collect-metrics.js
-- assert: metrics.precision >= 0.95
+Актуальный gate в monorepo (FixtureConf + context layer). Полный Rust/Java/E2E pipeline — в `.github/workflows/ci.yml` на тегах `v*`.
+
+```bash
+# TypeScript / Playwright gates (локально или CI)
+./scripts/build.sh
+./scripts/test.sh conference   # CONF-* + node e2e/conference/verify-reports.mjs
+./scripts/test.sh context      # C002–C004 + verify-context/reports/rca
+./scripts/bench-context.sh     # captureAll overhead < 20%
+
+# Java gate (release CI)
+./scripts/run-java-e2e.sh
 ```
 
-Артефакты: `results/run-<sha>.json`, JUnit для GitLab.
+Псевдо-pipeline для GitLab/Jenkins (эквивалент):
+
+```yaml
+- run: ./scripts/build.sh
+- run: ./scripts/test.sh conference
+- run: ./scripts/test.sh context
+- run: ./scripts/bench-context.sh
+- run: ./scripts/run-java-e2e.sh   # optional: Java surface
+```
+
+**Метрики и артефакты** (не отдельный `collect-metrics.js` — проверки в verify-скриптах и Playwright assertions):
+
+| Gate | Где смотреть |
+|------|----------------|
+| CP001–CP003 / CONF-* | `e2e/frap-reports/conference/frap-report.json`, `frap-events.jsonl` |
+| CP005 export | `e2e/frap-reports/conference/junit.xml` (проверяет `verify-reports.mjs`) |
+| Context / RCA | `e2e/frap-reports/context/frap-context.json` |
+| Overhead F002 | stdout `bench-context.sh` / `context/overhead.spec.ts` (`< 20%`) |
+| Java E2E | `examples/java/playwright/target/frap-reports/conference/` |
+
+Артефакты для CI: `e2e/frap-reports/**`, JUnit из conference reporter, Java reports из `run-java-e2e.sh`.
 
 ---
 

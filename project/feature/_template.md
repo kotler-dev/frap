@@ -1,13 +1,21 @@
+---
+id: FXXX
+status: draft
+release: v1.0.0
+cases: []
+e2e: []
+---
+
 # Feature: <название>
 
 ## Meta
 
 - **Epic (в терминах FEATURES.md)**: <категория → название>
 - **Roll-up target**: <секция в FEATURES.md, например ## MVP v1.0.0>
-- **Status**: <draft | in-progress | done | frozen | cancelled>
+- **Status**: <draft | in-progress | done | frozen | cancelled> — must match [FEATURES.md](../FEATURES.md)
 - **Target release**: <v1.0.0 | v1.1.0 | v1.2.0 | v2.0.0 | v3.0.0 | backlog>
 - **Created**: <дата>
-- **Related cases**: <C001, CP001 и т.д.>
+- **Related cases**: <C001, CONF-*, CP001 — см. [traceability.md](../traceability.md)>
 
 ## Goal
 
@@ -44,8 +52,9 @@
 - <сценарии 1–5 минут>
 
 ### Automation (если имеет смысл)
-- <что покрыть автотестом и какой командой>
+- <что покрыть автотестом и какой командой — см. [traceability.md](../traceability.md)>
 
 ## Related docs
 
-- <ссылки на positioning.md, audience.md, benchmark.md и т.д.>
+- [FEATURES.md](../FEATURES.md) · [traceability.md](../traceability.md)
+- <docs/positioning.md, benchmark.md, …>

@@ -1,0 +1,33 @@
+/* Frap promo — brand tokens (presentation deck) */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-default: #FF4080;
+    --primary-hover: #FF5790;
+    --secondary-default: #5EC8E8;
+    --secondary-hover: #78D4F0;
+
+    --accent-flamingo: #FF4080;
+    --accent-cyan: #5EC8E8;
+    --accent-mint: #6EDDB8;
+    --accent-lavender: #C4B8F0;
+    --accent-peach: #FCA55D;
+    --accent-lemon: #E8DC90;
+
+    --accent-border-flamingo: rgba(255, 64, 128, 0.2);
+    --accent-border-cyan: rgba(94, 200, 232, 0.2);
+    --accent-border-mint: rgba(110, 221, 184, 0.2);
+    --accent-border-peach: rgba(252, 165, 93, 0.2);
+    --accent-border-lavender: rgba(196, 184, 240, 0.2);
+
+    --shadow-soft: 0 8px 28px rgba(55, 53, 47, 0.08);
+}
+
+[data-theme="dark"] {
+    --shadow-soft: 0 8px 28px rgba(0, 0, 0, 0.35);
+}

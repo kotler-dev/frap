@@ -17,7 +17,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-CONF_DIR="$PROJECT_ROOT/internal/testing"
+CONF_DIR="$PROJECT_ROOT/e2e"
 CONF_CONFIG="playwright.conference.config.ts"
 CTX_CONFIG="playwright.context.config.ts"
 
@@ -97,6 +97,6 @@ echo ""
 echo -e "${GREEN}=== Tests complete! ===${NC}"
 echo ""
 echo "Reports:"
-echo "  - internal/testing/frap-reports/conference/  (Conference project)"
+echo "  - e2e/frap-reports/conference/  (Conference project)"
 echo "  - e2e/frap-reports/context/     (Context Layer C002–C004)"
 echo "  - e2e/test-results/"

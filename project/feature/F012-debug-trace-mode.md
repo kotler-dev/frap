@@ -29,11 +29,11 @@
 
 ### In
 
-- Флаг `debug: boolean | 'verbose'` в `FlettaConfig`
+- Флаг `debug: boolean | 'verbose'` в `FrapConfig`
 - Структура `DebugReport` с пошаговой трассировкой
 - Этапы трассировки: `dom_parsed`, `clusters_built`, `candidates_ranked`, `healing_decision`
 - HTML viewer для визуализации кластеров (аналог Allure/Playwright report)
-- Интеграция с `FlettaReporter` для сохранения debug-информации
+- Интеграция с `FrapReporter` для сохранения debug-информации
 - JSON dump кластеров для программного анализа
 
 ### Out
@@ -45,7 +45,7 @@
 
 ## Acceptance criteria
 
-- [x] Флаг `debug: boolean | 'verbose'` работает в `FlettaConfig`
+- [x] Флаг `debug: boolean | 'verbose'` работает в `FrapConfig`
 - [x] При `debug: true` создаётся `DebugReport` с минимальной информацией (шаги + кластеры)
 - [ ] При `debug: 'verbose'` добавляются полные сигнатуры всех кандидатов (future enhancement)
 - [x] HTML-отчёт `frap-debug.html` генерируется рядом с `frap-report.json`
@@ -60,7 +60,7 @@
 ### Затронутые файлы
 
 ```
-sdk/typescript/src/config.ts          # + debug поле в FlettaConfig
+sdk/typescript/src/config.ts          # + debug поле в FrapConfig
 sdk/typescript/src/core.ts            # + DebugStep запись в heal()
 sdk/typescript/src/debug.ts             # Новый файл: DebugReport, DebugTracer
 adapters/playwright/src/reporter.ts       # onEnd: generateAllDebugHtml
@@ -182,7 +182,7 @@ heal(primarySelector, originalSignature, domSnapshot): HealResult {
 <!-- frap-debug.html -->
 <!DOCTYPE html>
 <html>
-<head><title>Fletta Debug Report</title></head>
+<head><title>Frap Debug Report</title></head>
 <body>
   <h1>Debug Report: ${testName}</h1>
   

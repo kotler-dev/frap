@@ -19,7 +19,7 @@
 ```typescript
 // checkout.spec.ts — structural gate (отдельный job от functional tests)
 import { test, expect } from '@playwright/test';
-import { Frap } from '@frap/frap';
+import { Frap } from '@frap/sdk';
 
 test.describe('Checkout structural contract', () => {
   // Baseline signatures — сгенерированы на stable версии
@@ -216,12 +216,12 @@ whitelist:
     severity_override: info
 ```
 
-## Acceptance Criteria (для C006)
+## Acceptance Criteria (для C010)
 
 ### Phase 1 (F017.1) — ready for implementation
 
-- [ ] Тестовая страница `test-app/structural/checkout-v1.html` (baseline)
-- [ ] Тестовая страница `test-app/structural/checkout-v2.html` (drift)
+- [ ] Тестовая страница `fixtures/fixtureconf/structural/checkout-v1.html` (baseline)
+- [ ] Тестовая страница `fixtures/fixtureconf/structural/checkout-v2.html` (drift)
 - [ ] Playwright spec `e2e/structural/checkout-element-gate.spec.ts`
 - [ ] При drift с `healStrategy: 'fail'` — тест падает с explainable diff
 - [ ] `frap-events.jsonl` содержит drift classification

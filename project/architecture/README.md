@@ -137,15 +137,26 @@ export class HealingEngine {
 }
 ```
 
+## Reading order
+
+1. [ADR-001-core-language-strategy.md](./ADR-001-core-language-strategy.md) — guardrails (algorithms in Core only)
+2. [platform-agnostic-core.md](./platform-agnostic-core.md) — components and data flow
+3. [sdk-strategy.md](./sdk-strategy.md) — Java / TypeScript / Python surfaces
+4. [clustering.md](./clustering.md) — Drain3, element maps
+5. [extension-points.md](./extension-points.md) — hooks for adapters
+6. [enhancements.md](./enhancements.md) — roadmap ideas
+
+Hub: [project/README.md](../README.md) · shipped mapping: [traceability.md](../traceability.md)
+
 ## Директории
 
 ```
 project/architecture/
-├── README.md           # Этот файл — обзор
-├── core.md             # Детали Rust core
-├── sdk-strategy.md     # SDK Java / TypeScript / Python
-├── adapters.md         # Интеграции с фреймворками
-├── platforms.md        # Мультиплатформа
-├── mcp.md              # MCP/A2A протокол
-└── data-flow.md        # Потоки данных
+├── README.md                      # Этот файл
+├── ADR-001-core-language-strategy.md
+├── platform-agnostic-core.md
+├── sdk-strategy.md
+├── clustering.md
+├── extension-points.md
+└── enhancements.md
 ```

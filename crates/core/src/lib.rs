@@ -1,4 +1,4 @@
-//! Fletta Core — single public entry point for signature, clustering, and healing.
+//! Frap Core — single public entry point for signature, clustering, and healing.
 //!
 //! Language SDKs (TypeScript WASM, future FFI/JSON-RPC) should depend on this crate,
 //! not on the algorithm crates directly.
@@ -54,11 +54,11 @@ pub struct HealRequest {
 
 /// Platform API: orchestrates [`HealingEngine`] with optional JSON boundary.
 #[derive(Debug, Clone)]
-pub struct FlettaCore {
+pub struct FrapCore {
     engine: HealingEngine,
 }
 
-impl FlettaCore {
+impl FrapCore {
     pub fn new() -> Self {
         Self {
             engine: HealingEngine::new(),
@@ -121,7 +121,7 @@ pub fn analyze_rca_json(
     )?)
 }
 
-impl Default for FlettaCore {
+impl Default for FrapCore {
     fn default() -> Self {
         Self::new()
     }
@@ -165,7 +165,7 @@ mod tests {
 
     #[test]
     fn frap_core_heals_when_primary_missing() {
-        let mut core = FlettaCore::new();
+        let mut core = FrapCore::new();
         let result = core.heal(
             "[data-testid='pay-btn']",
             &pay_button_signature(),
@@ -180,7 +180,7 @@ mod tests {
 
     #[test]
     fn frap_core_primary_found_no_healing() {
-        let mut core = FlettaCore::new();
+        let mut core = FrapCore::new();
         let snapshot = cp002_snapshot();
         let selector = "[data-testid='checkout-pay']";
         let sig = pay_button_signature();
@@ -244,7 +244,7 @@ mod tests {
         };
 
         let json = serde_json::to_string(&request).expect("serialize");
-        let mut core = FlettaCore::new();
+        let mut core = FrapCore::new();
         let out = core.heal_json(&json).expect("heal_json");
         let result: HealResult = serde_json::from_str(&out).expect("parse");
         assert!(result.healed, "expected heal: {:?}", result);
@@ -264,7 +264,7 @@ mod tests {
         assert_eq!(parsed.primary_selector, request.primary_selector);
         assert_eq!(parsed.min_confidence, request.min_confidence);
 
-        let mut core = FlettaCore::new();
+        let mut core = FrapCore::new();
         let out = core.heal_json(&json).expect("heal_json");
         let result: HealResult = serde_json::from_str(&out).expect("parse result");
         assert!(result.healed);
@@ -273,7 +273,7 @@ mod tests {
     #[test]
     fn reexports_match_subcrates() {
         let mut engine = HealingEngine::new();
-        let mut core = FlettaCore::new();
+        let mut core = FrapCore::new();
         let sig = pay_button_signature();
         let snap = cp002_snapshot();
 
@@ -286,7 +286,7 @@ mod tests {
 
     #[test]
     fn heal_request_respects_min_confidence() {
-        let mut core = FlettaCore::new().with_min_confidence(0.99);
+        let mut core = FrapCore::new().with_min_confidence(0.99);
         let request = HealRequest {
             primary_selector: "[data-testid='pay-btn']".to_string(),
             original_signature: pay_button_signature(),
@@ -302,7 +302,7 @@ mod tests {
     /// CP003-style: two similar buttons — engine returns ranked candidates (may heal best match).
     #[test]
     fn ambiguous_snapshot_returns_candidates() {
-        let mut core = FlettaCore::new();
+        let mut core = FrapCore::new();
         let original = pay_button_signature();
         let snapshot = DOMSnapshot {
             html: String::new(),

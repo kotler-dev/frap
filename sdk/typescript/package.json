@@ -1,5 +1,5 @@
 {
-  "name": "@frap/frap",
+  "name": "@frap/sdk",
   "version": "1.1.1",
   "description": "frap SDK for self-healing test selectors",
   "main": "dist/index.js",

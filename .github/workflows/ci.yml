@@ -6,6 +6,7 @@ on:
   push:
     tags:
       - 'v*'
+      - 'java-v*'
   workflow_dispatch:
 
 jobs:
@@ -102,7 +103,7 @@ jobs:
         with:
           name: java-frap-conference-reports
           path: |
-            internal/demo/showcase/java-playwright/target/frap-reports/conference/**
+            examples/java/playwright/target/frap-reports/conference/**
           retention-days: 14
 
   typescript-sdk:
@@ -205,25 +206,25 @@ jobs:
 
       - name: Start test server
         run: |
-          cd internal/demo/site
+          cd fixtures/fixtureconf
           node server.js &
           sleep 2
           curl -sf http://localhost:3000
 
-      - name: Install conference testing deps
+      - name: Install e2e deps
         run: |
-          cd internal/testing
+          cd e2e
           npm install
 
       - name: Run Conference E2E
         run: |
-          cd internal/testing
+          cd e2e
           npx playwright test --config=playwright.conference.config.ts
         env:
-          FLETTA_TS_FALLBACK: 1
+          FRAP_TS_FALLBACK: 1
 
       - name: Verify CP005 report artifacts (CONF-RPT-RUN-PASS)
-        run: node internal/testing/conference/verify-reports.mjs
+        run: node e2e/conference/verify-reports.mjs
 
       - name: Upload frap reports (JUnit + JSON)
         uses: actions/upload-artifact@v4
@@ -231,10 +232,10 @@ jobs:
         with:
           name: frap-conference-reports
           path: |
-            internal/testing/frap-reports/conference/junit.xml
-            internal/testing/frap-reports/conference/frap-report.json
-            internal/testing/frap-reports/conference/frap-events.jsonl
-            internal/testing/frap-reports/conference/frap-debug.html
+            e2e/frap-reports/conference/junit.xml
+            e2e/frap-reports/conference/frap-report.json
+            e2e/frap-reports/conference/frap-events.jsonl
+            e2e/frap-reports/conference/frap-debug.html
           retention-days: 30
 
       - name: Upload Playwright test results
@@ -244,7 +245,7 @@ jobs:
           name: playwright-test-results
           path: |
             e2e/test-results/
-            internal/testing/conference-results.json
+            e2e/conference-results.json
           retention-days: 14
 
   e2e-context:
@@ -282,7 +283,7 @@ jobs:
 
       - name: Start test server
         run: |
-          cd internal/demo/site
+          cd fixtures/fixtureconf
           node server.js &
           sleep 2
           curl -sf http://localhost:3000
@@ -290,7 +291,7 @@ jobs:
       - name: Run Context Layer E2E
         run: ./scripts/test.sh context
         env:
-          FLETTA_TS_FALLBACK: 1
+          FRAP_TS_FALLBACK: 1
 
       - name: Upload context reports
         uses: actions/upload-artifact@v4

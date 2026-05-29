@@ -5,7 +5,7 @@ Accepted
 
 ## Context
 
-Fletta должен работать с разными UI платформами:
+Frap должен работать с разными UI платформами:
 - Web: DOM + computed styles
 - Android: ViewTree / AccessibilityNodeInfo
 - iOS: UIView hierarchy
@@ -26,7 +26,7 @@ Core (Rust) реализует platform-agnostic analysis engine, работаю
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Fletta Core (Rust/WASM)                   │
+│                    Frap Core (Rust/WASM)                   │
 │                                                              │
 │  ┌─────────────┐  ┌──────────────┐  ┌──────────────────┐   │
 │  │ Signature   │  │ Clustering   │  │ Resolution       │   │
@@ -480,5 +480,5 @@ pub struct ResolutionAttempt {
 ---
 
 *ADR Accepted: 2026-05-23*
-*Author: Fletta Architecture Team*
+*Author: Frap Architecture Team*
 *Reviewers: [TBD]*

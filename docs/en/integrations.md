@@ -5,7 +5,7 @@
 ### Installation
 
 ```bash
-npm install @frap/frap @frap/frap-playwright
+npm install @frap/sdk @frap/playwright
 ```
 
 ### Custom Selector Engine
@@ -13,7 +13,7 @@ npm install @frap/frap @frap/frap-playwright
 Recommended for new projects:
 
 ```typescript
-import { frapPlaywright, registerFrapSelector } from '@frap/frap-playwright';
+import { frapPlaywright, registerFrapSelector } from '@frap/playwright';
 
 export default defineConfig({
   ...frapPlaywright({
@@ -41,7 +41,7 @@ await page.locator('frap:[data-testid="submit"]').click();
 For existing tests, wrap locators:
 
 ```typescript
-import { withFrap } from '@frap/frap-playwright';
+import { withFrap } from '@frap/playwright';
 
 const button = await withFrap(page.getByTestId('submit'), page);
 await button.click();
@@ -61,4 +61,4 @@ await button.click();
 - **Java** — roadmap (Selenium, Selenide)
 - **Python** — roadmap
 
-See [Frap.en.md](../../Frap.en.md) for the full artifact naming scheme.
+See [README.md](../../README.md) for the full artifact naming scheme.

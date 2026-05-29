@@ -1,4 +1,4 @@
-# Fletta Knowledge Base
+# Frap Knowledge Base
 
 Связующий индекс фич и кейсов. Используется для навигации и понимания связей.
 
@@ -15,9 +15,9 @@
 | [integrations.md](./integrations.md) | Playwright plugin, JUnit, CI — не замена раннера | Разработчики |
 | [integrations-selenium-java.md](./integrations-selenium-java.md) | JUnit 5 + WebDriver + PO; Selenide P1 (банк) | Java QA, архитекторы |
 | [monetization.md](./monetization.md) | OSS + enterprise tiers | PM, бизнес |
-| [features.md](./features.md) | Каталог возможностей (F001-F00N) | Разработчики, PM |
-| [cases.md](./cases.md) | Сценарии C001–C008, PoC CP001–CP005 | QA, демо |
-| [roadmap.md](./roadmap.md) | Приоритеты и план разработки | Разработчики, менеджмент |
+| [features.md](./features.md) | Index → [project/feature/](../project/feature/) | Разработчики, PM |
+| [cases.md](./cases.md) | Index → [project/cases/](../project/cases/) | QA, демо |
+| [roadmap.md](./roadmap.md) | Narrative (status SSOT: [FEATURES.md](../project/FEATURES.md)) | Разработчики, менеджмент |
 | [talk-topics.md](./talk-topics.md) | Темы для выступлений | DevRel, спикеры |
 | [index.md](./index.md) | Связи и маппинг | Все |
 
@@ -176,22 +176,6 @@ C006 (Mobile)
 
 ---
 
-## Status Tracking (update manually)
+## Status Tracking
 
-| Кейс | Статус | Дата | Заметки |
-|------|--------|------|---------|
-| CP001 | `concept` | — | PoC gate |
-| CP002 | `concept` | — | PoC gate |
-| CP003 | `concept` | — | PoC gate |
-| CP004 | `concept` | — | PoC gate |
-| CP005 | `concept` | — | PoC gate |
-| C001 | `concept` | — | Базовый сценарий |
-| C002 | `concept` | — | Требует F002 |
-| C003 | `concept` | — | Требует F002 |
-| C004 | `concept` | — | Требует F004 |
-| C005 | `concept` | — | Требует F005 |
-| C006 | `concept` | — | Требует F006 |
-| C007 | `concept` | — | Требует F011 |
-| C008 | `concept` | — | Требует F011 |
-
-Статусы: `concept` → `draft` → `script-ready` → `demo-recorded` → `validated`
+**SSOT:** [project/cases/README.md](../project/cases/README.md) and [project/FEATURES.md](../project/FEATURES.md). Do not maintain duplicate status tables here.
