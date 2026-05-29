@@ -34,7 +34,7 @@ echo ""
 
 # Start test server
 echo -e "${YELLOW}Starting test server on port $PORT...${NC}"
-cd "$PROJECT_ROOT/internal/demo/site"
+cd "$PROJECT_ROOT/fixtures/fixtureconf"
 
 # Start server in background
 node server.js &
@@ -52,7 +52,7 @@ for i in {1..10}; do
         echo ""
         echo -e "Test pages available at:"
         echo -e "  ${BLUE}http://localhost:$PORT${NC} - Index"
-        echo -e "  ${BLUE}http://localhost:$PORT/conference/${NC} - FixtureConf demo"
+        echo -e "  ${BLUE}http://localhost:$PORT/conference/${NC} - FixtureConf (fixtures/fixtureconf)"
         echo ""
         echo -e "To stop the server: ${YELLOW}./scripts/stop.sh${NC}"
         exit 0

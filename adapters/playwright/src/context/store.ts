@@ -1,5 +1,5 @@
-import type { ContextEvent, ContextTimeline } from '@frap/frap';
-import { sortTimelineEvents } from '@frap/frap';
+import type { ContextEvent, ContextTimeline } from '@frap/sdk';
+import { sortTimelineEvents } from '@frap/sdk';
 import * as fs from 'fs';
 import * as path from 'path';
 

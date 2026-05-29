@@ -1,7 +1,7 @@
 # Bundled frap-core-rpc (built in CI before Maven release)
 sdk/java/frap-core-java/src/main/resources/META-INF/native/frap-core-rpc-*
 
-# GPG signing keys (public keys for manual upload to keyservers)
+# GPG / release signing keys (never commit private material)
 frap-signing-key.pub
 frap-signing-key-private.txt
 *.gpg
@@ -50,25 +50,26 @@ e2e/test-results/
 e2e/results.json
 e2e/frap-reports/
 e2e/conference-results.json
-internal/testing/frap-reports/
-internal/testing/conference-results.json
-internal/testing/**/test-results/
 
 # Demo / showcase build output
-internal/demo/showcase/**/target/
-internal/demo/site/**/tmp/
-internal/demo/site/**/*.log
+examples/**/target/
+examples/**/node_modules/
+examples/**/frap-reports/
+fixtures/fixtureconf/**/tmp/
+fixtures/fixtureconf/**/*.log
 
 # Presentation local exports (not for publish)
-internal/demo/presentation/export/
-internal/demo/presentation/**/*.pdf
-internal/demo/presentation/**/*.pptx
+promo/presentation/export/
+promo/presentation/**/*.pdf
+promo/presentation/**/*.pptx
 
 # Runtime
 .server.pid
 
-# Cursor (local plans only; rules/skills may be committed)
+# Cursor — commit rules/, skills/, hooks/; ignore local/ephemeral only
 .cursor/plans/
+.cursor/mcp.json
+.cursor/*.log
 
 # WASM
 pkg/

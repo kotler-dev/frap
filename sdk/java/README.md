@@ -8,10 +8,11 @@ Self-healing selectors and Page Object generation for Java automation.
 |--------------|----------|
 | Get started in 5 minutes | [Getting Started](../../docs/en/java-getting-started.md) |
 | See complete API reference | [API Reference](../../docs/en/java-api-reference.md) |
-| See what's in 1.0.0 (Maven Central) | [Capability Matrix](../../project/release/java-sdk-1.0.0-matrix.md) |
+| See what's in 1.0.0 (Maven Central) | [Capability Matrix](../../project/release/java/java-sdk-1.0.0-matrix.md) |
+| See all current releases | [Release Index](../../project/release/README.md) |
 | Understand Maven Central setup | [Maven Central Guide](../../docs/en/java-maven-central.md) |
 | Use JSON-RPC directly | [RPC Protocol](../../docs/en/java-sdk-rpc.md) |
-| See full examples | [Demo Project](../../internal/demo/showcase/java-playwright) |
+| See full examples | [Demo Project](../../examples/java/playwright) |
 
 ---
 
@@ -20,14 +21,14 @@ Self-healing selectors and Page Object generation for Java automation.
 ```xml
 <!-- Core: healing, discovery, Page Object generation -->
 <dependency>
-    <groupId>io.github.kotlerdev.frap</groupId>
+    <groupId>io.github.kotler-dev</groupId>
     <artifactId>frap-core-java</artifactId>
     <version>1.0.0</version>
 </dependency>
 
 <!-- Playwright adapter: browser integration -->
 <dependency>
-    <groupId>io.github.kotlerdev.frap</groupId>
+    <groupId>io.github.kotler-dev</groupId>
     <artifactId>frap-playwright</artifactId>
     <version>1.0.0</version>
     <scope>test</scope>
@@ -109,7 +110,7 @@ sdk/java/
 adapters/playwright-java/        # Playwright adapter
 └── README.md
 
-internal/demo/showcase/java-playwright/  # Full demo project
+examples/java/playwright/  # Full demo project
 ```
 
 ---

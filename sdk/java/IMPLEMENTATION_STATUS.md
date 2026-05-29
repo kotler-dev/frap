@@ -13,14 +13,14 @@
 - `FrapCoreClient`: buildElementMap, filterElementMap, generatePageObject
 - `SnapshotStore` for JSON persistence
 - Contract tests (Java reference SDK)
-- Bundled native binaries (Linux x86_64, macOS x86_64/aarch64)
+- Bundled native binaries (Linux x86_64 glibc/musl, macOS aarch64)
 
 ### frap-playwright
 - `Frap.discover(page)`, `Frap.generatePageObject(page, dir, options)`
 - `withFrap`, `FrapExtension`, reports
 
 ### Maven
-- Version `1.0.0`, coordinates `io.github.kotlerdev.frap`
+- Version `1.0.0`, coordinates `io.github.kotler-dev`
 - `smoke-consumer` module for local Maven-only verification
 - Release workflow: `.github/workflows/publish-maven.yml`
 

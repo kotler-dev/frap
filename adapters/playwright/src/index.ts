@@ -1,5 +1,5 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
-import { FrapConfig } from '@frap/frap';
+import { FrapConfig } from '@frap/sdk';
 import { FrapPlaywrightConfig, mergePlaywrightConfig } from './config';
 import { createFrapSelectorEngine, initFrapEngine, recordSignature } from './selector-engine';
 import { withFrap, getLastHealResult } from './wrapper';
@@ -41,11 +41,6 @@ export {
 };
 export type { ContextCaptureOptions } from './context';
 
-// Backward-compatible aliases for older e2e/demo imports.
-export const withFletta = withFrap;
-export const attachFlettaContext = attachFrapContext;
-export type WithFlettaOptions = import('./config').WithFrapOptions;
-
 export function frapPlaywright(
   userConfig?: Partial<FrapPlaywrightConfig>
 ): Partial<PlaywrightTestConfig> {
@@ -78,15 +73,15 @@ export function frapPlaywright(
     reporter: reporters as any,
     build: {
       ...userBuild,
-      // Keep @frap/frap (and WASM) on Node's native loader — Playwright must not babel-parse .wasm.
-      external: [...externalList, '@frap/frap'],
+      // Keep @frap/sdk (and WASM) on Node's native loader — Playwright must not babel-parse .wasm.
+      external: [...externalList, '@frap/sdk'],
     },
   };
 
   return playwrightConfig;
 }
 
-export async function registerFlettaSelector(
+export async function registerFrapSelector(
   selectors: any,
   config?: Partial<FrapConfig>
 ): Promise<void> {

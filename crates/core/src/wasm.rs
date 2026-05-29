@@ -2,13 +2,13 @@
 
 use wasm_bindgen::prelude::*;
 
-use crate::{analyze_rca_json, FlettaCore};
+use crate::{analyze_rca_json, FrapCore};
 use frap_rca::DEFAULT_WINDOW_MS;
 
 /// Run heal from JSON [`HealRequest`], return JSON [`HealResult`].
 #[wasm_bindgen(js_name = healJson)]
 pub fn heal_json(input: &str) -> Result<String, JsValue> {
-    let mut core = FlettaCore::new();
+    let mut core = FrapCore::new();
     core.heal_json(input)
         .map_err(|e| JsValue::from_str(&e.to_string()))
 }
