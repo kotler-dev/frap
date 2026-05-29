@@ -58,7 +58,7 @@ jobs:
       - name: Publish to Maven Central
         run: |
           cd sdk/java
-          mvn -P release -pl frap-core-java,../../adapters/playwright-java -am \
+          mvn -P release -pl frap-core-java,../../adapters/playwright-java \
             -Dgpg.passphrase="${GPG_PASSPHRASE}" \
             deploy --batch-mode
         env:
