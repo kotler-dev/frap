@@ -1,6 +1,11 @@
 # Bundled frap-core-rpc (built in CI before Maven release)
 sdk/java/frap-core-java/src/main/resources/META-INF/native/frap-core-rpc-*
 
+# GPG signing keys (public keys for manual upload to keyservers)
+frap-signing-key.pub
+*.gpg
+*.pgp
+
 # Rust
 target/
 Cargo.lock
