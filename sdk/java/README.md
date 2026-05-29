@@ -8,6 +8,7 @@ Self-healing selectors and Page Object generation for Java automation.
 |--------------|----------|
 | Get started in 5 minutes | [Getting Started](../../docs/en/java-getting-started.md) |
 | See complete API reference | [API Reference](../../docs/en/java-api-reference.md) |
+| See what's in 1.0.0 (Maven Central) | [Capability Matrix](../../project/release/java-sdk-1.0.0-matrix.md) |
 | Understand Maven Central setup | [Maven Central Guide](../../docs/en/java-maven-central.md) |
 | Use JSON-RPC directly | [RPC Protocol](../../docs/en/java-sdk-rpc.md) |
 | See full examples | [Demo Project](../../internal/demo/showcase/java-playwright) |
