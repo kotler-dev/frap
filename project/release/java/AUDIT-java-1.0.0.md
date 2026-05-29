@@ -20,6 +20,7 @@ Primary blocker identified and fixed: Maven `groupId` was `io.github.kotlerdev` 
 | F02 | P0 | Docs | `project/release/README.md` marked Java as `published` before Central verify | Status → `ready (awaiting publish)` | **fixed** |
 | F03 | P0 | Native | Wrong binary names in repo (`frap-core-rpc-darwin-*`, `macos-arm64`) | Renamed to `frap-core-rpc-macos-aarch64`; removed duplicates | **fixed** |
 | F04 | P0 | CI | Full CI only on `v*` tags | Added `java-v*` trigger to `ci.yml`, `lint.yml`, `publish-maven.yml` | **fixed** |
+| F15 | P0 | Maven | Staged POMs referenced unpublished parent `frap-sdk-parent` | `flatten-maven-plugin` (oss) + explicit groupId; `skipPublishing` on core | **fixed** |
 | F05 | P1 | CI | `publish-maven.yml` shared `v*` with npm | Maven workflow now `java-v*` only | **fixed** |
 | F06 | P1 | Docs | `Frap.md` had `io.frap` coords and `-SNAPSHOT` | Updated to `io.github.kotler-dev:1.0.0` | **fixed** |
 | F07 | P1 | Docs | Platform table claimed macOS x86_64 bundled | Updated `java-maven-central.md`, `java-api-reference.md` | **fixed** |
