@@ -64,7 +64,14 @@ jobs:
           merge-multiple: true
           path: sdk/java/frap-core-java/src/main/resources/META-INF/native/
       - name: Make binaries executable
-        run: chmod +x sdk/java/frap-core-java/src/main/resources/META-INF/native/*
+        run: chmod +x sdk/java/frap-core-java/src/main/resources/META-INF/native/*\n
+      - name: Publish GPG key to keyserver
+        run: |
+          # Export public key and send to keyserver
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --import --batch --yes 2>/dev/null || true
+          gpg --list-keys --with-colons | grep fpr | head -1 | cut -d: -f10 | xargs gpg --send-keys --keyserver hkps://keys.openpgp.org 2>/dev/null || true
+          gpg --list-keys --with-colons | grep fpr | head -1 | cut -d: -f10 | xargs gpg --send-keys --keyserver keyserver.ubuntu.com 2>/dev/null || true
+          sleep 30  # Wait for key propagation
       - name: Publish to Maven Central
         run: |
           cd sdk/java
