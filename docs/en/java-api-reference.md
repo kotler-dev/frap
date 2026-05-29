@@ -84,7 +84,8 @@ public record HealResult(
     @JsonProperty("confidence") double confidence,
     @JsonProperty("diff") String diff,
     @JsonProperty("top_candidates") List<Candidate> topCandidates,
-    @JsonProperty("original_signature") Signature originalSignature
+    @JsonProperty("original_signature") Signature originalSignature,
+    @JsonProperty("semantics") HealingSemantics semantics  // May be null if no healing attempted
 ) {}
 ```
 
@@ -150,7 +151,19 @@ public record DOMElementInfo(
 
 #### `ElementMap`
 
-Result of `buildElementMap` — page structure with clusters.
+Result of `buildElementMap` — a **flat catalog** of page elements after discover (not a site map, not a DOM tree API).
+
+Two lists: `elements` and `clusters` (linked via `cluster_id`). There are **no** `parent_id` / `children` fields on `ElementNode`; hierarchy is captured inside each element's `signature.path` (ancestor chain `tag:role` recorded at snapshot time).
+
+**Discover path (Playwright):** `Frap.discover(page)` → `SnapshotBuilder.build()` → `page.evaluate(...)` → `buildElementMap(...)`. **CDP is not used** on this path today.
+
+| Concept | Meaning |
+|---------|---------|
+| `ElementNode.id` (`el-0`, …) | Catalog key for **this** discover run |
+| `Signature` | Cross-run identity for heal/resolution when locators break |
+| `position_in_parent` | Same-tag sibling index in snapshot — used in confidence scoring, **not** as `:nth-child()` in `recommended_selector` |
+
+Traverse with stream/filter on `elements()` and `clusters()`. To re-identify an element after DOM changes, compare stored signatures against a **new** snapshot (heal), optionally scoped to the same cluster first.
 
 ```java
 public record ElementMap(
@@ -260,6 +273,22 @@ public record GeneratedFile(
 
 ### RCA (Root Cause Analysis)
 
+**`analyze_rca`** — post-mortem analysis of a `ContextTimeline` (UI events, network, console/logs) around the failure moment. Core classifies the likely cause and returns `RcaReport`. This is **not** healing and **not** discover.
+
+```java
+RcaReport analyzeRca(ContextTimeline timeline, long failureAtMs) throws IOException;
+```
+
+| `PrimaryCause` | Typical signal |
+|----------------|----------------|
+| `UI_CHANGE` | Locator failure, DOM drift |
+| `API_ERROR` | API request failed (5xx, timeout) |
+| `INFRASTRUCTURE` | Network-level failure (DNS, connection) |
+| `FLAKY` | Inconsistent failure pattern |
+| `UNKNOWN` | Insufficient context |
+
+Timeline is built by the Playwright adapter (`captureAll(true)`); Core only classifies the JSON stream.
+
 #### `RcaReport`
 
 ```java
@@ -278,8 +307,9 @@ public record RcaReport(
 ```java
 public enum PrimaryCause {
     UI_CHANGE,        // Element changed in DOM
-    NETWORK_ERROR,    // Request failed
-    TIMING_ISSUE,     // Race condition or timeout
+    API_ERROR,        // API request failed
+    INFRASTRUCTURE,   // Network-level failure
+    FLAKY,            // Inconsistent failure pattern
     UNKNOWN           // Could not determine
 }
 ```
@@ -400,9 +430,58 @@ public class WithFrapOptions {
 
 ```java
 public enum HealPolicy {
-    ALLOW,      // Always heal if confident enough
-    EXPECT,     // Expect healing (fail if no healing needed)
-    REFUSE      // Never heal (fail on selector not found)
+    ALLOW,       // Always heal if confident enough
+    DENY,        // Never heal (fail on selector not found)
+    EXPECT_HEAL  // Expect healing (fail if no healing needed)
+}
+```
+
+#### `HealTrigger`
+
+What triggered the healing attempt.
+
+```java
+public enum HealTrigger {
+    ELEMENT_NOT_FOUND,    // Original selector returned no elements
+    VISIBLE_CHECK_FAILED, // Element found but not visible/interactable
+    STALE_ELEMENT,        // Element became stale during interaction
+    RETRY,                // Explicit retry path
+    EXPLICIT              // User explicitly requested healing check
+}
+```
+
+#### `HealOutcome`
+
+Classified result of a healing attempt for reports and CI gates.
+
+```java
+public enum HealOutcome {
+    HEALED,          // Successfully healed to new selector
+    REJECTED,        // Heal attempted but rejected (ambiguous, low confidence)
+    UNEXPECTED_HEAL, // Healed when policy was DENY
+    NO_HEAL          // No healing needed (original selector worked)
+}
+```
+
+#### `HealingSemantics`
+
+Complete semantic classification of a healing event including trigger, policy, and outcome.
+
+```java
+public record HealingSemantics(
+    HealTrigger trigger,   // What triggered healing (failure, retry, etc.)
+    HealPolicy policy,     // Policy in effect when healing was attempted
+    HealOutcome outcome    // Final classified outcome
+) {}
+```
+
+**Accessing semantics after healing:**
+
+```java
+HealResult result = Frap.getLastHealResult(locator);
+if (result.semantics() != null) {
+    System.out.println("Outcome: " + result.semantics().outcome());
+    // e.g., UNEXPECTED_HEAL when policy was DENY but healing occurred
 }
 ```
 

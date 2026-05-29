@@ -43,6 +43,14 @@ Add to your `pom.xml`:
         <version>5.10.2</version>
         <scope>test</scope>
     </dependency>
+    
+    <!-- AssertJ (used in examples) -->
+    <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>3.25.3</version>
+        <scope>test</scope>
+    </dependency>
 </dependencies>
 ```
 
@@ -133,6 +141,68 @@ Run:
 mvn test -Dtest=FrapQuickTest
 ```
 
+### Healing Policies
+
+Control healing behavior with policies:
+
+```java
+import io.github.kotlerdev.frap.core.dto.HealResult;
+import io.github.kotlerdev.frap.core.semantics.HealOutcome;
+
+// Policy: expect_heal — fail if no healing was needed (detects unexpected stability)
+var options = new WithFrapOptions()
+    .healPolicy("expect_heal")
+    .minConfidence(0.7);
+
+FrapLocator button = Frap.withFrap(
+    page.locator("[data-testid='pay-btn']"),
+    page,
+    options
+);
+
+button.click();
+
+// Check semantics — useful for CI gates
+HealResult result = Frap.getLastHealResult(button);
+if (result.semantics() != null) {
+    HealOutcome outcome = result.semantics().outcome();
+    // Possible outcomes: HEALED, REJECTED, UNEXPECTED_HEAL, NO_HEAL
+    assertThat(outcome).isEqualTo(HealOutcome.HEALED);
+}
+```
+
+| Policy | Behavior |
+|--------|----------|
+| `allow` | Always heal if confident enough (default) |
+| `deny` | Never heal — fail on selector not found |
+| `expect_heal` | Expect healing to occur — fail if original selector still works |
+
+### Ambiguous Elements — Safe Fail
+
+When two elements are equally good candidates, Frap **rejects** healing to avoid clicking the wrong button:
+
+```java
+// Page has two "Submit" buttons with similar attributes
+// Original selector points to removed element
+FrapLocator submit = Frap.withFrap(
+    page.locator("[data-testid='cfp-submit-missing']"),
+    page,
+    new WithFrapOptions().minConfidence(0.85)
+);
+
+// Throws PlaywrightException — healing refused
+try {
+    submit.click();
+} catch (PlaywrightException e) {
+    // Ambiguous: check top candidates
+    HealResult result = Frap.getLastHealResult(submit);
+    assertThat(result.healed()).isFalse();
+    assertThat(result.topCandidates()).hasSizeGreaterThanOrEqualTo(2);
+}
+```
+
+See full example: `CfpAmbiguousHealTest` in the [demo showcase](../../internal/demo/showcase/java-playwright).
+
 ---
 
 ## 4. Discovery and Page Object Generation
@@ -168,8 +238,53 @@ void testDiscovery() {
 
     assertThat(listClusters).isGreaterThanOrEqualTo(1);
     System.out.println("Found " + map.elements().size() + " elements");
+    
+    // Access recommended locators from discovered elements
+    ElementNode firstElement = map.elements().get(0);
+    System.out.println("Selector: " + firstElement.selector());
+    System.out.println("Recommended: " + firstElement.recommendedSelector());
+    System.out.println("Confidence: " + firstElement.confidence());
 }
 ```
+
+### Filter Element Map
+
+Filter discovered elements interactively:
+
+```java
+import io.github.kotlerdev.frap.core.dto.FilterSpec;
+
+// Filter to interactive elements only, minimum cluster size 2
+ElementMap filtered = client.filterElementMap(
+    map,
+    new FilterSpec(true, 2, List.of("button", "a", "input"))
+);
+
+// filtered.elements() contains only buttons, links, and inputs
+```
+
+**How discover works (not CDP):** `Frap.discover(page)` runs `SnapshotBuilder.build()` → `page.evaluate(...)` in the browser → `client.buildElementMap(...)`. CDP is **not** used on this path. A standalone Chrome/CDP source is on the roadmap (separate transport, same Core API).
+
+### Context capture and RCA
+
+When a test fails, you need to know *why* — UI change, network timeout, or timing. Enable context capture:
+
+```java
+var options = new WithFrapOptions()
+    .captureAll(true)   // UI + network + console → ContextTimeline
+    .debug(true);
+
+Frap.withFrap(page.locator("[data-testid='checkout']"), page, options).click();
+```
+
+After failure, Core analyzes the timeline via `analyze_rca`:
+
+```java
+RcaReport report = client.analyzeRca(timeline, failureAtMs);
+// report.primaryCause() → UI_CHANGE | API_ERROR | INFRASTRUCTURE | FLAKY | UNKNOWN
+```
+
+**RCA** (Root Cause Analysis) is post-mortem classification around the failure moment — not healing, not discover. See [Glossary: RCA](../glossary.md#rca-root-cause-analysis).
 
 ### Generate Page Object
 
@@ -275,9 +390,19 @@ class FullTest {
 ```
 
 **Generated reports:**
-- `frap-report.json` — Healing events summary
-- `frap-debug.html` — Human-readable debug view
-- `junit.xml` — JUnit XML with frap properties
+
+| File | Description |
+|------|-------------|
+| `frap-report.json` | Summary of all healing events |
+| `frap-events.jsonl` | Streaming events (newline-delimited JSON) |
+| `frap-debug.html` | Human-readable debug view |
+| `frap-debug-explorer.html` | Sidebar view when multiple tests use `debug: true` |
+| `debug-reports/*.json` | Per-test detailed debug data |
+| `frap-context.json` | Context timeline (when `captureAll(true)`) |
+| `frap-rca.json` | RCA report (when failures analyzed) |
+| `junit.xml` | JUnit XML with frap properties |
+
+Default location: `target/frap-reports/conference/`
 
 ---
 
@@ -324,6 +449,7 @@ Frap.withFrap(locator, page, options).click();
 - **API Reference:** [java-api-reference.md](./java-api-reference.md)
 - **Maven Central Guide:** [java-maven-central.md](./java-maven-central.md)
 - **RPC Protocol:** [java-sdk-rpc.md](./java-sdk-rpc.md)
+- **Capability Matrix:** [java-sdk-1.0.0-matrix.md](../../project/release/java-sdk-1.0.0-matrix.md) — Full coverage of code, tests, docs, and demo
 - **Demo Project:** See `internal/demo/showcase/java-playwright` in the repository for full examples including conference tests and context capture.
 
 ---

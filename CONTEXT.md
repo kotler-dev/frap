@@ -52,6 +52,7 @@ frap/
 | Что нужно | Файл |
 |-----------|------|
 | Таблица фич, статусы, релизы | `project/FEATURES.md` |
+| **Java SDK 1.0.0** — capability matrix (Maven Central) | [`project/release/java-sdk-1.0.0-matrix.md`](./project/release/java-sdk-1.0.0-matrix.md) |
 | Карточка фичи | `project/feature/FXXX-*.md` |
 | Сценарии и кейсы | `project/cases/` |
 | Архитектура ядра | `project/architecture/` |

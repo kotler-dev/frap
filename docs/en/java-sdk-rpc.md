@@ -67,6 +67,10 @@ Each line is a JSON object:
 
 #### 2. `analyze_rca` — Root cause analysis
 
+Post-mortem classification of a **ContextTimeline** (UI + network + console/logs) around the failure moment. Returns `RcaReport` with primary cause, confidence, timeline excerpt, and recommendation.
+
+**Not** healing (no locator recovery) and **not** discover (no element map).
+
 **Request:**
 ```json
 {
@@ -88,6 +92,8 @@ Each line is a JSON object:
 #### 3. `build_element_map` — Discovery and clustering
 
 Analyzes DOM snapshot and returns element map with clustered groups (lists, forms, etc.).
+
+**Playwright path:** snapshot comes from `page.evaluate(...)` via `SnapshotBuilder` — **not** direct CDP. Standalone Chrome/CDP source is roadmap.
 
 **Request:**
 ```json
