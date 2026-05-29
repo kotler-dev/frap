@@ -32,6 +32,8 @@
         <maven-javadoc-plugin.version>3.8.0</maven-javadoc-plugin.version>
         <maven-gpg-plugin.version>3.2.7</maven-gpg-plugin.version>
         <maven-deploy-plugin.version>3.1.2</maven-deploy-plugin.version>
+        <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
+        <central-publishing-maven-plugin.version>0.7.0</central-publishing-maven-plugin.version>
 
         <!-- Parent POM is not deployed to Central - only child modules -->
         <maven.deploy.skip>true</maven.deploy.skip>
@@ -55,7 +57,7 @@
             <modules>
                 <module>frap-core-java</module>
                 <module>../../adapters/playwright-java</module>
-                <module>../../internal/demo/showcase/java-playwright</module>
+                <module>../../examples/java/playwright</module>
             </modules>
         </profile>
         <!-- Unit tests only (frap-core-java + playwright adapter). No browser/RPC E2E. -->
@@ -67,19 +69,45 @@
                 <module>../../adapters/playwright-java</module>
             </modules>
         </profile>
-        <!-- E2E: internal/demo/showcase/java-playwright — use scripts/run-java-e2e.sh -->
+        <!-- E2E: examples/java/playwright — use scripts/run-java-e2e.sh -->
         <profile>
             <id>java-e2e</id>
             <modules>
                 <module>frap-core-java</module>
                 <module>../../adapters/playwright-java</module>
-                <module>../../internal/demo/showcase/java-playwright</module>
+                <module>../../examples/java/playwright</module>
             </modules>
         </profile>
         <profile>
             <id>release</id>
             <build>
                 <plugins>
+                    <!-- Standalone POMs for Central (no unpublished parent reference) -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>flatten-maven-plugin</artifactId>
+                        <version>${flatten-maven-plugin.version}</version>
+                        <configuration>
+                            <flattenMode>oss</flattenMode>
+                            <updatePomFile>true</updatePomFile>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>flatten</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>flatten</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>flatten.clean</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>

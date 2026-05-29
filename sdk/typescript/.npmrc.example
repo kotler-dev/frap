@@ -1,0 +1,3 @@
+# Copy to sdk/typescript/.npmrc (gitignored) for local `npm publish`.
+# CI uses the NPM_TOKEN secret via setup-node — no .npmrc file needed there.
+//registry.npmjs.org/:_authToken=

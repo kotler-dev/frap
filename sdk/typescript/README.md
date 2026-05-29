@@ -53,12 +53,16 @@ npm run build    # build:wasm + tsc
 
 WASM output: `wasm/` (gitignored; built in CI).
 
+### Publishing
+
+Maintainers: [docs/publishing-npm.md](../../docs/publishing-npm.md). Local auth template: [`.npmrc.example`](./.npmrc.example).
+
 ### Dev fallback
 
 If WASM is missing during development:
 
 ```bash
-export FLETTA_TS_FALLBACK=1
+export FRAP_TS_FALLBACK=1
 ```
 
 Uses legacy TypeScript healing (`core-fallback.ts`). **Not for production.**

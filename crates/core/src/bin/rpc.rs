@@ -16,7 +16,7 @@
 
 use frap_core::{
     analyze_rca_json, build_element_map_json, filter_element_map_json, generate_page_object_json,
-    FlettaCore,
+    FrapCore,
 };
 use serde::{Deserialize, Serialize};
 use std::io::{self, BufRead, Write};
@@ -47,7 +47,7 @@ struct ErrorDetail {
 fn main() {
     let stdin = io::stdin();
     let mut stdout = io::stdout();
-    let mut core = FlettaCore::new();
+    let mut core = FrapCore::new();
 
     for line in stdin.lock().lines() {
         match line {
@@ -86,7 +86,7 @@ fn main() {
     }
 }
 
-fn handle_request(line: &str, core: &mut FlettaCore) -> Response {
+fn handle_request(line: &str, core: &mut FrapCore) -> Response {
     let request: Request = match serde_json::from_str(line) {
         Ok(r) => r,
         Err(e) => {
@@ -118,7 +118,7 @@ fn handle_request(line: &str, core: &mut FlettaCore) -> Response {
     }
 }
 
-fn handle_heal(request: Request, core: &mut FlettaCore) -> Response {
+fn handle_heal(request: Request, core: &mut FrapCore) -> Response {
     // params can be either a HealRequest object directly, or {"request": {...}}
     let params = &request.params;
     let request_json = if params.get("primary_selector").is_some() {
@@ -385,7 +385,7 @@ mod tests {
             method: "heal".to_string(),
             params: sample_heal_request(),
         };
-        let mut core = FlettaCore::new();
+        let mut core = FrapCore::new();
         let response = handle_heal(request, &mut core);
 
         assert!(
@@ -406,7 +406,7 @@ mod tests {
             method: "heal".to_string(),
             params: json!({"request": sample_heal_request()}),
         };
-        let mut core = FlettaCore::new();
+        let mut core = FrapCore::new();
         let response = handle_heal(request, &mut core);
 
         assert!(response.error.is_none());
@@ -455,7 +455,7 @@ mod tests {
             method: "unknown".to_string(),
             params: json!({}),
         };
-        let mut core = FlettaCore::new();
+        let mut core = FrapCore::new();
         let response = handle_request(&serde_json::to_string(&request).unwrap(), &mut core);
 
         assert!(response.error.is_some());

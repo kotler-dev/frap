@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
-import { attachFlettaContext, recordContextUiEvent } from '@frap/playwright';
+import { attachFrapContext, recordContextUiEvent } from '@frap/playwright';
 import { CONTEXT_PATH, CONTEXT_REPORT_DIR } from './helpers';
 
 test.describe('C002 API Timeout RCA', () => {
   test.fail('payment API timeout precedes missing pay button', async ({ page }, testInfo) => {
-    attachFlettaContext(page, {
+    attachFrapContext(page, {
       reportDir: CONTEXT_REPORT_DIR,
       testId: testInfo.title,
     });

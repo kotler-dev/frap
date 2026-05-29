@@ -1,4 +1,4 @@
-import { FrapConfig, mergeConfig as mergeBaseConfig } from '@frap/frap';
+import { FrapConfig, mergeConfig as mergeBaseConfig } from '@frap/sdk';
 import type { PlaywrightTestConfig, TestInfo } from '@playwright/test';
 
 export interface FrapPlaywrightConfig extends FrapConfig {

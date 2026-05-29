@@ -3,7 +3,7 @@ name: Publish to Maven Central
 on:
   push:
     tags:
-      - 'v*'
+      - 'java-v*'
   workflow_dispatch:
 
 jobs:
@@ -64,7 +64,7 @@ jobs:
           merge-multiple: true
           path: sdk/java/frap-core-java/src/main/resources/META-INF/native/
       - name: Make binaries executable
-        run: chmod +x sdk/java/frap-core-java/src/main/resources/META-INF/native/*\n
+        run: chmod +x sdk/java/frap-core-java/src/main/resources/META-INF/native/*
       - name: Publish GPG key to keyserver
         run: |
           # Export public key and send to keyserver
