@@ -74,12 +74,22 @@ public class FrapRpcClient implements FrapCoreClient {
 
     /**
      * Returns the bundled binary name for the current platform.
+     * For Linux x86_64, tries glibc first, then musl (for Alpine/Docker compatibility).
      */
     private static String getBundledBinaryName() {
         String os = System.getProperty("os.name").toLowerCase();
         String arch = System.getProperty("os.arch").toLowerCase();
 
         if (os.contains("linux") && arch.contains("amd64")) {
+            // Try glibc first (most common)
+            if (FrapRpcClient.class.getResource("/META-INF/native/frap-core-rpc-linux-x86_64") != null) {
+                return "frap-core-rpc-linux-x86_64";
+            }
+            // Fallback to musl (Alpine Linux, Docker)
+            if (FrapRpcClient.class.getResource("/META-INF/native/frap-core-rpc-linux-x86_64-musl") != null) {
+                return "frap-core-rpc-linux-x86_64-musl";
+            }
+            // Default to glibc name if neither found (will fail with helpful message in extractBundledBinary)
             return "frap-core-rpc-linux-x86_64";
         } else if (os.contains("mac")) {
             if (arch.contains("aarch64")) {
@@ -89,7 +99,7 @@ public class FrapRpcClient implements FrapCoreClient {
         }
         throw new UnsupportedOperationException(
             "Platform not supported: " + os + " " + arch +
-            ". Supported: Linux x86_64, macOS x86_64/aarch64"
+            ". Supported: Linux x86_64 (glibc/musl), macOS x86_64/aarch64"
         );
     }
 

@@ -12,21 +12,31 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            target: linux-x86_64
+            target: x86_64-unknown-linux-gnu
+            binary_name: frap-core-rpc-linux-x86_64
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+            binary_name: frap-core-rpc-linux-x86_64-musl
           - os: macos-latest
-            target: macos-aarch64
+            target: aarch64-apple-darwin
+            binary_name: frap-core-rpc-macos-aarch64
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}}
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: crates
-      - run: cd crates && cargo build --release -p frap-core --bin frap-core-rpc
+      - name: Install musl tools
+        if: contains(matrix.target, 'musl')
+        run: sudo apt-get update && sudo apt-get install -y musl-tools
+      - run: cd crates && cargo build --release -p frap-core --bin frap-core-rpc --target ${{ matrix.target }}
       - run: |
           mkdir -p sdk/java/frap-core-java/src/main/resources/META-INF/native
-          cp crates/target/release/frap-core-rpc \
-             sdk/java/frap-core-java/src/main/resources/META-INF/native/frap-core-rpc-${{ matrix.target }}
+          cp crates/target/${{ matrix.target }}/release/frap-core-rpc \
+             sdk/java/frap-core-java/src/main/resources/META-INF/native/${{ matrix.binary_name }}
       - uses: actions/upload-artifact@v4
         with:
           name: native-binaries-${{ matrix.target }}
