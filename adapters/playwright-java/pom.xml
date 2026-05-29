@@ -49,32 +49,35 @@
         <dependency>
             <groupId>io.github.kotlerdev.frap</groupId>
             <artifactId>frap-core-java</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.0</version>
         </dependency>
 
         <!-- Playwright -->
         <dependency>
             <groupId>com.microsoft.playwright</groupId>
             <artifactId>playwright</artifactId>
-            <version>${playwright.version}</version>
+            <version>1.44.0</version>
         </dependency>
 
         <!-- Jackson -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+            <version>2.17.0</version>
         </dependency>
 
         <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <version>2.0.12</version>
         </dependency>
 
         <!-- JUnit API for FrapExtension in main sources -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
+            <version>5.10.2</version>
             <scope>compile</scope>
         </dependency>
 
@@ -82,16 +85,19 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
+            <version>5.10.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
+            <version>3.25.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
+            <version>2.0.12</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
