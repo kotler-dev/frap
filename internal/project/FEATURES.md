@@ -184,8 +184,8 @@ Frap/
 ├── crates/              # Rust core (signature, clustering, healing, frapcode-core)
 ├── sdk/typescript/      # TypeScript SDK
 ├── adapters/playwright/ # Playwright adapter
-├── test-app/           # FixtureConf pages (Conference demo)
-├── e2e/conference/     # PoC gates CP001–CP005 (CONF-*)
+├── internal/demo/site/           # FixtureConf pages (Conference demo)
+├── internal/testing/conference/     # PoC gates CP001–CP005 (CONF-*)
 ├── e2e/context/        # C002/C003/C004 context layer demos + verify-context.mjs
 ├── crates/context/     # frapcode-context (timeline, correlation, WebSocket model)
 ├── crates/rca/         # frapcode-rca (classifier, report, MCP stub)

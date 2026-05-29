@@ -7,8 +7,8 @@
 | Ресурс | Описание |
 |--------|----------|
 | [conference/CASES.md](./conference/CASES.md) | Матрица `CONF-*` |
-| [e2e/conference/README.md](../../e2e/conference/README.md) | Как запускать тесты и открывать отчёты |
-| [test-app/conference/](../../test-app/conference/) | Статические страницы FixtureConf |
+| [internal/testing/conference/README.md](../../internal/testing/conference/README.md) | Как запускать тесты и открывать отчёты |
+| [internal/demo/site/conference/](../../internal/demo/site/conference/) | Статические страницы FixtureConf |
 
 ```bash
 ./scripts/test.sh conference
@@ -61,6 +61,6 @@ project/cases/
 
 ## Как добавить кейс Conference
 
-1. Добавить страницу в `test-app/conference/` при необходимости
-2. Добавить spec в `e2e/conference/` с ID `CONF-FEAT-AREA-OUTCOME`
-3. Обновить [conference/CASES.md](./conference/CASES.md) и [e2e/conference/README.md](../../e2e/conference/README.md)
+1. Добавить страницу в `internal/demo/site/conference/` при необходимости
+2. Добавить spec в `internal/testing/conference/` с ID `CONF-FEAT-AREA-OUTCOME`
+3. Обновить [conference/CASES.md](./conference/CASES.md) и [internal/testing/conference/README.md](../../internal/testing/conference/README.md)
