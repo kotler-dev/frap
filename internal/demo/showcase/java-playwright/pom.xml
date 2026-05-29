@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>io.github.kotler-dev.frap</groupId>
+        <groupId>io.github.kotler-dev</groupId>
         <artifactId>frap-sdk-parent</artifactId>
         <version>1.0.0</version>
         <relativePath>../../../../sdk/java/pom.xml</relativePath>
@@ -27,7 +27,7 @@
     <dependencies>
         <!-- Frap -->
         <dependency>
-            <groupId>io.github.kotler-dev.frap</groupId>
+            <groupId>io.github.kotler-dev</groupId>
             <artifactId>frap-playwright</artifactId>
             <version>${project.version}</version>
         </dependency>
