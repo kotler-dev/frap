@@ -22,7 +22,7 @@ Three layers — not one product category:
 
 Details: [docs/positioning.md](docs/positioning.md) · [docs/monetization.md](docs/monetization.md)
 
-## Quick start (npm)
+## Quick Start
 
 Published packages: [@frap/sdk](https://www.npmjs.com/package/@frap/sdk) · [@frap/playwright](https://www.npmjs.com/package/@frap/playwright)
 
@@ -50,11 +50,32 @@ export default defineConfig({
 ```
 
 ```typescript
-// test.spec.ts — custom selector or withFletta() wrapper
+// test.spec.ts — custom selector or withFrap() wrapper
 await page.locator('frap:[data-testid="pay-btn"]').click();
 ```
 
-See [adapters/playwright/README.md](adapters/playwright/README.md) and [sdk/typescript/README.md](sdk/typescript/README.md).
+See: [TypeScript SDK](sdk/typescript/README.md) · [Playwright Adapter](adapters/playwright/README.md)
+
+### Java / Maven
+
+```xml
+<dependency>
+    <groupId>io.github.kotler-dev</groupId>
+    <artifactId>frap-playwright</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+```java
+// Test with self-healing selectors
+@Test
+void paymentFlow() {
+    Frap frap = Frap.withOptions(page, WithFrapOptions.defaults());
+    frap.locator("[data-testid='pay-btn']").click();
+}
+```
+
+See: [Java Getting Started](docs/en/java-getting-started.md) · [Java API Reference](docs/en/java-api-reference.md) · [Maven Release Matrix](project/release/java-sdk-1.0.0-matrix.md)
 
 ## Quick start (from source)
 
@@ -108,18 +129,25 @@ When a primary selector fails, frap:
 
 ## Documentation
 
-| Topic | English | Русский |
-|-------|---------|---------|
-| Overview | [project/OVERVIEW.md](project/OVERVIEW.md) | [project/OVERVIEW.md](project/OVERVIEW.md) |
-| Features & roadmap | [project/FEATURES.md](project/FEATURES.md) | — |
-| PoC gates & benchmark | [docs/benchmark.md](docs/benchmark.md) | — |
-| npm publishing | [docs/publishing-npm.md](docs/publishing-npm.md) | — |
-| Positioning | [docs/positioning.md](docs/positioning.md) | [docs/positioning.md](docs/positioning.md) |
-| Playwright adapter | [adapters/playwright/README.md](adapters/playwright/README.md) | [docs/integrations.md](docs/integrations.md) |
-| TypeScript SDK | [sdk/typescript/README.md](sdk/typescript/README.md) | — |
-| Context E2E | [e2e/context/README.md](e2e/context/README.md) | — |
-| Architecture | [project/architecture/](project/architecture/) | — |
-| Knowledge base index | [docs/README.md](docs/README.md) | [docs/README.md](docs/README.md) |
+### Quick Links by Language
+
+| Topic | TypeScript / npm | Java / Maven |
+|-------|------------------|--------------|
+| **Getting Started** | [sdk/typescript/README.md](sdk/typescript/README.md) | [docs/en/java-getting-started.md](docs/en/java-getting-started.md) |
+| **API Reference** | [adapters/playwright/README.md](adapters/playwright/README.md) | [docs/en/java-api-reference.md](docs/en/java-api-reference.md) |
+| **Playwright Adapter** | [adapters/playwright/README.md](adapters/playwright/README.md) | [adapters/playwright-java/README.md](adapters/playwright-java/README.md) |
+| **Release Matrix** | — | [project/release/java-sdk-1.0.0-matrix.md](project/release/java-sdk-1.0.0-matrix.md) |
+
+### Architecture & Concepts
+
+| Topic | Document |
+|-------|----------|
+| Overview | [project/OVERVIEW.md](project/OVERVIEW.md) |
+| Features & Roadmap | [project/FEATURES.md](project/FEATURES.md) |
+| Architecture | [project/architecture/](project/architecture/) |
+| Positioning | [docs/positioning.md](docs/positioning.md) |
+| Benchmark & PoC | [docs/benchmark.md](docs/benchmark.md) |
+| E2E Context | [internal/testing/conference/README.md](internal/testing/conference/README.md) |
 
 ## Project structure
 
