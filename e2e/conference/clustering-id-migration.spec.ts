@@ -6,7 +6,7 @@ import * as path from 'path';
 
 const FIXTURE_DIR = path.resolve(
   __dirname,
-  '../../../fixtures/contract/clustering-id-migration'
+  '../../fixtures/contract/clustering-id-migration'
 );
 
 test.describe('Conference 2026 Spring', () => {
