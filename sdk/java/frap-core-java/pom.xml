@@ -11,6 +11,7 @@
         <version>1.0.0</version>
     </parent>
 
+    <groupId>io.github.kotler-dev</groupId>
     <artifactId>frap-core-java</artifactId>
     <name>Frap Core Java</name>
     <description>Core Java SDK with JSON-RPC client for Frap self-healing selectors</description>
@@ -102,11 +103,12 @@
             <plugin>
                 <groupId>org.sonatype.central</groupId>
                 <artifactId>central-publishing-maven-plugin</artifactId>
-                <version>0.6.0</version>
+                <version>${central-publishing-maven-plugin.version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <publishingServerId>central</publishingServerId>
                     <checksums>all</checksums>
+                    <skipPublishing>true</skipPublishing>
                 </configuration>
             </plugin>
         </plugins>
