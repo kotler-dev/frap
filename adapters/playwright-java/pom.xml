@@ -18,8 +18,8 @@
 
     <properties>
         <playwright.version>1.44.0</playwright.version>
-        <!-- Enable deployment for this module (parent has skip) -->
-        <maven.deploy.skip>false</maven.deploy.skip>
+        <!-- Use central-publishing plugin, not maven-deploy -->
+        <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
     <dependencies>
@@ -74,14 +74,6 @@
         </dependency>
     </dependencies>
 
-    <distributionManagement>
-        <repository>
-            <id>central</id>
-            <name>Maven Central</name>
-            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
-
     <build>
         <plugins>
             <plugin>
@@ -94,6 +86,17 @@
                 <configuration>
                     <!-- Unit tests only; browser + RPC E2E live in internal/demo/showcase/java-playwright -->
                     <excludedGroups>e2e</excludedGroups>
+                </configuration>
+            </plugin>
+            <!-- Sonatype Central Portal Publishing -->
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.6.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <checksums>all</checksums>
                 </configuration>
             </plugin>
         </plugins>

@@ -56,16 +56,8 @@
 
     <!-- Enable deployment for this module (parent has skip) -->
     <properties>
-        <maven.deploy.skip>false</maven.deploy.skip>
+        <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
-
-    <distributionManagement>
-        <repository>
-            <id>central</id>
-            <name>Maven Central</name>
-            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
 
     <build>
         <plugins>
@@ -76,6 +68,17 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <!-- Sonatype Central Portal Publishing -->
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.6.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <checksums>all</checksums>
+                </configuration>
             </plugin>
         </plugins>
     </build>
