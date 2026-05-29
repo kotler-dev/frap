@@ -59,7 +59,7 @@
    - Один element map format для всех платформ
 
 2. **Enterprise Observability Layer**
-   - Drift detection: "эта страница изменилась с прошлого раза"
+   - Drift detection: "эта страница изменилась с прошлого раза" — см. [Structural Contract](./structural-contract.md) и [F017](../project/feature/F017-structural-contract.md)
    - Unified context: UI + network + logs в одном timeline
    - RCA: "почему тест упал?" с root cause classification
 

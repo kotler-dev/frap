@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.github.kotlerdev.frap</groupId>
+        <artifactId>frap-sdk-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>frap-core-native</artifactId>
+    <name>Frap Core Native (JNI)</name>
+    <description>JNI bindings for frap-core native library</description>
+    <packaging>jar</packaging>
+
+    <properties>
+        <native.lib.dir>${project.build.directory}/native-lib</native.lib.dir>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.github.kotlerdev.frap</groupId>
+            <artifactId>frap-core-java</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- JNI loaded from system -->
+
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Compile JNI bindings -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+
+            <!-- Extract native libraries based on platform -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>extract-native-lib</id>
+                        <phase>process-classes</phase>
+                        <configuration>
+                            <target>
+                                <echo message="Native library must be built separately with: cargo build --release -p frap-core --features ffi" />
+                                <mkdir dir="${native.lib.dir}" />
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Include native libs in JAR -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-native-libs</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}/META-INF/native</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/src/main/resources/META-INF/native</directory>
+                                    <includes>
+                                        <include>**/*.so</include>
+                                        <include>**/*.dylib</include>
+                                        <include>**/*.dll</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <!-- Profile to build native library from source -->
+        <profile>
+            <id>build-native</id>
+            <activation>
+                <property>
+                    <name>buildNative</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.1.1</version>
+                        <executions>
+                            <execution>
+                                <id>build-rust-ffi</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>cargo</executable>
+                                    <arguments>
+                                        <argument>build</argument>
+                                        <argument>--release</argument>
+                                        <argument>-p</argument>
+                                        <argument>frap-core</argument>
+                                        <argument>--features</argument>
+                                        <argument>ffi</argument>
+                                    </arguments>
+                                    <workingDirectory>${project.basedir}/../../../crates</workingDirectory>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-native-lib</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>cp</executable>
+                                    <arguments>
+                                        <argument>${project.basedir}/../../../crates/target/release/libfrap_core.dylib</argument>
+                                        <argument>${native.lib.dir}/</argument>
+                                    </arguments>
+                                    <successExitCodes>0,1</successExitCodes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

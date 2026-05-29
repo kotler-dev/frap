@@ -87,7 +87,7 @@
 
 | Сегмент | PoC/MVP | v2 | v3+ |
 |---------|---------|-----|-----|
-| S1 Java/Selenium | Документация + roadmap | JUnit export, listener | Full Java SDK |
+| S1 Java/Selenium | Playwright Java PoC ✅; Selenium spec | JUnit export, listener | Full WebDriver SDK |
 | S2 Playwright | **Adapter, CP001–CP003** | Unified context, RCA | MCP analyze |
 | S3 AI-native QA | — | MCP generate (C005) | F011 agent audit |
 

@@ -6,6 +6,8 @@
 
 **Правило**: Фича считается реализованной только если есть работающий код + тесты + документация + минимум один проходящий кейс.
 
+**Архитектурное правило SDK**: алгоритмы healing/scoring/clustering не дублируются в SDK-языках; реализация только в Core ([ADR-001](./architecture/ADR-001-core-language-strategy.md)).
+
 ---
 
 ## Терминология
@@ -17,6 +19,8 @@
 | MCP | Model Context Protocol — JSON-RPC для LLM-агентов |
 | RCA | Root Cause Analysis — определение причины падения |
 | Self-healing | Автоматическое восстановление селектора при изменении UI |
+| Structural Contract | Структурный контракт — baseline + policy + drift gate |
+| Drift report | Отчёт об изменениях UI структуры (element/structural/cluster) |
 
 ---
 
@@ -29,6 +33,8 @@
 - **release=v3.0.0** — Future: AI-Agent Testing
 - **release=v1.4.0** — Java SDK & UI adapters (bank S1)
 - **release=backlog** — пока не запланировано (в т.ч. Python SDK)
+
+> **Note on Java SDK 1.0.0:** Maven Central release (`frap-core-java`, `frap-playwright`) is a **self-contained surface** with discover, healing, context/RCA, and Page Object generation. It does not follow the npm product versioning timeline (v1.0.0 MVP / v1.1.0 context). See [Java SDK 1.0.0 Matrix](./release/java-sdk-1.0.0-matrix.md) for capabilities × surfaces coverage.
 
 ---
 
@@ -48,7 +54,7 @@
 | [F000: Core Platform API](./feature/F000-core-platform-api.md) | ✅ | Critical | v1.0.0 | P0 WASM + `frap-core`; FFI/JSON-RPC → v1.4.0 |
 | [F001: Self-Healing Selectors](./feature/F001-self-healing.md) | ✅ | Critical | v1.0.0 | Rust Core + WASM runtime; Conference E2E |
 | [F013: TypeScript SDK](./feature/F013-typescript-sdk.md) | ✅ | Critical | v1.0.0 | `healJson` WASM; README API |
-| [F008: Playwright Adapter](./feature/F008-playwright-adapter.md) | ✅ | Critical | v1.0.0 | `withFletta`, JUnit в CI (CP005) |
+| [F008: Playwright Adapter](./feature/F008-playwright-adapter.md) | ✅ | Critical | v1.0.0 | `withFrap`, JUnit в CI (CP005) |
 | [F012: Debug Trace Mode](./feature/F012-debug-trace-mode.md) | ✅ | Medium | v1.0.0 | Debug режим с HTML отчётом (Classic + Explorer) |
 
 ---
@@ -57,8 +63,8 @@
 
 | Фича | Статус | Severity | Release | Примечание |
 |------|--------|----------|---------|------------|
-| [F002: Unified Context](./feature/F002-unified-context.md) | ✅ | High | v1.1.0 | timeline + captureAll; C002/C003/C004 e2e |
-| [F003: Root Cause Analysis](./feature/F003-rca.md) | ✅ | High | v1.1.0 | frap-rca + WASM; C002/C003 verify-rca |
+| [F002: Unified Context](./feature/F002-unified-context.md) | ✅ | High | v1.1.0 | timeline + captureAll; C002/C003/C004 e2e; **available in Java SDK 1.0.0** |
+| [F003: Root Cause Analysis](./feature/F003-rca.md) | ✅ | High | v1.1.0 | frap-rca + WASM; C002/C003 verify-rca; **available in Java SDK 1.0.0** |
 
 ---
 
@@ -66,7 +72,7 @@
 
 | Фича | Статус | Severity | Release | Примечание |
 |------|--------|----------|---------|------------|
-| [F004: Page Object Generator](./feature/F004-page-object-gen.md) | ❌ | Medium | v1.2.0 | Автогенерация из структуры |
+| [F004: Page Object Generator](./feature/F004-page-object-gen.md) | ⚠️ | Medium | v1.2.0 | Java `generate_page_object` — **in Java SDK 1.0.0**; CLI/TS export — backlog v1.2.0 |
 | [F005: MCP/A2A Integration](./feature/F005-mcp-integration.md) | ❌ | Medium | v1.2.0 | JSON-RPC для LLM-агентов |
 | [F009: Feedback Loop](./feature/F009-feedback-loop.md) | ❌ | Medium | v1.2.0 | Обучение на исправлениях |
 
@@ -79,6 +85,7 @@
 | [F006: Multi-Platform Core](./feature/F006-multi-platform.md) | ❌ | Medium | v2.0.0 | Web + Android + iOS |
 | [F007: Visual Fingerprint](./feature/F007-visual-fingerprint.md) | ❌ | Low | v2.0.0 | Визуальные признаки в сигнатуре |
 | [F010: Test Health Score](./feature/F010-test-health.md) | ❌ | Medium | v2.0.0 | Метрика стабильности теста |
+| [F017: Structural Contract](./feature/F017-structural-contract.md) | ❌ | High | v2.0.0 | Структурная регрессия UI; P07; partial v1.2 docs |
 
 ---
 
@@ -86,7 +93,28 @@
 
 | Фича | Статус | Severity | Release | Примечание |
 |------|--------|----------|---------|------------|
-| [F014: Java SDK & UI Adapters](./feature/F014-java-sdk-ui-adapters.md) | ❌ | High | v1.4.0 | JUnit 5 + WebDriver P0; Selenide P1 |
+| [F014: Java SDK & UI Adapters](./feature/F014-java-sdk-ui-adapters.md) | ⚠️ | High | v1.0.0 / v1.4.0 | Track A: Maven 1.0.0 shipped (see below). Track B (WebDriver/Selenide) — v1.4.0 |
+
+---
+
+## Java SDK 1.0.0 (Maven Central)
+
+Self-contained release for Java automation. Includes all capabilities from product releases v1.0.0–v1.1.0 in a single Maven artifact.
+
+| Capability | Status | Test Gate | Docs | Demo |
+|------------|--------|-----------|------|------|
+| Self-healing (`withFrap`) | ✅ | `ScheduleHealingTest` | getting-started, api-reference | Showcase: schedule-heal PASS |
+| Discover + clustering | ✅ | `DiscoveryPageObjectE2eTest` | getting-started §4 | Showcase |
+| Page Object generation | ✅ | Compile check | getting-started §4 | — |
+| Context capture (`captureAll`) | ✅ | `PaymentTimeoutTest` | getting-started §4 | Showcase |
+| RCA (`analyze_rca`) | ✅ | `PaymentTimeoutTest` | api-reference | — |
+| Reports (jsonl, debug, explorer, context, rca) | ✅ | `ZzzReportingVerificationTest` | getting-started §6, showcase README | Generated files |
+| WebDriver / Selenide | ❌ | — | — | — |
+| Windows bundled binary | ❌ | — | Troubleshooting workaround | — |
+
+**Verification:** `./scripts/run-java-e2e.sh` (13 tests, conference + context gates).  
+**Coordinates:** `io.github.kotlerdev.frap:frap-core-java:1.0.0`, `io.github.kotlerdev.frap:frap-playwright:1.0.0`  
+**Detailed matrix:** [java-sdk-1.0.0-matrix.md](./release/java-sdk-1.0.0-matrix.md)
 
 ---
 
@@ -116,7 +144,14 @@
 - [x] F012: Debug Trace Mode — developer experience
 
 ### v1.4.0 Java
-- [ ] F014: Java SDK & UI Adapters — JUnit 5 + WebDriver; Selenide P1
+- [ ] F014: Java SDK & UI Adapters — **Playwright Java PoC ✅** (RPC + demo E2E); WebDriver + Selenide P1 — в работе
+
+### v2.0.0 Scale (Structural Contract F017)
+- [ ] F017.0: Documentation + availability matrix + case C006 — v1.2.0 docs
+- [ ] F017.1: Element-level contract — signatures baseline, `healStrategy: fail`, CI gate
+- [ ] F017.2: Page-level contract — `discover` element map, `drift-report.json`
+- [ ] F017.3: Policy DSL — `structural-contract.yaml`, scopes, invariants
+- [ ] F017.4: Geometry invariants — relative bounds (F007 integration)
 
 ### v1.1.0 Context
 - [x] F002: Unified Context — timeline (F002.0–F002.6)
@@ -161,15 +196,16 @@
 | v1.0.0 | 5 | 5 | 0 | 0 | 100% |
 | v1.1.0 | 2 | 2 | 0 | 0 | 100% |
 | v1.2.0 | 3 | 0 | 0 | 3 | 0% |
-| v1.4.0 | 1 | 0 | 0 | 1 | 0% |
+| v1.4.0 | 1 | 0 | 1 | 0 | 50% |
 | backlog | 1 | 0 | 0 | 1 | 0% |
-| v2.0.0 | 3 | 0 | 0 | 3 | 0% |
+| v2.0.0 | 4 | 0 | 0 | 4 | 0% |
 | v3.0.0 | 1 | 0 | 0 | 1 | 0% |
-| **Всего** | **16** | **7** | **0** | **9** | **44%** |
+| **Всего** | **17** | **7** | **1** | **9** | **44%** |
+| **Java SDK 1.0.0** | **11** | **9** | **2** | **0** | **91%** | — See [matrix](./release/java-sdk-1.0.0-matrix.md)
 
 ---
 
-*Обновлено: 2026-05-24*
+*Обновлено: 2026-05-29*
 
 ---
 
@@ -181,8 +217,8 @@ frap/
 ├── crates/              # Rust core (signature, clustering, healing, frap-core)
 ├── sdk/typescript/      # TypeScript SDK
 ├── adapters/playwright/ # Playwright adapter
-├── test-app/           # FixtureConf pages (Conference demo)
-├── e2e/conference/     # PoC gates CP001–CP005 (CONF-*)
+├── internal/demo/site/           # FixtureConf pages (Conference demo)
+├── internal/testing/conference/     # PoC gates CP001–CP005 (CONF-*)
 ├── e2e/context/        # C002/C003/C004 context layer demos + verify-context.mjs
 ├── crates/context/     # frap-context (timeline, correlation, WebSocket model)
 ├── crates/rca/         # frap-rca (classifier, report, MCP stub)
@@ -196,6 +232,8 @@ frap/
 - [x] Playwright adapter + JUnit/JSON reporter
 - [x] Conference E2E (CP001–CP005 gates) + `verify-reports.mjs`
 - [x] CI: Rust tests, WASM build, Conference E2E, Context Layer E2E + RCA verify, JUnit artifact upload
+- [x] Java SDK (JSON-RPC): `sdk/java/frap-core-java`, `frap-core-rpc` smoke in CI
+- [x] Playwright Java adapter + L4 demo E2E (`internal/demo/showcase/java-playwright`, `./scripts/run-java-e2e.sh`, CI job `java-playwright-e2e`)
 
 ### Ожидает (v1.0.1 / v1.4.0)
 
@@ -205,6 +243,8 @@ frap/
 | P1 | FFI + cbindgen (F000) | v1.4.0 |
 | P2 | JSON-RPC CLI (F000, Python F015) | v1.4.0 / backlog |
 | P3 | Custom adapter guide + standalone examples | v1.4.0+ |
+| P4 | Java Playwright PoC (F014 track A) | ✅ 2026-05-27 |
+| P5 | Java WebDriver + Selenide (F014 track B) | v1.4.0 |
 
 ### Подзадачи v1.0.0 (закрыто)
 

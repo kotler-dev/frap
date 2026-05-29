@@ -1,0 +1,41 @@
+{
+  "id": 1,
+  "method": "heal",
+  "params": {
+    "primary_selector": "[data-testid='pay-btn']",
+    "original_signature": {
+      "path": [
+        {
+          "tag": "button",
+          "role": "submit",
+          "semantic_type": null,
+          "structural_class": null,
+          "depth": 0
+        }
+      ],
+      "prefix": "button:submit",
+      "stable_attrs": {
+        "data-testid": "pay-btn"
+      },
+      "text_content": "Pay",
+      "position_in_parent": null,
+      "children_hash": 0,
+      "depth": 1
+    },
+    "dom_snapshot": {
+      "html": "<button data-testid='checkout-pay'>Pay</button>",
+      "elements": [
+        {
+          "selector": "[data-testid='checkout-pay']",
+          "tag": "button",
+          "attributes": {
+            "data-testid": "checkout-pay"
+          },
+          "text_content": "Pay",
+          "path": ["button:submit"]
+        }
+      ]
+    },
+    "min_confidence": 0.7
+  }
+}

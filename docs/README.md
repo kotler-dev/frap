@@ -29,6 +29,9 @@ docs/
 | Кого целим (банк, команды) | [audience.md](./audience.md) |
 | PoC за неделю | [benchmark.md](./benchmark.md) |
 | Playwright / JUnit | [integrations.md](./integrations.md) |
+| Кластеризация, ClusterType | [clustering.md](./clustering.md) |
+| Element Map, Signature, RCA, discover vs CDP | [glossary.md](./glossary.md) |
+| Java SDK quick start | [en/java-getting-started.md](./en/java-getting-started.md) |
 | Деньги / enterprise | [monetization.md](./monetization.md) |
 | Карта фич и кейсов | [index.md](./index.md) |
 

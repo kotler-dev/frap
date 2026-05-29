@@ -7,50 +7,65 @@
 ## Core Concepts (ядро)
 
 ### Discover
-**Определение:** Процесс автоматического извлечения полной структуры UI из platform-specific source и преобразования её в element map.
+**Определение:** Процесс автоматического извлечения структуры UI и преобразования её в element map.
 
 **Детали:**
-- Input: URL или platform handle (CDP session, Android ViewTree, etc.)
-- Process: tree extraction → filtering (interactive elements) → signature computation → clustering
+- Input: platform handle (Playwright `Page`, в roadmap — CDP session, Android ViewTree, …)
+- Process: snapshot → filtering (interactive elements) → signature computation → clustering
 - Output: structured element map (JSON)
 
+**Playwright adapter (сейчас):** `Frap.discover(page)` **не использует CDP**. Цепочка:
+
+```
+SnapshotBuilder.build() → page.evaluate(...) → client.buildElementMap(...)
+```
+
+Снимок собирается in-page JavaScript (интерактивные элементы, path, атрибуты); Core получает `DOMSnapshot` и строит element map.
+
+**CDP (roadmap):** standalone Chrome source (URL или CDP endpoint), запись сценариев через Chrome DevTools Protocol (F004, C009) — **отдельный transport**, тот же Core pipeline (`build_element_map`). См. [project/cases/demo/C009-recording-cdp.md](../project/cases/demo/C009-recording-cdp.md).
+
 **Пример:**
-```bash
-frap discover --url https://shop.example.com
-# Output: element-map.json с интерактивными элементами, clusters, confidence scores
+```java
+ElementMap map = Frap.discover(page);
 ```
 
 **Отличие от:**
 - "Scrape" — discover не извлекает контент, а структуру элементов
 - "Record" — discover без действий пользователя, статический анализ
 - "Parse" — discover включает clustering и signature generation, не просто DOM parsing
+- "RCA" — discover строит карту UI; `analyze_rca` разбирает падение по timeline (см. ниже)
 
 ---
 
 ### Element Map
-**Определение:** Результат discover — структурированное, platform-agnostic представление UI элементов с stable IDs и confidence scores.
+**Определение:** Результат discover — не «карта сайта», а **структурированный каталог UI-элементов страницы**: сигнатуры, confidence, рекомендованные локаторы и кластеры.
 
-**Структура:**
+**Структура (v1.0.0):** два **плоских** списка — не дерево и не граф в ответе API.
+
 ```typescript
 interface ElementMap {
-  elements: ElementNode[];           // Все интерактивные элементы
-  clusters: Cluster[];                // Группы схожих элементов
-  confidenceScores: Map<string, number>; // Устойчивость каждого ID
-  metadata: {
-    url: string;
-    timestamp: number;
-    source: 'chrome' | 'playwright' | 'android';
-    coverage: number;                 // % интерактивных элементов
-  };
+  elements: ElementNode[];    // каталог элементов
+  clusters: Cluster[];      // группы; связь через cluster_id
+  metadata: MapMetadata;
 }
 
 interface ElementNode {
-  id: string;                         // Stable ID (генерируется core)
-  signature: Signature;               // Устойчивые атрибуты
-  clusterId?: string;                 // Принадлежность к cluster
-  confidence: number;                 // 0.0 - 1.0
+  id: string;               // ключ каталога в этом discover (el-0, el-1, …)
+  selector: string;         // селектор на момент снимка
+  recommended_selector: string;
+  tag: string;
+  signature: Signature;     // структура + устойчивые атрибуты
+  cluster_id?: string;
+  confidence: number;
+  locator: LocatorRecommendation;
 }
 ```
+
+**Навигация:** перебор / stream / filter по `elements` и `clusters`. Между `ElementNode` **нет** полей `parent_id` / `children` — иерархия не материализована как ссылки.
+
+**Где тогда структура DOM?** В `signature.path` каждого элемента: при снятии snapshot адаптер поднимается от узла к `body` и записывает цепочку токенов `tag:role`. Этого достаточно для matching и кластеризации без дерева в Element Map.
+
+**`el-N` vs «тот же элемент после изменения UI»:** ID в element map — **внутренний ключ одного прогона discover**, не стабильный идентификатор на годы. Чтобы узнать «тот же» элемент после смены `id` / разметки, используется **сохранённая сигнатура** (при bind локатора через adapter) и алгоритм resolution/heal: сравнение с кандидатами в **новом** snapshot, сначала в том же кластере.
 
 **Назначение:**
 - Input для code generation (PageObject, тесты)
@@ -82,47 +97,113 @@ trait Source {
 ---
 
 ### Signature
-**Определение:** Набор устойчивых атрибутов элемента, используемых для stable identification при изменениях UI.
+**Определение:** Структурный «отпечаток» элемента для matching при изменениях UI. Записывается в snapshot и копируется в element map / heal request.
 
-**Компоненты signature:**
+**Компоненты (реализация v1.0.0):**
 ```rust
 struct Signature {
-  role: ElementRole,           // button, link, input, heading, etc.
-  attributes: HashMap<String, String>,  // data-testid, aria-label, type, etc.
-  text_hash: Option<String>,   // Hash видимого текста (normalized)
-  structural_path: Vec<u32>,   // Позиция относительно parent (resilient)
-  visual_hints: Vec<VisualHint>, // CSS-based (optional, enhancement)
+  path: Vec<DOMToken>,              // цепочка tag:role от элемента к body
+  prefix: String,                    // первые токены path (для кластеризации)
+  stable_attrs: HashMap<String, String>, // data-testid, id, data-id, aria-*, name, …
+  text_content: Option<String>,      // видимый текст (кнопки, ссылки)
+  position_in_parent: Option<usize>, // индекс среди siblings с тем же tag
+  children_hash: u64,                // зарезервировано под structural hash детей
+  depth: u8,
 }
 ```
 
-**Устойчивость:** Signature выбирается так, чтобы переживать типичные рефакторинги (смена CSS классов, перестановка в DOM) но быть чувствительным к семантическим изменениям.
+**`path` vs parent-child в Element Map:** дерево в ответе discover не строится, но **путь уже снят** в момент snapshot. При heal сравниваются `path` (Levenshtein + LCS по токенам), `stable_attrs`, `text_content`, `position_in_parent`, плюс бонусы/штрафы (например, миграция `id` → `data-id` с тем же значением).
+
+**`position_in_parent` — это не `:nth-child()` в локаторе.** SnapshotBuilder считает индекс элемента среди **однотипных** siblings (`parent.children` с тем же `tagName`). В `recommended_selector` nth-child **не** подставляется — приоритет: `data-testid` → `id` → `data-id` → `name` → fallback. Позиция используется как **+0.08 к confidence** при сопоставлении сигнатур, когда уникальный атрибут пропал.
+
+**Пример (id → data-id):** было `li#2`, стало `li[data-id='2']`. Кластер списка сохраняется (тот же `prefix_signature`). Heal находит кандидата по path + `position_in_parent` + bonus за перенос значения идентификатора. Контракт: `fixtures/contract/clustering-id-migration/`.
+
+**Устойчивость:** сигнатура рассчитана на типичные рефакторинги (смена классов, перенос атрибута) и явный fail при неоднозначности (два почти одинаковых кандидата).
 
 ---
 
 ### Cluster
-**Определение:** Группа элементов с похожими signatures, идентифицируемая как повторяющаяся структура (например, карточки товаров, пункты меню).
+**Определение:** Группа элементов с похожей **структурной сигнатурой** — один DOM-шаблон (например, карточки товара, строки таблицы, пункты меню).
 
-**Пример:**
+**Зачем:** отличить повторяющийся блок (LIST) от уникального элемента (SINGLE); сгенерировать один метод Page Object на шаблон; сузить healing и drift к структурному контексту. Подробнее: [clustering.md](./clustering.md).
+
+**Пример (element map v1.0.0):**
 ```typescript
 interface Cluster {
   id: string;
-  type: 'list' | 'grid' | 'navigation' | 'form' | 'other';
-  elements: string[];           // Element IDs
-  pattern: SignaturePattern;   // Общая signature элементов
-  count: number;
+  cluster_type: 'single' | 'list' | 'unknown';
+  element_ids: string[];
+  prefix_signature: string;   // общий префикс пути элементов кластера
 }
 
-// Пример: cluster "product-cards" с 12 элементами
+// 12 карточек товара — один LIST-кластер
 {
   id: "cl-7f3a9b",
-  type: "grid",
-  elements: ["el-1", "el-2", ..., "el-12"],
-  pattern: { role: "link", has: ["image", "heading", "price"] },
-  count: 12
+  cluster_type: "list",
+  element_ids: ["el-1", "el-2", ..., "el-12"],
+  prefix_signature: "div:main:div:products:list:div:product:card"
 }
 ```
 
-**Алгоритм:** Hierarchical clustering на основе Drain3 (token-based similarity).
+**Алгоритм:** детерминированная кластеризация по token-based similarity (Drain3-подход). Discover сначала сужает выборку (`SnapshotBuilder`: интерактив + `data-testid` и т.п.), затем Core группирует по сигнатурам.
+
+---
+
+### ClusterType
+**Определение:** Классификация кластера в element map (v1.0.0).
+
+| Значение | Условие | Пример |
+|----------|---------|--------|
+| `single` | 1 элемент в кластере | Уникальная кнопка Submit |
+| `list` | ≥ 2 элемента с похожей сигнатурой | Карточки каталога, строки таблицы |
+| `unknown` | резерв | — |
+
+**Использование:** фильтрация при PO generation (`filter(c -> c.clusterType() == LIST)`), `FilterSpec.min_cluster_size` для отбора только повторяющихся блоков.
+
+---
+
+## Context Layer (v1.1+)
+
+### ContextTimeline
+**Определение:** Единый **временной ряд** событий вокруг прогона теста — агрегация трёх плоскостей контекста (tri-plane):
+
+| Плоскость | События в timeline |
+|-----------|-------------------|
+| **UI** | клики, failures локаторов, навигация |
+| **Network** | HTTP запросы/ответы, тайминги, ошибки |
+| **Logs** | console (info/warn/error), page errors |
+
+События коррелируются по `timestamp_ms` и `trace_id`. Адаптер (Playwright) собирает поток при `captureAll(true)`; Core не ходит в браузер — получает готовый JSON.
+
+```typescript
+interface ContextTimeline {
+  events: ContextEvent[];  // kind: "ui" | "network" | "console" | "log"
+}
+```
+
+**Связанная фича:** [F002: Unified Context](../project/feature/F002-unified-context.md).
+
+---
+
+### RCA (Root Cause Analysis)
+**Определение:** **Post-mortem** разбор таймлайна контекста вокруг момента падения. Core классифицирует вероятную причину и отдаёт `RcaReport`.
+
+**RPC-метод:** `analyze_rca` → Java: `FrapCoreClient.analyzeRca(ContextTimeline, failureAtMs)`.
+
+**Процесс:**
+1. Тест падает; adapter отдаёт `ContextTimeline` (окно ±N сек от failure)
+2. Core анализирует корреляцию UI failure с network/logs
+3. Классификация: `UI_CHANGE` | `NETWORK_ERROR` | `TIMING_ISSUE` | `UNKNOWN`
+4. `RcaReport`: primary cause, confidence, timeline excerpt, recommendation
+
+**Это не:**
+- **Healing** — RCA не ищет новый локатор
+- **Discover** — RCA не строит element map
+- **Drift detection** — RCA про один прогон и момент падения, не baseline vs текущая страница
+
+**Пример сценария:** API timeout перед UI failure → RCA: `NETWORK_ERROR`, рекомендация не «лечить» селектор. Кейс C002.
+
+**Связанная фича:** [F003: RCA](../project/feature/F003-rca.md).
 
 ---
 
@@ -163,6 +244,30 @@ frap analyze --url https://shop.example.com \
   --against element-map-baseline.json
 # Output: drift-report.json
 ```
+
+**Связанная фича:** [F017: Structural Contract](../project/feature/F017-structural-contract.md) — drift detection как CI gate с explainable diff.
+
+---
+
+### Structural Contract
+**Определение:** Подход к валидации UI через структурные инварианты: baseline element map + policy + drift gate. Не pixel diff, а проверка «страница устроена как в требованиях».
+
+**Компоненты:**
+| Component | Description | Phase |
+|-----------|-------------|-------|
+| **Baseline** | Фиксированная element map или signatures критичных зон | ✅ v1 (element-level) / ❌ v2 (page-level) |
+| **Policy** | Декларативные инварианты (cluster_exists, element_unique) | ❌ v2+ (F017.3) |
+| **Drift Engine** | Сравнение текущего UI с baseline | ❌ v2 (F017.2) |
+| **Gate** | CI assertion: fail при unexpected drift | ✅ v1.2 (F017.1) |
+
+**Отличие от visual regression:**
+| Aspect | Visual regression | Structural Contract |
+|--------|-------------------|---------------------|
+| Сравниваем | Пиксели, скриншоты | DOM-структура, кластеры |
+| Типичный fail | «Красный пиксель» | «Пропал блок payment-methods» |
+| Объяснимость | PNG diff | drift-report.json с severity |
+
+**См.:** [docs/structural-contract.md](./structural-contract.md) — матрица доступности и anti-pitch.
 
 ---
 

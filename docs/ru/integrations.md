@@ -58,7 +58,8 @@ await button.click();
 
 ## Другие платформы
 
-- **Java** — в планах (Selenium, Selenide)
+- **Java / Playwright** — PoC готов (`frap-playwright`, demo E2E: `./scripts/run-java-e2e.sh`)
+- **Java / Selenium** — в планах (WebDriver, Selenide) — [F014](../project/feature/F014-java-sdk-ui-adapters.md)
 - **Python** — в планах
 
 Полная схема имён артефактов — в [Frap.md](../../Frap.md).

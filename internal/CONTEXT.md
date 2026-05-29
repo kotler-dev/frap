@@ -33,7 +33,7 @@ frapcode/
 │   │   ├── F010-test-health.md
 │   │   └── F011-ai-agent-testing.md
 │   ├── cases/              # Сценарии (C001–C008, CP001–CP005)
-│   ├── architecture/       # Архитектурные документы
+│   ├── architecture/       # → см. internal/architecture/
 │   └── conventions.md      # Соглашения по коду
 ├── crates/                 # Rust core (workspace: signature, core, context, …)
 ├── sdk/                    # SDK разных языков
@@ -53,14 +53,14 @@ frapcode/
 | Таблица фич, статусы, релизы | `project/FEATURES.md` |
 | Карточка фичи | `project/feature/FXXX-*.md` |
 | Сценарии и кейсы | `project/cases/` |
-| Архитектура ядра | `project/architecture/` |
+| Архитектура ядра | `internal/architecture/` |
 | Позиционирование, конкуренты | `docs/positioning.md` |
 | Боли, scope, copy для сайта/презентаций | `docs/pains.md` |
 | Целевая аудитория | `docs/audience.md` |
 | PoC gates и метрики | `docs/benchmark.md` |
 | Интеграции | `docs/integrations.md` |
 | Selenium/Java (банк) | `docs/integrations-selenium-java.md` |
-| SDK (Java, TS, Python) | `project/architecture/sdk-strategy.md` |
+| SDK (Java, TS, Python) | `internal/architecture/sdk-strategy.md` |
 | Монетизация | `docs/monetization.md` |
 
 ## Принципы
@@ -76,7 +76,7 @@ frapcode/
 - Указывать конкретные файлы или папки (`@file`, `@folder`)
 - Дробить большие постановки на подзадачи с явным списком файлов на итерацию
 - Для фичи — читать `project/feature/FXXX-*.md` перед реализацией
-- Для архитектурных решений — сверяться с `project/architecture/`
+- Для архитектурных решений — сверяться с `internal/architecture/`
 
 ## Терминология
 

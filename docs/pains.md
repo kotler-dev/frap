@@ -35,7 +35,7 @@ Fletta — **слой вокруг UI-структуры и селекторов
 | P04 | **Record-replay даёт хрупкий код** | Codegen/Selenium IDE — не maintainable POM | Element map → генерация POM (опция) | v1.2 |
 | P05 | **Self-healing = чёрный ящик или ML** | Healenium/Testim не проходят security / ИБ | NO ML in core, on-prem, воспроизводимость | MVP |
 | P06 | **Непонятно: UI vs сеть vs тайминг** | Flaky, долгий разбор падения | Unified context + RCA (roadmap) | v1.1+ |
-| P07 | **Drift UI незаметен до массового падения** | Рефакторинг фронта ломает десятки тестов | Drift report, сравнение element maps | v2 |
+| P07 | **Drift UI незаметен до массового падения** | Рефакторинг фронта ломает десятки тестов | Drift report, structural contract ([F017](../project/feature/F017-structural-contract.md)) | partial ([docs](../docs/structural-contract.md)), v2 (drift engine) |
 | P08 | **AI-агент «видит» DOM, но не структуру** | Хаотичные клики, нет регресса в CI | MCP grounding: element map + audit | v1.2 / v3 |
 
 ---

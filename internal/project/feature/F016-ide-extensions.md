@@ -169,7 +169,7 @@ frap ide index --workspace . --stdout   # CLI emits completion JSON for any edit
 ### Manual smoke (Phase 1)
 
 1. Fixture: `test-app` + сгенерированный `.frap/element-map.json` (stub или F004).
-2. Открыть `e2e/conference/*.spec.ts`, ввести `frap:`, убедиться в списке ID.
+2. Открыть `internal/testing/conference/*.spec.ts`, ввести `frap:`, убедиться в списке ID.
 3. Изменить map на диске → completion обновился.
 4. Прогнать тест с `debug: true` → команда открывает explorer.
 

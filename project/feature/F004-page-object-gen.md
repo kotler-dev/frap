@@ -4,7 +4,7 @@
 
 - **Epic**: Feature → Developer Experience
 - **Roll-up target**: ## v1.2.0 (AI Integration)
-- **Status**: draft
+- **Status**: in_progress (Java 1.0.0: `generate_page_object` + Playwright `Frap.generatePageObject`)
 - **Target release**: v1.2.0
 - **Created**: 2026-05-20
 - **Related cases**: C004
@@ -38,13 +38,13 @@
 
 ## Acceptance criteria
 
-- [ ] Генерация из URL: `frap generate --url ...`
-- [ ] Кластеризация: группировка карточек товаров, списков
-- [ ] Интерактивные элементы: кнопки, поля, ссылки определяются
-- [ ] Сгенерированный код использует `frap:` селекторы
-- [ ] TypeScript экспорт: `.page.ts` файлы
-- [ ] Java экспорт: Page Object классы
-- [ ] C004: сгенерированный код компилируется и работает
+- [ ] Генерация из URL: `frap generate --url ...` (CLI backlog)
+- [x] Кластеризация: `build_element_map` + list clusters (contract `element-map-list`)
+- [x] Интерактивные элементы: `FilterSpec.interactive_only`
+- [ ] Сгенерированный код использует `frap:` селекторы (backlog)
+- [ ] TypeScript экспорт: `.page.ts` файлы (SDK frozen)
+- [x] Java экспорт: Playwright Page Object (`java_playwright` template)
+- [ ] C004: полный e2e сгенерированного кода (частично: unit + smoke-consumer)
 
 ## Implementation notes (sketch)
 

@@ -5,7 +5,7 @@
 ## Стек
 
 - **Core:** Rust (алгоритмы кластеризации, сигнатуры DOM/логов) → компиляция в WASM и нативные сборки
-- **SDK:** TypeScript (Playwright adapter), Java (roadmap P4)
+- **SDK:** TypeScript (frozen for release); Java 1.0.0 on Maven Central path (`frap-core-java`, `frap-playwright`, discovery + PO gen)
 - **Интеграции:** Playwright (custom selectors), MCP (JSON-RPC для LLM-агентов), JUnit export
 - **Платформы:** Web (v1), Android/iOS (v3)
 
@@ -31,7 +31,8 @@ frap/
 │   │   ├── F015-python-sdk-adapters.md
 │   │   ├── F009-feedback-loop.md
 │   │   ├── F010-test-health.md
-│   │   └── F011-ai-agent-testing.md
+│   │   ├── F011-ai-agent-testing.md
+│   │   └── F017-structural-contract.md
 │   ├── cases/              # Сценарии (C001–C008, CP001–CP005)
 │   ├── architecture/       # Архитектурные документы
 │   └── conventions.md      # Соглашения по коду
@@ -51,16 +52,19 @@ frap/
 | Что нужно | Файл |
 |-----------|------|
 | Таблица фич, статусы, релизы | `project/FEATURES.md` |
+| **Java SDK 1.0.0** — capability matrix (Maven Central) | [`project/release/java-sdk-1.0.0-matrix.md`](./project/release/java-sdk-1.0.0-matrix.md) |
 | Карточка фичи | `project/feature/FXXX-*.md` |
 | Сценарии и кейсы | `project/cases/` |
 | Архитектура ядра | `project/architecture/` |
 | Позиционирование, конкуренты | `docs/positioning.md` |
+| Структурный контракт (vs скриншоты) | `docs/structural-contract.md` |
 | Боли, scope, copy для сайта/презентаций | `docs/pains.md` |
 | Целевая аудитория | `docs/audience.md` |
 | PoC gates и метрики | `docs/benchmark.md` |
 | Интеграции | `docs/integrations.md` |
-| Selenium/Java (банк) | `docs/integrations-selenium-java.md` |
-| SDK (Java, TS, Python) | `project/architecture/sdk-strategy.md` |
+| **Java SDK** | `sdk/java/README.md`, `docs/en/java-getting-started.md` |
+| Selenium/Java (банк roadmap) | `docs/integrations-selenium-java.md` |
+| SDK стратегия (Java, TS, Python) | `project/architecture/sdk-strategy.md` |
 | Монетизация | `docs/monetization.md` |
 
 ## Принципы
@@ -88,11 +92,13 @@ frap/
 | MCP | Model Context Protocol — интеграция с LLM-агентами |
 | A2A | Agent-to-Agent protocol — мультиагентное взаимодействие |
 | RCA | Root Cause Analysis — определение первопричины падения |
+| Structural Contract | Структурный контракт — baseline + policy + drift gate для валидации UI |
+| Drift report | Отчёт об изменениях структуры UI (element/structural/cluster drift) |
 
 ## Статусы релизов
 
 - **v1.0.0 (MVP)** — F001 + F008: Self-healing + Playwright adapter
 - **v1.1.0** — F002 + F003: Unified Context + RCA
 - **v1.2.0** — F004 + F005 + F009: Page Object Gen + MCP + Feedback Loop
-- **v2.0.0** — F006 + F007 + F010: Multi-platform + Visual Fingerprint + Health Score
+- **v2.0.0** — F006 + F007 + F010 + F017: Multi-platform + Visual Fingerprint + Health Score + Structural Contract
 - **v3.0.0** — F011: AI-Agent Testing & Audit

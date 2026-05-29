@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.github.kotlerdev.frap</groupId>
+        <artifactId>frap-sdk-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../../../../sdk/java/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>java-playwright-demo</artifactId>
+    <name>Frap Java Playwright Demo</name>
+    <description>Demo project showing Frap healing with Playwright Java</description>
+
+    <properties>
+        <playwright.version>1.44.0</playwright.version>
+        <test.server.url>http://localhost:3000</test.server.url>
+        <!-- E2E suite: Playwright browser + frap-core-rpc + demo site on :3000 -->
+        <junit.groups>e2e</junit.groups>
+        <frap.core.bin>${project.basedir}/../../../../crates/target/release/frap-core-rpc</frap.core.bin>
+    </properties>
+
+    <dependencies>
+        <!-- Frap -->
+        <dependency>
+            <groupId>io.github.kotlerdev.frap</groupId>
+            <artifactId>frap-playwright</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Playwright -->
+        <dependency>
+            <groupId>com.microsoft.playwright</groupId>
+            <artifactId>playwright</artifactId>
+            <version>${playwright.version}</version>
+        </dependency>
+
+        <!-- JUnit -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <groups>${junit.groups}</groups>
+                    <systemPropertyVariables>
+                        <frap.reportDir>${project.build.directory}/frap-reports/conference</frap.reportDir>
+                        <test.server.url>${test.server.url}</test.server.url>
+                    </systemPropertyVariables>
+                    <environmentVariables>
+                        <FRAP_CORE_BIN>${frap.core.bin}</FRAP_CORE_BIN>
+                    </environmentVariables>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <!-- Skip E2E when demo site / RPC / browsers are unavailable -->
+        <profile>
+            <id>skip-e2e</id>
+            <activation>
+                <property>
+                    <name>skipIT</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <skipTests>true</skipTests>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

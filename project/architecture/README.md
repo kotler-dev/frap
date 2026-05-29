@@ -62,7 +62,7 @@
 | Язык | Фреймворк | Статус |
 |------|-----------|--------|
 | TypeScript | Playwright | MVP — [F013](../feature/F013-typescript-sdk.md), [F008](../feature/F008-playwright-adapter.md) |
-| Java | JUnit 5 / WebDriver; Selenide P1 | v1.4 — [F014](../feature/F014-java-sdk-ui-adapters.md) |
+| Java | Playwright Java ✅; JUnit 5 / WebDriver; Selenide P1 | ⚠️ v1.4 — [F014](../feature/F014-java-sdk-ui-adapters.md) |
 | Python | pytest + Selenium | backlog — [F015](../feature/F015-python-sdk-adapters.md) |
 
 ### Платформы

@@ -72,7 +72,41 @@ await withFletta(page.getByTestId('pay-btn')).click();
 
 ---
 
-## Selenium / Java (roadmap P4, зафиксировано для банка)
+## Java / Playwright (1.0.0 on Maven Central)
+
+**Модули:** `sdk/java/frap-core-java`, `adapters/playwright-java`, `internal/demo/showcase/java-playwright`.
+
+**Maven Central:** `io.github.kotlerdev.frap:frap-core-java:1.0.0`, `frap-playwright:1.0.0`
+
+**Gate:** `./scripts/run-java-e2e.sh` — `frap-core-rpc` + test-app `:3000` + Playwright Chromium + 14+ E2E (`@Tag("e2e")`), включая discovery и Page Object generation.
+
+```java
+@ExtendWith(FrapExtension.class)
+class ScheduleTest {
+  @Test void openTalk() {
+    Frap.withFrap(page.locator("[data-testid='talk-open-healing']"), page).click();
+  }
+  
+  @Test void discoverAndGenerate() {
+    ElementMap map = Frap.discover(page);
+    Frap.generatePageObject(page, Path.of("target/generated"), 
+        GenerateOptions.javaPlaywright("CatalogPage", "com.example"));
+  }
+}
+```
+
+**Документация:** 
+- [java-getting-started.md](./en/java-getting-started.md) — Быстрый старт
+- [java-api-reference.md](./en/java-api-reference.md) — API reference
+- [java-maven-central.md](./en/java-maven-central.md) — Maven Central guide
+- [java-sdk-rpc.md](./en/java-sdk-rpc.md) — RPC protocol
+- [internal/demo/showcase/java-playwright/README.md](../internal/demo/showcase/java-playwright/README.md) — Демо проект
+
+**Статус:** [F014](../project/feature/F014-java-sdk-ui-adapters.md) — Playwright ✅ в 1.0.0, WebDriver/Selenide в планах v1.4.
+
+---
+
+## Selenium / Java (roadmap P4 track B, зафиксировано для банка)
 
 **Минимальная интеграция** (JUnit 5 + Selenium + Page Object, фазы 0–2, CI): **[integrations-selenium-java.md](./integrations-selenium-java.md)**.
 

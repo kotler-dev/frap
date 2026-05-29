@@ -3,6 +3,8 @@
 > Детерминированная привязка селекторов к структуре DOM.
 > *«Когда DOM штормит — Frap держит селекторы в узде».*
 
+> **Другой слой, не скриншоты:** структурная и семантическая регрессия UI — «страница/блок устроены так, как в требованиях», с объяснимым diff. Visual regression (pixel diff) остаётся отдельным инструментом; Frap даёт контракт на структуре DOM, element map и drift-отчётах.
+
 **Языки:** [English](Frap.en.md) · [Русский](Frap.md)
 
 ---
@@ -178,35 +180,62 @@ signature.serializeTo("submit-v2.signature.json");
 ### Java (Playwright)
 
 ```java
-import io.github.kotlerdev.frap.playwright.Frap;
-import io.github.kotlerdev.frap.core.Binding;
-import io.github.kotlerdev.frap.core.Signature;
-import io.github.kotlerdev.frap.core.Resolution;
+import io.frap.playwright.Frap;
+import io.frap.playwright.config.WithFrapOptions;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Locator;
+import org.junit.jupiter.api.extension.ExtendWith;
+import io.frap.playwright.extension.FrapExtension;
 
-// Привязка — извлекает сигнатуру
-Binding binding = Frap.bind(page.locator("[data-testid='submit']"));
-Signature signature = binding.getSignature();
+@ExtendWith(FrapExtension.class)
+class MyTest {
+    Page page;
 
-// Сохранить сигнатуру для версионирования
-String json = signature.serialize();  // или serializeTo("submit.signature.json")
+    @Test
+    void testWithSelfHealing() {
+        // Wrap locator with Frap - automatic healing on selector failure
+        FrapLocator button = Frap.withFrap(
+            page.locator("[data-testid='submit']"),
+            page
+        );
 
-// Позже — разрешение (самовосстановление при необходимости)
-Signature loaded = Frap.deserialize(json);
-Resolution res = loaded.locate(page);
+        // Click with automatic healing if element moved/changed
+        button.click();
 
-if (res.isHealed()) {
-    System.out.println("Селектор восстановлен: " + res.getHealedSelector());
-    System.out.println("Уверенность: " + res.getConfidence());
+        // Check healing result
+        if (Frap.isHealed(button)) {
+            HealResult result = Frap.getLastHealResult(button);
+            System.out.println("Healed to: " + result.selector());
+            System.out.println("Confidence: " + result.confidence());
+        }
+    }
+
+    @Test
+    void testWithOptions() {
+        var options = new WithFrapOptions()
+            .minConfidence(0.90)
+            .captureAll(true)   // Enable context capture for RCA
+            .debug(true);
+
+        FrapLocator button = Frap.withFrap(
+            page.locator("[data-testid='submit']"),
+            page,
+            options
+        );
+
+        button.click();
+    }
 }
+```
 
-Locator element = res.getLocator();
-element.click();
-
-// Обновить привязку после изменений DOM
-binding.rebind(page);
-signature.serializeTo("submit-v2.signature.json");
+**Maven dependency:**
+```xml
+<dependency>
+    <groupId>io.frap</groupId>
+    <artifactId>frap-playwright</artifactId>
+    <version>1.1.1-SNAPSHOT</version>
+    <scope>test</scope>
+</dependency>
 ```
 
 ### Kotlin (Selenide-стиль)
@@ -387,6 +416,20 @@ frap scan --url http://localhost:3000 --format playwright-po \
 
 ## Основные концепции
 
+### Структурная регрессия UI
+
+Frap проверяет не «как выглядит пиксель», а **как устроена страница**: иерархия DOM, кластеры компонентов, сигнатуры элементов, при необходимости — относительная геометрия (roadmap). Требования переводятся в **структурные инварианты** (baseline element map, зоны drift, пороги confidence); при изменении UI CI получает **объяснимый diff**, а не только красно-зелёный снимок.
+
+| Вопрос | Visual regression | Frap |
+|--------|-------------------|------|
+| Что сравниваем | Пиксели, скриншот | Дерево, кластеры, сигнатуры |
+| Типичный сбой | Цвет, шрифт, anti-aliasing | Пропал блок, сдвинулась форма, сломалась вложенность |
+| Артефакт | PNG diff | `drift-report`, кандидаты, score |
+
+Слои дополняют друг друга: скриншоты — «как нарисовано», Frap — «как собрано».
+
+> **Матрица доступности**: какие возможности доступны сейчас, а какие в roadmap — см. [docs/structural-contract.md](docs/structural-contract.md).
+
 ### Структура сигнатуры
 
 ```json
@@ -503,6 +546,7 @@ if (!resolved.success) {
 | Динамические классы | Нестабильные селекторы | Сопоставление по структурной сигнатуре |
 | Стабильность между версиями | Ручные правки | Сценарий `rebind` |
 | Разбор падений | Скриншоты в консоли | Структурированный diff и кандидаты |
+| Проверка вёрстки / layout | Pixel snapshot, visual diff | Baseline element map, drift-отчёт, структурные инварианты |
 
 ---
 
@@ -525,6 +569,8 @@ if (!resolved.success) {
 | **unbound** | Элемент без привязки (потенциально нестабильный) |
 | **healed** | Элемент найден через кластеризацию при неточном совпадении |
 | **confidence** | Оценка уверенности при healing (0.0–1.0) |
+| **структурная регрессия UI** | Проверка «страница/блок устроены как в требованиях» по element map и drift, с объяснимым diff (не pixel diff). Подробнее: [docs/structural-contract.md](docs/structural-contract.md) |
+| **drift** | Отличие текущей структуры UI от baseline (element, structural, cluster) |
 
 ---
 
@@ -685,4 +731,4 @@ export default defineConfig({
 ---
 
 ## В двух словах:
-> *Frap привязывает селекторы к структуре — детерминированная привязка, автоматическое самовосстановление, контекст для RCA, готовность к LLM.*
+> *Frap привязывает селекторы к структуре — детерминированная привязка, структурная регрессия UI с объяснимым diff, автоматическое самовосстановление, контекст для RCA, готовность к LLM.*

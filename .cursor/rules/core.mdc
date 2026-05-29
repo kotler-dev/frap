@@ -27,6 +27,12 @@ alwaysApply: true
 4. **On-prem first** — работает без облачных API
 5. **Tri-plane context** — UI + logs + network в одном сценарии
 
+## Архитектурные guardrails
+- Алгоритмы healing/scoring/clustering реализуются только в Core (Rust).
+- SDK-слои (TS/Java/Python) остаются thin: transport, hooks, config, events, reports.
+- Не дублировать ranking/policy алгоритмы в SDK; при необходимости менять поведение — менять Core и общий контракт.
+- Обоснование и критерии пересмотра: `project/architecture/ADR-001-core-language-strategy.md`.
+
 ## Как давать задачи
 - Указывать конкретные файлы или папки (@file, @folder)
 - Дробить большие постановки на подзадачи с явным списком файлов на итерацию

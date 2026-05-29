@@ -40,6 +40,7 @@ export interface DOMElementInfo {
   attributes: Record<string, string>;
   text_content?: string;
   path: string[];
+  position_in_parent?: number;
 }
 
 export interface DOMSnapshot {

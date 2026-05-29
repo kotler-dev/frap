@@ -3,6 +3,8 @@
 > Deterministic DOM binding for stable selectors.
 > *"When the DOM gets rough, Frap keeps your selectors tight."*
 
+> **A different layer than screenshots:** structural and semantic UI regression — "the page/block is built as required," with an explainable diff. Visual regression (pixel diff) stays a separate concern; Frap provides contracts on DOM structure, element maps, and drift reports.
+
 **Languages:** [English](Frap.en.md) · [Русский](Frap.md)
 
 ---
@@ -387,6 +389,18 @@ frap scan --url http://localhost:3000 --format playwright-po \
 
 ## Core Concepts
 
+### Structural UI regression
+
+Frap checks not "how the pixel looks" but **how the page is built**: DOM hierarchy, component clusters, element signatures, and optionally relative geometry (roadmap). Requirements become **structural invariants** (baseline element map, drift scopes, confidence thresholds); when the UI changes, CI gets an **explainable diff**, not only a red/green snapshot.
+
+| Question | Visual regression | Frap |
+|----------|-------------------|------|
+| What we compare | Pixels, screenshots | Tree, clusters, signatures |
+| Typical failure | Color, font, anti-aliasing | Missing block, moved form, broken nesting |
+| Artifact | PNG diff | `drift-report`, candidates, score |
+
+The layers complement each other: screenshots answer "how it looks"; Frap answers "how it is assembled."
+
 ### Signature Structure
 
 ```json
@@ -503,6 +517,7 @@ if (!resolved.success) {
 | Dynamic class names | Flaky selectors | Structural signature matching |
 | Cross-version stability | Manual updates | `rebind` workflow |
 | Debugging failures | Console screenshots | Structured diff + candidates |
+| Layout / markup validation | Pixel snapshot, visual diff | Baseline element map, drift report, structural invariants |
 
 ---
 
@@ -525,6 +540,8 @@ if (!resolved.success) {
 | **unbound** | Element without binding (potentially unstable) |
 | **healed** | Element found via clustering when match is inexact |
 | **confidence** | Healing confidence score (0.0–1.0) |
+| **structural UI regression** | Verifying "page/block is built as required" via element map and drift, with explainable diff (not pixel diff) |
+| **drift** | Difference between current UI structure and baseline (element, structural, cluster) |
 
 ---
 
@@ -685,4 +702,4 @@ export default defineConfig({
 ---
 
 ## One-liner:
-> *"Frap binds your selectors to structure — deterministic binding, automatic healing, context for RCA, LLM-ready grounding."*
+> *"Frap binds your selectors to structure — deterministic binding, structural UI regression with explainable diff, automatic healing, context for RCA, LLM-ready grounding."*

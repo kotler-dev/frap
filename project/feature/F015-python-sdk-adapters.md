@@ -13,6 +13,8 @@
 
 Python SDK с тем же контрактом, что F013: `configure`, `heal`, `discover`, events, reports. Адаптеры для **pytest** + Selenium WebDriver. Быстрый старт через **JSON-RPC к Core CLI** (F000); позже — in-process FFI/ctypes.
 
+Архитектурный guardrail: Python SDK не дублирует алгоритмы healing/scoring/clustering, а использует единый Core через transport-слои (см. [ADR-001](../architecture/ADR-001-core-language-strategy.md)).
+
 ## User workflow
 
 1. `pip install frap` (или path dependency из monorepo `sdk/python/`).
