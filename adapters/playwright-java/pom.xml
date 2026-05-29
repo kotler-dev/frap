@@ -12,6 +12,7 @@
         <relativePath>../../sdk/java/pom.xml</relativePath>
     </parent>
 
+    <groupId>io.github.kotler-dev</groupId>
     <artifactId>frap-playwright</artifactId>
     <name>Frap Playwright Java</name>
     <description>Playwright adapter for Frap self-healing selectors</description>
@@ -120,7 +121,7 @@
             <plugin>
                 <groupId>org.sonatype.central</groupId>
                 <artifactId>central-publishing-maven-plugin</artifactId>
-                <version>0.6.0</version>
+                <version>${central-publishing-maven-plugin.version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <publishingServerId>central</publishingServerId>
