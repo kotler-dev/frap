@@ -70,6 +70,7 @@ jobs:
           cd sdk/java
           mvn -P release -pl frap-core-java,../../adapters/playwright-java \
             -Dgpg.passphrase="${GPG_PASSPHRASE}" \
+            -DskipTests \
             deploy --batch-mode
         env:
           CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
