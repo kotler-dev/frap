@@ -18,6 +18,8 @@
 
     <properties>
         <playwright.version>1.44.0</playwright.version>
+        <!-- Enable deployment for this module (parent has skip) -->
+        <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
 
     <dependencies>
@@ -71,11 +73,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <!-- Enable deployment for this module (parent has skip) -->
-    <properties>
-        <maven.deploy.skip>false</maven.deploy.skip>
-    </properties>
 
     <distributionManagement>
         <repository>
