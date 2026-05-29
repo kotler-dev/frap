@@ -4,6 +4,7 @@ sdk/java/frap-core-java/src/main/resources/META-INF/native/frap-core-rpc-*
 # GPG / release signing keys (never commit private material)
 frap-signing-key.pub
 frap-signing-key-private.txt
+**/.flattened-pom.xml
 *.gpg
 *.pgp
 *.key
