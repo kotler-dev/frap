@@ -97,11 +97,6 @@
         </profile>
     </profiles>
 
-    <!-- Parent POM is not deployed to Central - only child modules -->
-    <properties>
-        <maven.deploy.skip>true</maven.deploy.skip>
-    </properties>
-
     <dependencyManagement>
         <dependencies>
             <!-- Jackson -->
