@@ -33,7 +33,7 @@ npm install @frap/playwright @frap/sdk
 ```typescript
 // playwright.config.ts
 import { defineConfig } from '@playwright/test';
-import { frapPlaywright, registerFlettaSelector } from '@frap/playwright';
+import { frapPlaywright, registerFrapSelector } from '@frap/playwright';
 
 export default defineConfig({
   ...frapPlaywright({
@@ -43,7 +43,7 @@ export default defineConfig({
   }),
   use: {
     async setup({ selectors }) {
-      await registerFlettaSelector(selectors);
+      await registerFrapSelector(selectors);
     },
   },
 });
@@ -77,7 +77,7 @@ Release verification (Rust + E2E + lint) runs on git tags `v*` in CI. See [docs/
 
 **Custom selector engine** (recommended) — see Quick start above.
 
-**Wrapper API** — wrap an existing locator with [`withFletta`](adapters/playwright/README.md).
+**Wrapper API** — wrap an existing locator with [`withFrap`](adapters/playwright/README.md).
 
 **Unified context** — `captureAll: true` writes `frap-context.json` (network, console, UI); RCA report via `frap-rca.json`. Demo: `./scripts/test.sh context`.
 

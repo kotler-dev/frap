@@ -5,7 +5,7 @@ export interface FrapPlaywrightConfig extends FrapConfig {
   playwrightConfig?: Partial<PlaywrightTestConfig>;
 }
 
-/** Options for {@link withFletta} (Playwright-specific) */
+/** Options for {@link withFrap} (Playwright-specific) */
 export interface WithFrapOptions extends Partial<FrapConfig> {
   /** Pass `test.info()` from the spec so reports get the correct Playwright test id */
   testInfo?: TestInfo;
