@@ -9,7 +9,7 @@ import {
   buildElementFoundDebugReport,
   writeDebugReport,
   type HealPolicy,
-} from '@frap/frap';
+} from '@frap/sdk';
 import type { WithFrapOptions } from './config';
 import {
   buildSemantics,
@@ -19,7 +19,7 @@ import {
   recordHealingEvent,
 } from './healing-events';
 
-interface FlettaLocator extends Locator {
+interface FrapLocator extends Locator {
   __frap?: {
     originalLocator: Locator;
     healingEngine: HealingEngine;
@@ -35,7 +35,7 @@ export async function withFrap<T extends Locator>(
   page: Page,
   config?: WithFrapOptions,
   testName?: string
-): Promise<FlettaLocator> {
+): Promise<FrapLocator> {
   const { testInfo, ...frapConfig } = config ?? {};
   const fullConfig: FrapConfig = {
     minConfidence: 0.85,
@@ -75,7 +75,7 @@ export async function withFrap<T extends Locator>(
     }
   }
 
-  const frapLocator: FlettaLocator = new Proxy(locator, {
+  const frapLocator: FrapLocator = new Proxy(locator, {
     get(target, prop, receiver) {
       const value = Reflect.get(target, prop, receiver);
       
@@ -193,7 +193,7 @@ export async function withFrap<T extends Locator>(
 
       return value;
     },
-  }) as FlettaLocator;
+  }) as FrapLocator;
 
   frapLocator.__frap = {
     originalLocator: locator,
@@ -483,6 +483,6 @@ function constructSignatureFromSelector(selector: string, snapshot: DOMSnapshot)
   };
 }
 
-export function getLastHealResult(locator: FlettaLocator): HealResult | undefined {
+export function getLastHealResult(locator: FrapLocator): HealResult | undefined {
   return locator.__frap?.lastHealResult;
 }

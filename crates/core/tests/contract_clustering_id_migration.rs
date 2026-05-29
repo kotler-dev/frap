@@ -1,6 +1,6 @@
 //! Language-agnostic contract: id -> data-id migration in the same list cluster.
 
-use frap_core::{FlettaCore, HealRequest, HealResult};
+use frap_core::{FrapCore, HealRequest, HealResult};
 use serde::Deserialize;
 use std::fs;
 use std::path::PathBuf;
@@ -26,7 +26,7 @@ fn contract_clustering_id_to_data_id_migration() {
     let expected: ContractExpected = serde_json::from_str(&expected_json).expect("parse expected");
 
     let request: HealRequest = serde_json::from_str(&request_json).expect("parse request");
-    let mut core = FlettaCore::new();
+    let mut core = FrapCore::new();
     let result: HealResult = core.heal_request(&request);
 
     assert_eq!(

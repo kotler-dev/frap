@@ -8,7 +8,7 @@ import {
   FrapHealingEvent,
   loadAllHealingEvents,
 } from './healing-events';
-import { clearDebugReports } from '@frap/frap';
+import { clearDebugReports } from '@frap/sdk';
 import {
   clearContextBuffers,
   recordContextUiEvent,

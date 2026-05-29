@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Rust workspace: `signature`, `clustering`, `healing`, `frap-core` with WASM `healJson`
 - TypeScript SDK (`@frap/sdk`) wired to WASM with dev fallback
-- Playwright adapter: `withFletta`, custom selector engine, healing events
+- Playwright adapter: `withFrap`, custom selector engine, healing events
 - JUnit / JSON reporting (CP005) and Conference E2E gates (CP001–CP005)
 - Debug Trace Mode (F012): Classic + Explorer HTML reports, healing timeline
 
@@ -32,23 +32,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `frap-context` Rust crate: `Timeline`, `Event`, correlation, window API
-- Playwright context capture: `attachFlettaContext`, `captureAll` config
-- C002/C003 fixtures: `internal/demo/site/context/`, `e2e/context/`, `./scripts/test.sh context`
+- Playwright context capture: `attachFrapContext`, `captureAll` config
+- C002/C003 fixtures: `fixtures/fixtureconf/context/`, `e2e/context/`, `./scripts/test.sh context`
 
 ## [Unreleased]
-
-### Added
-
-- Java Playwright adapter (`adapters/playwright-java`): `withFrap`, healing proxy, `FrapExtension`, selector resolution (`Locator@` + explicit override)
-- Java E2E demo (`internal/demo/showcase/java-playwright`): conference healing, CP005 reports, C002 RCA; gate `./scripts/run-java-e2e.sh`
-- CI job `java-playwright-e2e`; Maven profiles `java-unit` / `java-e2e` in `sdk/java/pom.xml`
-
-### Documentation
-
-- F014 status ⚠️ (Playwright track ✅, WebDriver/Selenide pending); `project/FEATURES.md` updated
-
-## [1.0.1] - Unreleased
 
 ### Planned
 
 - MVP-C: benchmark overhead < 10% vs baseline ([docs/benchmark.md](docs/benchmark.md))
+
+## [Java SDK 1.0.0] - 2026-05-30
+
+### Added
+
+- Maven Central: `io.github.kotler-dev:frap-core-java`, `io.github.kotler-dev:frap-playwright`
+- Java Playwright adapter (`adapters/playwright-java`): `withFrap`, healing proxy, `FrapExtension`, discovery, Page Object generation
+- Java E2E demo (`examples/java/playwright`): conference healing, CP005 reports, C002 RCA; gate `./scripts/run-java-e2e.sh`
+- CI job `java-playwright-e2e`; Maven profiles `java-unit` / `java-e2e` in `sdk/java/pom.xml`
+- Bundled `frap-core-rpc` binaries (Linux glibc/musl, macOS aarch64)
+
+### Fixed
+
+- Maven `groupId` aligned with verified Central Portal namespace `io.github.kotler-dev`
+
+### Documentation
+
+- F014 Playwright track; capability matrix [project/release/java/java-sdk-1.0.0-matrix.md](project/release/java/java-sdk-1.0.0-matrix.md)

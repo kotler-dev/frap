@@ -1,4 +1,4 @@
-import type { WithFlettaOptions } from '@frap/playwright';
+import type { WithFrapOptions } from '@frap/playwright';
 
 export const CONTEXT_REPORT_DIR = './frap-reports/context';
 
@@ -9,7 +9,7 @@ export const CONTEXT_PATH = {
   cartFast: '/context/cart.html?delay=100',
 };
 
-export function contextFletta(opts: Partial<WithFlettaOptions> = {}): WithFlettaOptions {
+export function contextFrap(opts: Partial<WithFrapOptions> = {}): WithFrapOptions {
   return {
     reportDir: CONTEXT_REPORT_DIR,
     enableHealing: false,

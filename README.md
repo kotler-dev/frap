@@ -1,200 +1,212 @@
-# frap
+# Frap
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![npm @frap/sdk](https://img.shields.io/npm/v/@frap/sdk?label=%40frap%2Fsdk)](https://www.npmjs.com/package/@frap/sdk)
-[![npm @frap/playwright](https://img.shields.io/npm/v/@frap/playwright?label=%40frap%2Fplaywright)](https://www.npmjs.com/package/@frap/playwright)
 
-> Deterministic engine for UI structure extraction: stable identifiers, self-healing selectors, explainable reports. No ML in core, on-prem first, AI-ready via MCP.
+> Deterministic library for working with locators in test automation.
+> *Stable locators when the interface changes.*
 
-**frap** parses element trees (DOM, ViewTree, accessibility), clusters components with deterministic algorithms, and generates stable locators for Page Objects and tests. When a selector breaks, it heals by signature matching with confidence scores and diff reports.
+Frap helps tests survive UI changes: finds elements on a page, remembers their structural fingerprint, and picks a new selector when needed — with a report and a **confidence score** (0.0–1.0: how sure Frap is that the found element is the same one).
 
-## No ML in core, AI-ready
+**Full locator path:** page map → element fingerprint → selector recovery → failure cause analysis → interface change tracking across runs *(v1.2.0 — feedback loop, F009; v2.0+ — structural drift and CI gate, F017)*.
 
-Three layers — not one product category:
+---
 
-| Layer | What | ML in frap? |
-|-------|------|----------------|
-| **Core** (OSS) | Signatures, Drain3 clustering, self-healing, WASM | **No** — same input → same output |
-| **Integration** (roadmap) | MCP tools: `discover`, `resolve`, `analyze` | **No** — JSON-RPC wire to agents; LLM runs outside |
-| **Enhancements** (optional) | Semantic naming, step generation | **Optional** — separate package, BYO API key |
+## What is Frap
 
-**frap is a grounding layer, not an AI testing tool.** It does not orchestrate LLMs or generate tests from prompts. An agent (Cursor, Claude, your stack) calls frap for structured element maps, stable execution, and explainable RCA — deterministic infrastructure the model can rely on.
+**What Frap does:**
 
-Details: [docs/positioning.md](docs/positioning.md) · [docs/monetization.md](docs/monetization.md)
+- **Find** — builds a map of interactive elements with recommended selectors in a single pass, without manual DOM inspection
+- **Hold** — when markup changes, restores the link between selector and element by structure, instead of failing on the first diff
+- **Explain** — shows confidence, alternative candidates, and why a test failed — not a black-box "fix"
 
-## Quick Start
+Frap parses element trees (**DOM** — today; **accessibility tree** — v1.4+ via CDP, v2.0+ multi-platform, F006), groups similar blocks with deterministic algorithms, and generates stable locators for tests.
 
-Published packages: [@frap/sdk](https://www.npmjs.com/package/@frap/sdk) · [@frap/playwright](https://www.npmjs.com/package/@frap/playwright)
+---
 
-```bash
-npm install @frap/playwright @frap/sdk
+## Problem
+
+The interface changes faster than tests are updated.
+
+**Pain points:**
+
+- Hours of manual DOM inspection on new pages
+- Frontend refactoring causes massive selector failures in CI
+- Unclear why auto-recovery chose a new element
+- Opaque cloud tools often fail enterprise security requirements
+
+**What automators expect:**
+
+- Take a snapshot of a page and get all available locators
+- Group elements by structure and business zones
+- Quickly start PageObject without manual routine
+- Reduce flaky failures via deterministic logic
+
+---
+
+## Positioning
+
+Frap is a structural and stable identifier layer, not a replacement for your test tools.
+
+**Principle: Integration, not replacement.**
+
+```
+Playwright (today) / Selenium·WebDriver (v1.4+) / JUnit
+        ↓
+TypeScript SDK / Java SDK / JSON-RPC
+        ↓
+Rust Core: fingerprints · clustering · recovery · context
 ```
 
-```typescript
-// playwright.config.ts
-import { defineConfig } from '@playwright/test';
-import { frapPlaywright, registerFrapSelector } from '@frap/playwright';
+Frap wraps your existing locators and adds structural resilience.
 
-export default defineConfig({
-  ...frapPlaywright({
-    minConfidence: 0.85,
-    reportDir: './frap-reports',
-    captureAll: true, // optional: unified context timeline (F002)
-  }),
-  use: {
-    async setup({ selectors }) {
-      await registerFrapSelector(selectors);
-    },
-  },
-});
-```
+---
 
-```typescript
-// test.spec.ts — custom selector or withFrap() wrapper
-await page.locator('frap:[data-testid="pay-btn"]').click();
-```
+## Locator Lifecycle
 
-See: [TypeScript SDK](sdk/typescript/README.md) · [Playwright Adapter](adapters/playwright/README.md)
+One clear lifecycle for every locator:
 
-### Java / Maven
+1. **Page map** — collect element list: tags, attributes, path, role, text
+2. **Element fingerprint** — capture stable traits and structural prefix (signature)
+3. **Selector recovery** — if the element is not found, find the best candidate by confidence and selection rules
+4. **Report** — what changed, which selector was picked, confidence score, top candidates
 
-```xml
-<dependency>
-    <groupId>io.github.kotler-dev</groupId>
-    <artifactId>frap-playwright</artifactId>
-    <version>1.0.0</version>
-</dependency>
-```
+---
 
-```java
-// Test with self-healing selectors
-@Test
-void paymentFlow() {
-    Frap frap = Frap.withOptions(page, WithFrapOptions.defaults());
-    frap.locator("[data-testid='pay-btn']").click();
-}
-```
+## Core Features
 
-See: [Java Getting Started](docs/en/java-getting-started.md) · [Java API Reference](docs/en/java-api-reference.md) · [Maven Release Matrix](project/release/java-sdk-1.0.0-matrix.md)
+### Page Map (Element Map)
 
-## Quick start (from source)
+In a single pass, Frap builds a **page map** — a flat catalog of elements with a recommended selector and confidence score. Not a DOM tree, not `querySelector('*')`. This catalog is the foundation for PageObjects and baselines.
 
-For Conference / Context E2E demos and core development:
+API: `Frap.discover`, `buildElementMap`.
 
-```bash
-./scripts/setup.sh
-./scripts/build.sh
-./scripts/start.sh          # test server on http://localhost:3000
+### Clustering
 
-./scripts/test.sh conference  # FixtureConf gates (CONF-*)
-./scripts/test.sh context     # Context layer C002–C004
+Elements are grouped by structural template:
 
-./scripts/stop.sh
-```
+- **SINGLE** — unique element (button, field)
+- **LIST** — two or more similar items (repeating cards, rows)
 
-Release verification (Rust + E2E + lint) runs on git tags `v*` in CI. See [docs/publishing-npm.md](docs/publishing-npm.md) and [docs/benchmark.md](docs/benchmark.md).
+Five identical cards → one `items(index)` method, not five copies. Clustering removes noise and narrows the search during selector recovery.
 
-## Playwright integration
+### Locator Recovery
 
-**Custom selector engine** (recommended) — see Quick start above.
+When a selector stops finding an element (changed `data-testid`, class, wrapper), Frap **recovers the locator** — picks a new selector for the same element:
 
-**Wrapper API** — wrap an existing locator with [`withFrap`](adapters/playwright/README.md).
+1. Compare saved fingerprint against the current page
+2. Rank candidates by confidence score
+3. Decide: recover if confidence ≥ threshold, or fail safely with a report (e.g. two similar candidates — refuse, to avoid clicking the wrong element)
 
-**Unified context** — `captureAll: true` writes `frap-context.json` (network, console, UI); RCA report via `frap-rca.json`. Demo: `./scripts/test.sh context`.
+Behavior is deterministic: same input → same output.
 
-## How it works
+API: `withFrap`, `heal`, `HealResult`.
 
-When a primary selector fails, frap:
+### Unified Run Context & Failure Cause Analysis
 
-1. Extracts the element signature (path, attributes, text)
-2. Clusters similar elements (Drain3)
-3. Scores each candidate
-4. Heals if confidence ≥ `minConfidence` (default: 0.85)
-5. Reports the attempt with diff and top candidates
+**Unified run context** — a single timeline from three sources: UI actions (clicks, locator failures), network (HTTP, timeouts), logs (console, page errors).
 
-## Release highlights
+**Failure cause analysis** — after a test fails, Frap inspects this context and answers: UI issue, network issue, timing issue, or unclear. This is **not** picking a new selector. Example: API timeout → don't "fix" the selector, report a network cause.
 
-**v1.1.1** (npm)
+API: `captureAll`, `ContextTimeline`; `analyzeRca` → returns `RcaReport`.
 
-- Unified Context (F002): `frap-context.json`, C002–C004 E2E
-- RCA (F003): `frap-rca.json`, WASM + `generate-rca.mjs`
-- Public packages `@frap/sdk` and `@frap/playwright` on [npm](https://www.npmjs.com/settings/frap/packages)
+### Page Object Generation
 
-**v1.0.0**
+Workflow from zero to first tests:
 
-- Rust/WASM core (`frap-core`, `healJson`)
-- Playwright adapter — custom selector + `withFletta`, JUnit/JSON reports
-- Debug Trace Mode (F012) — Classic + Explorer HTML reports
-- Conference E2E gates CP001–CP005
+- Page map → filter interactive elements → group by clusters → read recommended selectors → generate Page Object skeleton → evolve with baseline fingerprints; UI change tracking across runs — **v1.2.0** (F009 feedback), **v2.0+** (F017 drift-report)
+
+---
+
+## Principles
+
+- **Explainable by design** — every decision shows its work
+- **No ML by default** — deterministic algorithms, same input → same output
+- **On-prem first** — works without cloud APIs
+- **Integration, not replacement** — complements Playwright, Selenium, and JUnit
+
+---
+
+## Architecture
+
+**Unified Rust Core**
+
+- Single source of truth for fingerprints, clustering, and locator recovery
+- Consistent behavior across Java, TypeScript, and future SDKs
+- Performance and determinism without divergence
+
+**Thin SDK Adapters**
+
+- JSON-RPC contract and DTO schema for all transports
+- Contract tests for every SDK
+- API convenience without duplicating logic
+
+You own your fingerprints and can reproduce behavior across stacks.
+
+---
+
+## API Summary
+
+Names in the table are the target Core/RPC contract; concrete SDKs may differ (e.g. `HealingEngine.heal()` in TypeScript). Surface matrix: [project/release/README.md](project/release/README.md).
+
+| Action | API | Purpose |
+|--------|-----|---------|
+| Page map | `Frap.discover`, `buildElementMap` | Snapshot → element catalog |
+| Filter | `filterElementMap`, `FilterSpec` | Interactive only, min cluster size |
+| PO generation | `generatePageObject`, `GenerateOptions` | Page Object skeleton |
+| Locator recovery | `withFrap`, `heal` → `HealResult` | Pick a new selector |
+| Unified run context | `captureAll`, `ContextTimeline` | UI + network + logs |
+| Failure cause analysis | `analyzeRca` → `RcaReport` | Classify: UI / network / timing |
+
+---
+
+## Packages
+
+| Registry | SDK / Core | Playwright |
+|----------|------------|------------|
+| npm | `@frap/sdk` | `@frap/playwright` |
+| Maven | `io.github.kotler-dev:frap-core-java` | `io.github.kotler-dev:frap-playwright` |
+
+Note: npm requires scoped install `@frap/...`; Maven uses `io.github.kotler-dev` groupId.
+
+See full coordinates in [project/release/README.md](project/release/README.md).
+
+---
 
 ## Documentation
 
-### Quick Links by Language
+| Topic | Link |
+|-------|------|
+| Quick start (Playwright) | [docs/en/quickstart.md](docs/en/quickstart.md) |
+| Java getting started | [docs/en/java-getting-started.md](docs/en/java-getting-started.md) |
+| Java API reference | [docs/en/java-api-reference.md](docs/en/java-api-reference.md) |
+| Integrations | [docs/en/integrations.md](docs/en/integrations.md) |
+| Examples (by language) | [examples/](examples/) |
+| FixtureConf demo app | [fixtures/fixtureconf/](fixtures/fixtureconf/) |
+| Promo materials | [promo/](promo/) (slides, CSS) |
+| Java example (Playwright) | [examples/java/playwright/](examples/java/playwright/) |
+| TypeScript example (Playwright) | [examples/typescript/playwright/](examples/typescript/playwright/) |
+| Playwright adapter | [adapters/playwright/README.md](adapters/playwright/README.md) |
+| Clustering | [docs/clustering.md](docs/clustering.md) |
+| Glossary | [docs/glossary.md](docs/glossary.md) |
 
-| Topic | TypeScript / npm | Java / Maven |
-|-------|------------------|--------------|
-| **Getting Started** | [sdk/typescript/README.md](sdk/typescript/README.md) | [docs/en/java-getting-started.md](docs/en/java-getting-started.md) |
-| **API Reference** | [adapters/playwright/README.md](adapters/playwright/README.md) | [docs/en/java-api-reference.md](docs/en/java-api-reference.md) |
-| **Playwright Adapter** | [adapters/playwright/README.md](adapters/playwright/README.md) | [adapters/playwright-java/README.md](adapters/playwright-java/README.md) |
-| **Release Matrix** | — | [project/release/java-sdk-1.0.0-matrix.md](project/release/java-sdk-1.0.0-matrix.md) |
-
-### Architecture & Concepts
-
-| Topic | Document |
-|-------|----------|
-| Overview | [project/OVERVIEW.md](project/OVERVIEW.md) |
-| Features & Roadmap | [project/FEATURES.md](project/FEATURES.md) |
-| Architecture | [project/architecture/](project/architecture/) |
-| Positioning | [docs/positioning.md](docs/positioning.md) |
-| Benchmark & PoC | [docs/benchmark.md](docs/benchmark.md) |
-| E2E Context | [internal/testing/conference/README.md](internal/testing/conference/README.md) |
-
-## Project structure
-
-```
-frap/
-├── crates/                      # Rust core (signature, clustering, healing, context, rca)
-├── sdk/                         # TypeScript + Java SDK
-├── adapters/                    # Playwright integrations
-├── internal/
-│   ├── architecture/            # Architecture docs (internal)
-│   ├── testing/conference/      # Conference E2E (CONF-*)
-│   ├── demo/
-│   │   ├── presentation/        # Slide deck
-│   │   ├── site/                # Demo server + FixtureConf + context pages
-│   │   └── showcase/java-playwright/  # Java E2E demo
-│   └── project/                 # Features, cases (internal planning)
-├── e2e/                         # Playwright runner + context specs
-├── docs/                        # Public docs
-├── project/                     # Public feature/case docs
-└── scripts/
-```
-
-See [internal/README.md](internal/README.md) for the internal workspace map.
-
-## Scripts
-
-| Script | Description |
-|--------|-------------|
-| `./scripts/setup.sh` | Install dependencies |
-| `./scripts/build.sh` | Build SDK, adapter, Rust core + WASM |
-| `./scripts/start.sh [port]` | Start test server (default: 3000) |
-| `./scripts/test.sh conference` | Conference E2E (CONF-*) |
-| `./scripts/test.sh context` | Context layer E2E (C002–C004) |
-| `./scripts/test.sh [debug\|all]` | Other E2E targets |
-| `./scripts/bench-context.sh` | Context capture overhead gate |
-| `./scripts/stop.sh [port]` | Stop test server |
-| `./scripts/dev.sh` | Dev mode with auto-rebuild |
+---
 
 ## Roadmap
 
-- **v1.1.1** — Context + RCA + npm packages — released ([CHANGELOG.md](CHANGELOG.md))
-- **v1.0.1** — Benchmark overhead gate (MVP-C)
-- **v1.2.0** — MCP + Page Object Generator
-- **v1.4.0** — Java SDK & UI adapters
-- **v2.0.0** — Multi-platform (Android/iOS)
+- **1.0.0** — core + Java SDK: page map, locator recovery, reports, context and RCA, PO generation (Maven Central)
+- **1.2.0** — feedback loop (F009), MCP, npm parity for discover/PO
+- **1.4+** — CDP source (incl. web accessibility tree), WebDriver/Selenide (F014)
+- **2.0+** — structural contracts and drift gate (F017), visual fingerprints (F007), health score (F010), multi-platform and accessibility tree (F006)
 
-See [project/FEATURES.md](project/FEATURES.md) for details.
+See [docs/roadmap.md](docs/roadmap.md) and [project/release/README.md](project/release/README.md).
+
+---
+
+## Let's frap
+
+[Quick start](docs/en/quickstart.md) · [Examples](examples/) · [Glossary](docs/glossary.md)
+
+---
 
 ## License
 

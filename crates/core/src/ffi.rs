@@ -15,11 +15,11 @@ use std::ffi::{CStr, CString};
 use std::os::raw::{c_char, c_double, c_int};
 use std::ptr::null_mut;
 
-use crate::{analyze_rca_json, FlettaCore, HealRequest};
+use crate::{analyze_rca_json, FrapCore, HealRequest};
 
-/// Opaque handle to a FlettaCore instance.
+/// Opaque handle to a FrapCore instance.
 pub struct FrapCoreHandle {
-    core: FlettaCore,
+    core: FrapCore,
 }
 
 /// Result structure for healing operations.
@@ -73,7 +73,7 @@ thread_local! {
 #[no_mangle]
 pub unsafe extern "C" fn frap_core_new() -> *mut FrapCoreHandle {
     let handle = Box::new(FrapCoreHandle {
-        core: FlettaCore::new(),
+        core: FrapCore::new(),
     });
     Box::into_raw(handle)
 }
@@ -87,7 +87,7 @@ pub unsafe extern "C" fn frap_core_with_confidence(
     min_confidence: c_double,
 ) -> *mut FrapCoreHandle {
     let handle = Box::new(FrapCoreHandle {
-        core: FlettaCore::new().with_min_confidence(min_confidence),
+        core: FrapCore::new().with_min_confidence(min_confidence),
     });
     Box::into_raw(handle)
 }

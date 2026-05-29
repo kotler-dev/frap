@@ -5,7 +5,7 @@
 ### 1. Sonatype Account
 
 - [ ] Create account at https://central.sonatype.org/publish/publish-guide/
-- [ ] Verify `io.github.kotlerdev.frap` namespace (GitHub-based, auto-verified)
+- [x] Verify `io.github.kotler-dev` namespace (GitHub-based, verified in Central Portal)
 
 ### 2. GPG Key
 
@@ -46,13 +46,13 @@ API surface in `frap-core-rpc`: `heal`, `analyze_rca`, `build_element_map`, `fil
 
 Publish to Maven Central:
 
-- [ ] `io.github.kotlerdev.frap:frap-core-java:1.0.0`
-- [ ] `io.github.kotlerdev.frap:frap-playwright:1.0.0`
+- [ ] `io.github.kotler-dev:frap-core-java:1.0.0`
+- [ ] `io.github.kotler-dev:frap-playwright:1.0.0`
 
 Do not publish in 1.0.0:
 
 - [ ] `frap-core-native` (kept in repository for local/experimental JNI flow)
-- [ ] `internal/demo/showcase/java-playwright` (demo-only module)
+- [ ] `examples/java/playwright` (demo-only module)
 
 ## Release Steps
 
@@ -93,8 +93,8 @@ git add sdk/java/
 git commit -m "Release 1.0.0"
 
 # Create tag
-git tag -a v1.0.0 -m "Release 1.0.0"
-git push origin v1.0.0
+git tag -a java-v1.0.0 -m "Java SDK 1.0.0 — Maven Central"
+git push origin java-v1.0.0
 ```
 
 ### 4. CI Release
@@ -112,8 +112,8 @@ Wait 10-30 minutes, then verify:
 
 ```bash
 # Check Maven Central
-curl "https://repo1.maven.org/maven2/io/github/kotlerdev/frap/frap-core-java/1.0.0/frap-core-java-1.0.0.pom"
-curl "https://repo1.maven.org/maven2/io/github/kotlerdev/frap/frap-playwright/1.0.0/frap-playwright-1.0.0.pom"
+curl "https://repo1.maven.org/maven2/io/github/kotler-dev/frap-core-java/1.0.0/frap-core-java-1.0.0.pom"
+curl "https://repo1.maven.org/maven2/io/github/kotler-dev/frap-playwright/1.0.0/frap-playwright-1.0.0.pom"
 
 # Or use in test project
 mvn dependency:resolve -DincludeArtifactIds=frap-core-java
@@ -220,6 +220,7 @@ Examples:
 ## Final Go/No-Go (before pushing `v1.0.0`)
 
 - [ ] No `io.frap` remains in Maven coordinates (`pom.xml`, README snippets, demo POM)
+- [ ] Maven `groupId` is `io.github.kotler-dev` (matches verified Central Portal namespace)
 - [ ] No `SNAPSHOT` remains in release-facing docs/snippets
 - [ ] `mvn -P release -pl frap-core-java,../../adapters/playwright-java -am verify` passes
 - [ ] `target` outputs include `.jar`, `-sources.jar`, `-javadoc.jar`, `.pom`, `.asc`
