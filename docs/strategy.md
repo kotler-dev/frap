@@ -1,12 +1,12 @@
-# Fletta Strategic Architecture: 3 Layers
+# frap Strategic Architecture: 3 Layers
 
-Стратегическая архитектура развития Fletta — три слоя, от фундамента к AI-интеграции.
+Стратегическая архитектура развития frap — три слоя, от фундамента к AI-интеграции.
 
 ---
 
 ## Overview
 
-Fletta развивается через три архитектурных слоя, каждый из которых строится на предыдущем:
+frap развивается через три архитектурных слоя, каждый из которых строится на предыдущем:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -88,7 +88,7 @@ Generated Code in User's Repo
 
 **AI Integration (Enhancement Tier):**
 - LLM может использовать element map для semantic naming
-- Но: Fletta core не содержит LLM, enhancement adapter — опционально
+- Но: frap core не содержит LLM, enhancement adapter — опционально
 - BYO-key или managed tier (M3+)
 
 **User Value:**
@@ -160,7 +160,7 @@ CI Pipeline / Scheduled Run
 
 ## AI Integration Across Layers
 
-**Ключевой принцип:** Fletta не использует AI в core. AI — enhancement layer.
+**Ключевой принцип:** frap не использует AI в core. AI — enhancement layer.
 
 | Layer | Core (NO AI) | AI Enhancement (Optional) |
 |-------|--------------|---------------------------|
@@ -174,7 +174,7 @@ CI Pipeline / Scheduled Run
 - Layer 3: `frap/analyze` → RCA для AI decision support
 
 **Метафора:**
-> **Fletta даёт AI-агенту надёжные руки и глаза** — structured input (element map), stable execution (resolution), explainable output (audit trail).
+> **frap даёт AI-агенту надёжные руки и глаза** — structured input (element map), stable execution (resolution), explainable output (audit trail).
 
 ---
 
@@ -184,7 +184,7 @@ Layer 1 architecture позволяет добавлять платформы б
 
 ```
 ┌──────────────────────────────────────┐
-│           Fletta Core               │
+│           frap Core               │
 │  (Signature, Clustering, Resolution)│
 │        Platform-Agnostic              │
 └──────────────┬───────────────────────┘

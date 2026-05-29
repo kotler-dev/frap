@@ -61,8 +61,8 @@ await page.locator('frap:pay-btn').click();
 // primary: data-testid=pay-btn, fallbacks: signature chain
 
 // Вариант B: обёртка существующего локатора (миграция)
-import { withFletta } from '@frap/frap-playwright';
-await withFletta(page.getByTestId('pay-btn')).click();
+import { withfrap } from '@frap/frap-playwright';
+await withfrap(page.getByTestId('pay-btn')).click();
 ```
 
 ### Что не делаем
@@ -115,7 +115,7 @@ class ScheduleTest {
 ### JUnit 5
 
 ```java
-@ExtendWith(FlettaExtension.class)
+@ExtendWith(frapExtension.class)
 class CheckoutTest {
   @Test
   void pay() {
@@ -197,7 +197,7 @@ test:e2e:
 | Формат | Путь |
 |--------|------|
 | TypeScript | `*.page.ts` с `frap:` locators |
-| Java | Page Object + `@FlettaLocator` |
+| Java | Page Object + `@frapLocator` |
 | Python | pytest-playwright stubs |
 
 POM — **один из экспортов**, не суть продукта.

@@ -227,7 +227,7 @@ frap/
 
 ### Реализовано
 - [x] Rust workspace: `signature`, `clustering`, `healing`, `frap-core` (`crates/core`)
-- [x] F000 P0: WASM `healJson`, `FlettaCore`, CI wasm-pack
+- [x] F000 P0: WASM `healJson`, `frapCore`, CI wasm-pack
 - [x] TypeScript SDK: `HealingEngine` → WASM (`core.ts` + `core-fallback.ts` dev-only)
 - [x] Playwright adapter + JUnit/JSON reporter
 - [x] Conference E2E (CP001–CP005 gates) + `verify-reports.mjs`

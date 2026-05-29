@@ -14,7 +14,7 @@
 |-----------|-----------|
 | **Elevator (10 сек)** | Движок для извлечения структуры UI: парсит, кластеризует детерминированно, генерирует стабильные локаторы для PageObject — без ML в core, AI-ready через MCP |
 | **Java разработчик** | Получи структурированную карту элементов страницы для генерации PageObject с устойчивыми селекторами — встраивается в Selenium/Playwright, deterministic, on-prem |
-| **AI/LLM интегратор** | Дай LLM структурированный доступ к UI: element maps через MCP, стабильные идентификаторы, unified context для tool calls — Fletta даёт AI-агенту надёжные руки и глаза |
+| **AI/LLM интегратор** | Дай LLM структурированный доступ к UI: element maps через MCP, стабильные идентификаторы, unified context для tool calls — frap даёт AI-агенту надёжные руки и глаза |
 | **Enterprise/Банк** | Platform-agnostic engine для структурного анализа UI: on-prem, deterministic (NO ML dependencies), генерирует maintainable test code, bank-grade security |
 
 ---
@@ -64,22 +64,22 @@
    - RCA: "почему тест упал?" с root cause classification
 
 3. **AI-Native Testing Infrastructure**
-   - Не "Fletta генерирует тесты через LLM"
-   - А "Fletta даёт LLM инструменты для надёжного тестирования"
+   - Не "frap генерирует тесты через LLM"
+   - А "frap даёт LLM инструменты для надёжного тестирования"
    - Агент использует MCP tools: `frap/discover`, `frap/analyze`
 
 ---
 
-## AI Positioning: Fletta как Grounding Layer
+## AI Positioning: frap как Grounding Layer
 
-### Что Fletta НЕ делает
-- **Fletta ≠ AI testing tool** — мы не генерируем тесты из требований
-- **Fletta ≠ LLM orchestrator** — мы не управляем диалогом с моделью
-- **Fletta ≠ prompt engineering framework** — мы не шаблонизируем промпты
+### Что frap НЕ делает
+- **frap ≠ AI testing tool** — мы не генерируем тесты из требований
+- **frap ≠ LLM orchestrator** — мы не управляем диалогом с моделью
+- **frap ≠ prompt engineering framework** — мы не шаблонизируем промпты
 
-### Что Fletta делает для AI-агентов
+### Что frap делает для AI-агентов
 
-**Fletta = grounding layer для AI-агентов:**
+**frap = grounding layer для AI-агентов:**
 - **Глаза (discovery)** — структурированный element map вместо raw DOM
 - **Руки (execution)** — stable resolution при изменении UI
 - **Память (observability)** — audit trail действий для анализа
@@ -88,14 +88,14 @@
 ```
 AI Agent (orchestrator, снаружи)
     ↓ вызывает через MCP/API
-Fletta Core (grounding layer, внутри)
+frap Core (grounding layer, внутри)
     - discover(url) → element map
     - resolve(selector) → stable element
     - analyze(context) → RCA report
 ```
 
-**Playwright MCP vs Fletta:**
-| | Playwright MCP | Fletta |
+**Playwright MCP vs frap:**
+| | Playwright MCP | frap |
 |---|---|---|
 | **Роль** | Агент **действует** в браузере | Агент **стабилен и объясним** |
 | **Что делает** | Explore, click, navigate | Structure discovery, stable execution, audit |
@@ -103,7 +103,7 @@ Fletta Core (grounding layer, внутри)
 | **Детерминизм** | Зависит от LLM | Deterministic core, NO ML |
 
 **Метафора:**
-> **Fletta даёт AI-агенту надёжные руки и глаза** — стабильное зрение (element maps) и надёжные действия (resolution mechanism), deterministic и explainable.
+> **frap даёт AI-агенту надёжные руки и глаза** — стабильное зрение (element maps) и надёжные действия (resolution mechanism), deterministic и explainable.
 
 ---
 
@@ -140,7 +140,7 @@ Fletta Core (grounding layer, внутри)
 5. **AI Integration** — MCP tools для LLM
    - `frap/discover` — element map для grounding
    - `frap/analyze` — RCA для понимания падений
-   - Fletta не генерирует тесты — даёт инструменты для генерации
+   - frap не генерирует тесты — даёт инструменты для генерации
 
 ### No-ML by Default
 
@@ -183,12 +183,12 @@ Fletta Core (grounding layer, внутри)
                 ↓
         Playwright MCP выполняет действия (внутри браузера)
                 ↓
-        Fletta resolution обеспечивает стабильность при изменениях UI
+        frap resolution обеспечивает стабильность при изменениях UI
                 ↓
-        Fletta analyze даёт RCA если что-то пошло не так
+        frap analyze даёт RCA если что-то пошло не так
 ```
 
-**frap не заменяет Playwright.** Playwright = browser driver; Fletta = structure engine + observability layer.
+**frap не заменяет Playwright.** Playwright = browser driver; frap = structure engine + observability layer.
 
 ---
 
@@ -234,7 +234,7 @@ Fletta Core (grounding layer, внутри)
 | "Self-healing без ML" | **Deterministic resolution**: signature matching, confidence scores, explainable diff |
 | "Унифицированная платформа тестирования" | **Structure discovery engine** — анализирует UI для любых downstream tools |
 | "Заменяет селекторы" | **Stable identification** — primary + fallback signatures, resolution при drift |
-| "AI генерирует тесты" | **Алгоритмы дают структуру, LLM может генерировать** — Fletta = grounding layer |
+| "AI генерирует тесты" | **Алгоритмы дают структуру, LLM может генерировать** — frap = grounding layer |
 | "Ниша свободна" | **Пересечение редкое**: OSS + deterministic + platform-agnostic + enterprise audit |
 
 ### Value props по сегментам

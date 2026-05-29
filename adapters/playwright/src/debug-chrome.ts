@@ -92,7 +92,7 @@ export function renderReportHeader(opts: ReportHeaderOptions): string {
   return `
     <header class="site-header">
       <div class="site-header__brand">
-        <h1>Fletta</h1>
+        <h1>Frap</h1>
         <p class="subtitle">${escapeHtml(opts.subtitle)}</p>
         ${nav}
       </div>

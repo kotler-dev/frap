@@ -127,8 +127,8 @@ pub fn analyze_rca(timeline: &Timeline, failure_time: u64) -> RootCause;
 
 ```typescript
 // Playwright adapter
-export function frapPlaywright(config: FlettaConfig): PlaywrightConfig;
-export function withFletta<T extends Locator>(locator: T): FlettaLocator<T>;
+export function frapPlaywright(config: frapConfig): PlaywrightConfig;
+export function withfrap<T extends Locator>(locator: T): frapLocator<T>;
 
 // Core (через WASM)
 export class HealingEngine {

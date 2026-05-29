@@ -98,7 +98,7 @@ enhancements:
     model: gpt-4
 ```
 
-### Managed: Fletta-Hosted
+### Managed: frap-Hosted
 
 **Who:** Enterprises that don't want to manage API keys or need SLA.
 
@@ -111,7 +111,7 @@ enhancements:
 | **Rate limiting** | Prevent runaway costs |
 | **Usage analytics** | Dashboard: requests, costs, cache hit rate |
 | **SLA guarantees** | 99.9% uptime for enhancement API |
-| **No key management** | Fletta manages provider keys |
+| **No key management** | frap manages provider keys |
 
 **Pricing Models:**
 
@@ -123,7 +123,7 @@ enhancements:
 
 **Example:**
 ```yaml
-# Fletta-managed
+# frap-managed
 enhancements:
   semantic_naming:
     enabled: true
@@ -160,7 +160,7 @@ enhancements:
 ┌─────────────────────────────────────────┐
 │         Enterprise Customer              │
 │  ┌─────────────────────────────────┐   │
-│  │   On-prem Fletta Deployment     │   │
+│  │   On-prem frap Deployment     │   │
 │  │                                 │   │
 │  │  ┌─────────┐  ┌──────────────┐  │   │
 │  │  │  Core   │  │  Enterprise │  │   │

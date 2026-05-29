@@ -1,16 +1,16 @@
-# Fletta — Обзор проекта
+# frap — Обзор проекта
 
 Краткое введение в проект: что это, для чего, ключевые возможности и отличия.
 
 ---
 
-## Что такое Fletta
+## Что такое frap
 
-**Fletta** — deterministic engine для автоматического извлечения структуры UI: парсит деревья элементов (DOM, ViewTree, accessibility), кластеризует компоненты детерминированными алгоритмами, генерирует устойчивые идентификаторы для Page Object и тестов.
+**frap** — deterministic engine для автоматического извлечения структуры UI: парсит деревья элементов (DOM, ViewTree, accessibility), кластеризует компоненты детерминированными алгоритмами, генерирует устойчивые идентификаторы для Page Object и тестов.
 
 **Без ML в core, без облачных API** — bank-grade deterministic engine.
 
-**Метафора:** Fletta даёт AI-агенту и тестировщикам надёжные руки и глаза — структурированный доступ к UI с автоматическим восстановлением селекторов при изменениях.
+**Метафора:** frap даёт AI-агенту и тестировщикам надёжные руки и глаза — структурированный доступ к UI с автоматическим восстановлением селекторов при изменениях.
 
 ---
 
@@ -47,7 +47,7 @@
 
 ---
 
-## Почему Fletta
+## Почему frap
 
 ### Deterministic (NO ML in core)
 - Алгоритмические методы: Drain3 clustering, weighted signature matching
@@ -135,7 +135,7 @@ await page.click('frap://filters/category');
 
 ## Сравнение с альтернативами
 
-| | Healenium | playwright-healer | **Fletta** |
+| | Healenium | playwright-healer | **frap** |
 |--|-----------|-------------------|------------|
 | **Core** | ML-based | Heuristics + optional AI | **Deterministic (NO ML)** |
 | **Output** | Fixed selector | Fixed selector | **Element map + stable IDs** |

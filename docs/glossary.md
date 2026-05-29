@@ -1,6 +1,6 @@
-# Fletta Glossary
+# frap Glossary
 
-Терминологический словарь Fletta — единые определения для всей документации, кода и коммуникаций.
+Терминологический словарь frap — единые определения для всей документации, кода и коммуникаций.
 
 ---
 
@@ -354,32 +354,32 @@ frap-enhancements/
 ## AI Integration Concepts
 
 ### Grounding Layer
-**Определение:** Роль Fletta в AI-ecosystem — предоставление структурированного, стабильного доступа к UI для LLM-агентов.
+**Определение:** Роль frap в AI-ecosystem — предоставление структурированного, стабильного доступа к UI для LLM-агентов.
 
 **Метафора:**
-> **Fletta даёт AI-агенту надёжные руки и глаза**
+> **frap даёт AI-агенту надёжные руки и глаза**
 - **Глаза (eyes):** element map вместо скриншотов/DOM
 - **Руки (hands):** deterministic resolution для стабильных действий
 - **Память (memory):** audit trail для анализа behavior drift
 
 **Не делает:**
-- Fletta ≠ AI testing tool (не генерирует тесты из требований)
-- Fletta ≠ LLM orchestrator (не управляет диалогом)
-- Fletta ≠ prompt engineering framework
+- frap ≠ AI testing tool (не генерирует тесты из требований)
+- frap ≠ LLM orchestrator (не управляет диалогом)
+- frap ≠ prompt engineering framework
 
 ---
 
 ### MCP (Model Context Protocol)
-**Определение:** JSON-RPC протокол для интеграции Fletta tools с LLM-агентами.
+**Определение:** JSON-RPC протокол для интеграции frap tools с LLM-агентами.
 
-**Fletta MCP tools:**
+**frap MCP tools:**
 | Tool | Input | Output | Purpose |
 |------|-------|--------|---------|
 | `frap/discover` | URL | element map | Structure extraction |
 | `frap/resolve` | signature | element + confidence | Stable execution |
 | `frap/analyze` | run ID | RCA report | Drift detection |
 
-**Важно:** Fletta предоставляет tools через MCP, но не управляет workflow агента.
+**Важно:** frap предоставляет tools через MCP, но не управляет workflow агента.
 
 ---
 
@@ -429,9 +429,9 @@ trait PolicyChecker {
 |----------|----------|--------|
 | **Healing** | **Resolution** | "Healing" implies fixing something broken; "Resolution" is technical matching |
 | **Self-healing test** | **Stable test via element map** | Focus on structure, not symptom |
-| **AI-powered testing** | **AI-ready grounding layer** | Fletta doesn't use AI in core |
+| **AI-powered testing** | **AI-ready grounding layer** | frap doesn't use AI in core |
 | **ML algorithm** | **Deterministic clustering** | Explicit NO ML in core |
-| **Test generation** | **Code generation from element map** | Fletta doesn't generate tests directly |
+| **Test generation** | **Code generation from element map** | frap doesn't generate tests directly |
 
 ---
 

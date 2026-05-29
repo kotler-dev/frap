@@ -71,10 +71,10 @@ test('payment flow', async ({ page }) => {
 ## Unified context (F002)
 
 ```typescript
-import { attachFlettaContext } from '@frap/frap-playwright';
+import { attachFrapContext } from '@frap/frap-playwright';
 
 test.beforeEach(async ({ page }) => {
-  attachFlettaContext(page, { reportDir: './frap-reports', traceId: 'run-1' });
+  attachFrapContext(page, { reportDir: './frap-reports', traceId: 'run-1' });
 });
 ```
 
