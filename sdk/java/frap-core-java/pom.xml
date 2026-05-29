@@ -14,6 +14,28 @@
     <artifactId>frap-core-java</artifactId>
     <name>Frap Core Java</name>
     <description>Core Java SDK with JSON-RPC client for Frap self-healing selectors</description>
+    <url>https://github.com/kotler-dev/frap</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git://github.com/kotler-dev/frap.git</connection>
+        <developerConnection>scm:git:ssh://github.com:kotler-dev/frap.git</developerConnection>
+        <url>https://github.com/kotler-dev/frap/tree/main</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>kotlerdev</id>
+            <name>Kotler Dev</name>
+            <url>https://github.com/kotler-dev</url>
+        </developer>
+    </developers>
 
     <dependencies>
         <!-- Jackson -->
