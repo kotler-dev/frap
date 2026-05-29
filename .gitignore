@@ -3,8 +3,10 @@ sdk/java/frap-core-java/src/main/resources/META-INF/native/frap-core-rpc-*
 
 # GPG signing keys (public keys for manual upload to keyservers)
 frap-signing-key.pub
+frap-signing-key-private.txt
 *.gpg
 *.pgp
+*.key
 
 # Rust
 target/
