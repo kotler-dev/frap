@@ -8,7 +8,7 @@
     <parent>
         <groupId>io.github.kotler-dev</groupId>
         <artifactId>frap-sdk-parent</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1-SNAPSHOT</version>
         <relativePath>../../sdk/java/pom.xml</relativePath>
     </parent>
 
@@ -50,7 +50,7 @@
         <dependency>
             <groupId>io.github.kotler-dev</groupId>
             <artifactId>frap-core-java</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
 
         <!-- Playwright -->

@@ -166,10 +166,6 @@ mvn test -Dfrap.native.lib=../../../crates/target/release/libfrap_core.dylib
 
 ## See Also
 
-- [docs/en/java-getting-started.md](../../../docs/en/java-getting-started.md) — Quick start guide (5 minutes)
-- [docs/en/java-api-reference.md](../../../docs/en/java-api-reference.md) — Complete API reference
-- [docs/en/java-maven-central.md](../../../docs/en/java-maven-central.md) — Maven Central usage
-- [docs/en/java-sdk-rpc.md](../../../docs/en/java-sdk-rpc.md) — RPC protocol details
 - [../frap-core-native](../frap-core-native) — JNI native client (experimental, not on Central)
 - [crates/core](../../../crates/core) — Rust core with FFI
 - [sdk/java](../..) — SDK documentation index
