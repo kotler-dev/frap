@@ -14,5 +14,3 @@ Shared test data and demo applications for Frap SDK examples, E2E, and CI.
 ```
 
 Used by [`examples/`](../examples/), [`e2e/`](../e2e/), and CI.
-
-Case specs (`CONF-*`, C002–C010): [`project/cases/`](../project/cases/).

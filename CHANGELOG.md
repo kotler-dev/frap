@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Documentation
 
-- Feature cards F000, F001, F008, F012, F013; `project/FEATURES.md` MVP 100%
+- Feature cards F000, F001, F008, F012, F013; MVP scope complete
 
 ## [1.1.1] - 2026-05-24
 
@@ -39,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Planned
 
-- MVP-C: benchmark overhead < 10% vs baseline ([docs/benchmark.md](docs/benchmark.md))
+- MVP-C: benchmark overhead < 10% vs baseline
 
 ## [Java SDK 1.0.0] - 2026-05-30
 
@@ -57,4 +57,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Documentation
 
-- F014 Playwright track; capability matrix [project/release/java/java-sdk-1.0.0-matrix.md](project/release/java/java-sdk-1.0.0-matrix.md)
+- F014 Playwright track; Java SDK 1.0.0 capability matrix documented in `sdk/java/README.md`

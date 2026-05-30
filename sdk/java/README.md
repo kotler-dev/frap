@@ -2,20 +2,6 @@
 
 Self-healing selectors and Page Object generation for Java automation.
 
-## Quick Links
-
-| I want to... | Document |
-|--------------|----------|
-| Get started in 5 minutes | [Getting Started](../../docs/en/java-getting-started.md) |
-| See complete API reference | [API Reference](../../docs/en/java-api-reference.md) |
-| See what's in 1.0.0 (Maven Central) | [Capability Matrix](../../project/release/java/java-sdk-1.0.0-matrix.md) |
-| See all current releases | [Release Index](../../project/release/README.md) |
-| Understand Maven Central setup | [Maven Central Guide](../../docs/en/java-maven-central.md) |
-| Use JSON-RPC directly | [RPC Protocol](../../docs/en/java-sdk-rpc.md) |
-| See full examples | [Demo Project](../../examples/java/playwright) |
-
----
-
 ## Maven Coordinates
 
 ```xml
@@ -79,6 +65,11 @@ if (Frap.isHealed(button)) {
 | `frap-playwright` | Playwright adapter, healing, discovery | ✅ 1.0.0 |
 | `frap-core-native` | JNI native client (experimental) | ❌ Repo only |
 
+See module READMEs:
+- [frap-core-java](./frap-core-java/README.md)
+- [frap-core-native](./frap-core-native/README.md)
+- [frap-playwright adapter](../../adapters/playwright-java/README.md)
+
 ---
 
 ## Platform Support
@@ -110,14 +101,14 @@ sdk/java/
 adapters/playwright-java/        # Playwright adapter
 └── README.md
 
-examples/java/playwright/  # Full demo project
+examples/java/playwright/        # Full demo project
 ```
 
 ---
 
 ## Verification
 
-For maintainers and contributors:
+For maintainers and contributors (run from repository root):
 
 ```bash
 # Level 1: Rust contracts
@@ -137,22 +128,14 @@ See [VERIFICATION.md](./VERIFICATION.md) for full matrix.
 
 ---
 
-## Documentation Index
+## Documentation
 
-### User Documentation
-- [Getting Started](../../docs/en/java-getting-started.md) — 5-minute quick start
-- [API Reference](../../docs/en/java-api-reference.md) — Complete Java API
-- [Maven Central Guide](../../docs/en/java-maven-central.md) — Release usage
-- [RPC Protocol](../../docs/en/java-sdk-rpc.md) — NDJSON protocol for custom integrations
-
-### Maintainer Documentation
+- [frap-core-java](./frap-core-java/README.md) — Core RPC client API
+- [frap-playwright adapter](../../adapters/playwright-java/README.md) — Playwright integration
+- [Demo project](../../examples/java/playwright/) — Runnable example
 - [Verification Matrix](./VERIFICATION.md) — Test levels and acceptance criteria
 - [Release Checklist](./MAVEN_RELEASE_CHECKLIST.md) — Maven Central publication
-
-### Related
-- [Feature F014: Java SDK](../../project/feature/F014-java-sdk-ui-adapters.md)
-- [SDK Strategy](../../project/architecture/sdk-strategy.md)
-- [Rust Core RPC](../../crates/core/README.md)
+- [Rust Core RPC](../../crates/core/README.md) — Native RPC binary
 
 ---
 

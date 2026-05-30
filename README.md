@@ -146,7 +146,7 @@ You own your fingerprints and can reproduce behavior across stacks.
 
 ## API Summary
 
-Names in the table are the target Core/RPC contract; concrete SDKs may differ (e.g. `HealingEngine.heal()` in TypeScript). Surface matrix: [project/release/README.md](project/release/README.md).
+Names in the table are the target Core/RPC contract; concrete SDKs may differ (e.g. `HealingEngine.heal()` in TypeScript).
 
 | Action | API | Purpose |
 |--------|-----|---------|
@@ -168,26 +168,21 @@ Names in the table are the target Core/RPC contract; concrete SDKs may differ (e
 
 Note: npm requires scoped install `@frap/...`; Maven uses `io.github.kotler-dev` groupId.
 
-See full coordinates in [project/release/README.md](project/release/README.md).
-
 ---
 
 ## Documentation
 
 | Topic | Link |
 |-------|------|
-| Quick start (Playwright) | [docs/en/quickstart.md](docs/en/quickstart.md) |
-| Java getting started | [docs/en/java-getting-started.md](docs/en/java-getting-started.md) |
-| Java API reference | [docs/en/java-api-reference.md](docs/en/java-api-reference.md) |
-| Integrations | [docs/en/integrations.md](docs/en/integrations.md) |
 | Examples (by language) | [examples/](examples/) |
 | FixtureConf demo app | [fixtures/fixtureconf/](fixtures/fixtureconf/) |
-| Promo materials | [promo/](promo/) (slides, CSS) |
+| Java SDK | [sdk/java/README.md](sdk/java/README.md) |
+| TypeScript SDK | [sdk/typescript/README.md](sdk/typescript/README.md) |
 | Java example (Playwright) | [examples/java/playwright/](examples/java/playwright/) |
 | TypeScript example (Playwright) | [examples/typescript/playwright/](examples/typescript/playwright/) |
-| Playwright adapter | [adapters/playwright/README.md](adapters/playwright/README.md) |
-| Clustering | [docs/clustering.md](docs/clustering.md) |
-| Glossary | [docs/glossary.md](docs/glossary.md) |
+| Playwright adapter (TS) | [adapters/playwright/README.md](adapters/playwright/README.md) |
+| Playwright adapter (Java) | [adapters/playwright-java/README.md](adapters/playwright-java/README.md) |
+| Rust core | [crates/core/README.md](crates/core/README.md) |
 
 ---
 
@@ -198,13 +193,11 @@ See full coordinates in [project/release/README.md](project/release/README.md).
 - **1.4+** — CDP source (incl. web accessibility tree), WebDriver/Selenide (F014)
 - **2.0+** — structural contracts and drift gate (F017), visual fingerprints (F007), health score (F010), multi-platform and accessibility tree (F006)
 
-See [docs/roadmap.md](docs/roadmap.md) and [project/release/README.md](project/release/README.md).
-
 ---
 
 ## Let's frap
 
-[Quick start](docs/en/quickstart.md) · [Examples](examples/) · [Glossary](docs/glossary.md)
+[Examples](examples/) · [Java SDK](sdk/java/README.md) · [TypeScript SDK](sdk/typescript/README.md)
 
 ---
 
