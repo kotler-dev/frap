@@ -26,5 +26,3 @@ fixtures/fixtureconf/     # shared AUT (conference + context pages)
 ```
 
 For SDK source and adapters, see [`sdk/`](../sdk/) and [`adapters/`](../adapters/).
-
-Case matrix and scenario specs: [`project/cases/`](../project/cases/) · public catalog [`docs/cases.md`](../docs/cases.md).

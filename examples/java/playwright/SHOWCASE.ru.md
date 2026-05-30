@@ -15,7 +15,7 @@
 | Что делает | Ищет элемент, похожий на записанный, и подставляет селектор при высокой уверенности | Группирует **уже найденных** кандидатов по `signature.prefix` — объяснение решения |
 | Где в коде | Один Rust `heal()` для Java и TS | Построение view после heal (`buildClusterViews`) |
 
-Алгоритм Drain3 / ParseTree для полного discovery: [project/architecture/clustering.md](../../../project/architecture/clustering.md).
+Алгоритм Drain3 / ParseTree для полного discovery: см. `crates/clustering/` и отчёты conference E2E.
 
 ## Два сценария (показывать парой)
 
@@ -24,7 +24,7 @@
 | Умный PASS | `schedule-heal.html` — тест ищет `talk-open-healing`, на странице `talk-card-open-healing` | `ScheduleHealingTest` → heal OK, новый селектор |
 | Умный отказ | CFP — две кнопки «Отправить», сломанный `cfp-submit-missing` | `CfpAmbiguousHealTest` → `healed == false`, ≥2 кандидата |
 
-Кейсы: **CONF-SH-SCHED-PASS**, **CONF-SH-CFP-FAIL** — [project/cases/conference/CASES.md](../../project/cases/conference/CASES.md).
+Кейсы: **CONF-SH-SCHED-PASS**, **CONF-SH-CFP-FAIL** — см. `e2e/conference/` и `./scripts/run-java-e2e.sh`.
 
 ## Прогон Java
 

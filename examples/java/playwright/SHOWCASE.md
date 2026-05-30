@@ -15,7 +15,7 @@ Short walkthrough for presentations: what the library does, how to see healing a
 | What it does | Finds an element similar to the recorded one and substitutes a selector when confidence is high | Groups **ranked candidates** by `signature.prefix` — explains the decision |
 | Where | Same Rust `heal()` for Java and TS | Built after heal (`buildClusterViews`) |
 
-Full Drain3 / ParseTree discovery: [project/architecture/clustering.md](../../../project/architecture/clustering.md).
+Full clustering details: see Rust core in `crates/clustering/` and conference E2E reports.
 
 ## Two scenarios (show as a pair)
 
@@ -24,7 +24,7 @@ Full Drain3 / ParseTree discovery: [project/architecture/clustering.md](../../..
 | Smart PASS | `schedule-heal.html` — test uses `talk-open-healing`, page has `talk-card-open-healing` | `ScheduleHealingTest` → heal OK, new selector |
 | Smart reject | CFP — two “Submit” buttons, broken `cfp-submit-missing` | `CfpAmbiguousHealTest` → `healed == false`, ≥2 candidates |
 
-Cases: **CONF-SH-SCHED-PASS**, **CONF-SH-CFP-FAIL** — [project/cases/conference/CASES.md](../../project/cases/conference/CASES.md).
+Cases: **CONF-SH-SCHED-PASS**, **CONF-SH-CFP-FAIL** — see `e2e/conference/` and `./scripts/run-java-e2e.sh`.
 
 ## Java run
 

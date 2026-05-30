@@ -42,5 +42,4 @@ open frap-reports/frap-debug.html
 
 ## See also
 
-- [Quick start](../../../docs/en/quickstart.md)
 - [Java example](../../java/playwright/)

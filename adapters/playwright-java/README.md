@@ -155,8 +155,5 @@ Default location: `target/frap-reports/conference/`
 
 ## See Also
 
-- [docs/en/java-getting-started.md](../../docs/en/java-getting-started.md) — Quick start guide
-- [docs/en/java-api-reference.md](../../docs/en/java-api-reference.md) — Complete API reference
 - [sdk/java](../../sdk/java) — Core SDK and documentation index
-- [docs/en/java-sdk-rpc.md](../../docs/en/java-sdk-rpc.md) — RPC protocol details
 - [crates/core](../../../crates/core) — Rust core implementation
