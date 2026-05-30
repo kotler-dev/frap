@@ -67,11 +67,6 @@ promo/presentation/**/*.pptx
 # Runtime
 .server.pid
 
-# Cursor — commit rules/, skills/, hooks/; ignore local/ephemeral only
-.cursor/plans/
-.cursor/mcp.json
-.cursor/*.log
-
 # WASM
 pkg/
 sdk/typescript/wasm/

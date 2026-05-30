@@ -58,7 +58,7 @@ open e2e/frap-reports/conference/frap-debug-explorer.html
 - **FEAT:** `SH` (healing), `PW` (adapter), `DBG` (debug), `POL` (policy), `RPT` (reporting)
 - **AREA:** `SCHED`, `REG`, `CFP`, `SPK`, `NAV`
 
-Полная матрица: [project/cases/conference/CASES.md](../../project/cases/conference/CASES.md).
+Conference scenario IDs follow `CONF-{FEAT}-{AREA}-{OUTCOME}` (e.g. `CONF-SH-SCHED-PASS`, `CONF-SH-CFP-FAIL`).
 
 ## Как читать отчёт
 
@@ -160,5 +160,4 @@ cd e2e
 npx playwright test --config=playwright.conference.config.ts --grep "CONF-CL-REG-PASS"
 ```
 
-| Presentation slide | [promo/presentation/](../../promo/presentation/) (slide «id → data-id») |
 | Golden reports (generated) | `e2e/frap-reports/conference/` |

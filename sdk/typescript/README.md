@@ -55,7 +55,7 @@ WASM output: `wasm/` (gitignored; built in CI).
 
 ### Publishing
 
-Maintainers: [docs/publishing-npm.md](../../docs/publishing-npm.md). Local auth template: [`.npmrc.example`](./.npmrc.example).
+Maintainers: see CI workflow `.github/workflows/publish.yml`. Local auth template: [`.npmrc.example`](./.npmrc.example).
 
 ### Dev fallback
 
