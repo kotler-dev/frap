@@ -100,6 +100,11 @@ fn generate_java_playwright(map: &ElementMap, options: &GenerateOptions) -> Stri
     writeln!(out, "    }}").unwrap();
 
     let mut emitted_clusters = std::collections::HashSet::new();
+    let mut used_names: std::collections::HashSet<String> = std::collections::HashSet::new();
+    // Members emitted via a cluster `items(index)` accessor are not emitted again
+    // as individual methods.
+    let mut clustered_member_ids: std::collections::HashSet<&str> =
+        std::collections::HashSet::new();
 
     for cluster in &map.clusters {
         if cluster.cluster_type != ClusterType::List || cluster.element_ids.len() < 2 {
@@ -108,32 +113,41 @@ fn generate_java_playwright(map: &ElementMap, options: &GenerateOptions) -> Stri
         if !emitted_clusters.insert(cluster.id.clone()) {
             continue;
         }
-        let method = cluster_method_name(&cluster.prefix_signature);
-        let sample = cluster
-            .element_ids
-            .first()
-            .and_then(|id| map.elements.iter().find(|e| &e.id == id));
-        if let Some(el) = sample {
-            writeln!(
-                out,
-                "\n    /** Cluster `{}` ({} elements) */",
-                cluster.id,
-                cluster.element_ids.len()
-            )
-            .unwrap();
-            writeln!(out, "    public Locator {}(int index) {{", method).unwrap();
-            writeln!(
-                out,
-                "        return page.locator(\"{}\").nth(index);",
-                escape_java_string(&el.recommended_selector)
-            )
-            .unwrap();
-            writeln!(out, "    }}").unwrap();
+        for id in &cluster.element_ids {
+            clustered_member_ids.insert(id.as_str());
         }
+        let method = unique_name(
+            cluster_method_name(&cluster.prefix_signature),
+            &mut used_names,
+        );
+        let list_selector = cluster_list_selector(cluster, map);
+        writeln!(
+            out,
+            "\n    /** Cluster `{}` ({} elements) */",
+            cluster.id,
+            cluster.element_ids.len()
+        )
+        .unwrap();
+        writeln!(out, "    public Locator {}(int index) {{", method).unwrap();
+        writeln!(
+            out,
+            "        return page.locator(\"{}\").nth(index);",
+            escape_java_string(&list_selector)
+        )
+        .unwrap();
+        writeln!(out, "    }}").unwrap();
     }
 
+    // Dedup individual methods by selector so the same locator is not emitted twice.
+    let mut emitted_selectors: std::collections::HashSet<&str> = std::collections::HashSet::new();
     for element in &map.elements {
-        let method = element_method_name(element);
+        if clustered_member_ids.contains(element.id.as_str()) {
+            continue;
+        }
+        if !emitted_selectors.insert(element.recommended_selector.as_str()) {
+            continue;
+        }
+        let method = unique_name(element_method_name(element), &mut used_names);
         writeln!(
             out,
             "\n    /** {} (confidence {:.2}) */",
@@ -158,14 +172,110 @@ fn generate_java_playwright(map: &ElementMap, options: &GenerateOptions) -> Stri
 }
 
 fn element_method_name(element: &ElementNode) -> String {
-    let base = element
-        .tag
-        .chars()
-        .chain(element.locator.strategy.chars())
-        .filter(|c| c.is_alphanumeric())
-        .collect::<String>();
-    let suffix = element.id.replace('-', "");
-    to_camel_case(&format!("{base}_{suffix}"))
+    let name = to_camel_case(&transliterate(&method_name_source(element)));
+    if name.is_empty() {
+        to_camel_case(&format!("{}_element", element.tag))
+    } else {
+        name
+    }
+}
+
+/// Picks the human source for a method name from the element semantics, in
+/// priority order: `data-testid` → `aria-label` → semantic `id` → `name` →
+/// visible text → synthetic fallback.
+fn method_name_source(element: &ElementNode) -> String {
+    let attrs = &element.signature.stable_attrs;
+    for key in ["data-testid", "aria-label", "name"] {
+        if let Some(v) = attrs.get(key) {
+            if !v.trim().is_empty() {
+                return v.clone();
+            }
+        }
+    }
+    if let Some(id) = attrs.get("id") {
+        if id_is_namelike(id) {
+            return id.clone();
+        }
+    }
+    if let Some(text) = &element.signature.text_content {
+        let text = text.split_whitespace().collect::<Vec<_>>().join(" ");
+        if !text.is_empty() && text.chars().count() <= 40 {
+            return text;
+        }
+    }
+    format!("{}_{}", element.tag, element.id)
+}
+
+/// An id is good as a method name if it reads like a label: it has letters and
+/// is not number-dominant or uuid-like. (Stricter `looks_like_generated` is for
+/// rejecting *selectors*, and over-rejects semantic ids like `nav-link-pay`.)
+fn id_is_namelike(id: &str) -> bool {
+    let id = id.trim();
+    let letters = id.chars().filter(|c| c.is_alphabetic()).count();
+    let digits = id.chars().filter(|c| c.is_ascii_digit()).count();
+    letters >= 2 && digits * 2 < id.chars().count() && !id.contains("uuid")
+}
+
+/// Transliterates Cyrillic to Latin so names stay valid Java identifiers.
+/// Non-Cyrillic characters are kept as-is (word boundaries handled downstream).
+fn transliterate(input: &str) -> String {
+    let mut out = String::new();
+    for ch in input.chars() {
+        let lower = ch.to_lowercase().next().unwrap_or(ch);
+        let mapped = match lower {
+            'а' => "a",
+            'б' => "b",
+            'в' => "v",
+            'г' => "g",
+            'д' => "d",
+            'е' | 'ё' | 'э' => "e",
+            'ж' => "zh",
+            'з' => "z",
+            'и' => "i",
+            'й' => "y",
+            'к' => "k",
+            'л' => "l",
+            'м' => "m",
+            'н' => "n",
+            'о' => "o",
+            'п' => "p",
+            'р' => "r",
+            'с' => "s",
+            'т' => "t",
+            'у' => "u",
+            'ф' => "f",
+            'х' => "h",
+            'ц' => "ts",
+            'ч' => "ch",
+            'ш' => "sh",
+            'щ' => "sch",
+            'ы' => "y",
+            'ю' => "yu",
+            'я' => "ya",
+            'ъ' | 'ь' => "",
+            _ => {
+                out.push(ch);
+                continue;
+            }
+        };
+        out.push_str(mapped);
+    }
+    out
+}
+
+/// Ensures a method name is unique within the class by adding a numeric suffix.
+fn unique_name(base: String, used: &mut std::collections::HashSet<String>) -> String {
+    if used.insert(base.clone()) {
+        return base;
+    }
+    let mut n = 2;
+    loop {
+        let candidate = format!("{base}{n}");
+        if used.insert(candidate.clone()) {
+            return candidate;
+        }
+        n += 1;
+    }
 }
 
 fn cluster_method_name(prefix: &str) -> String {
@@ -174,6 +284,46 @@ fn cluster_method_name(prefix: &str) -> String {
         .map(|c| if c.is_alphanumeric() { c } else { '_' })
         .collect();
     to_camel_case(&format!("cluster_{sanitized}"))
+}
+
+/// Builds a selector that matches ALL members of a list cluster.
+///
+/// If every member shares the same recommended selector (e.g. a repeated
+/// `[data-testid="remove-btn"]`), that selector is used. Otherwise members are
+/// unique (e.g. different ids), so a structural descendant selector from the
+/// common path prefix is used — this is what makes `items(index)` resolve every
+/// member instead of just one.
+fn cluster_list_selector(cluster: &crate::element_map::Cluster, map: &ElementMap) -> String {
+    let selectors: Vec<&str> = cluster
+        .element_ids
+        .iter()
+        .filter_map(|id| map.elements.iter().find(|e| &e.id == id))
+        .map(|e| e.recommended_selector.as_str())
+        .collect();
+
+    if let Some(first) = selectors.first() {
+        if selectors.iter().all(|s| s == first) {
+            return (*first).to_string();
+        }
+    }
+    prefix_to_css(&cluster.prefix_signature)
+}
+
+/// Turns a path prefix signature like `div:->div:->aside:->nav:->a:-` into a
+/// descendant CSS selector `div div aside nav a`.
+fn prefix_to_css(prefix: &str) -> String {
+    let css = prefix
+        .split('>')
+        .filter_map(|token| token.split(':').next())
+        .map(str::trim)
+        .filter(|tag| !tag.is_empty())
+        .collect::<Vec<_>>()
+        .join(" ");
+    if css.is_empty() {
+        "*".to_string()
+    } else {
+        css
+    }
 }
 
 fn to_camel_case(input: &str) -> String {
@@ -236,5 +386,264 @@ mod tests {
         assert!(source.contains("public class CheckoutPage"));
         assert!(source.contains("package com.example.pages"));
         assert!(source.contains("page.locator"));
+    }
+
+    fn el(
+        selector: &str,
+        tag: &str,
+        attrs: &[(&str, &str)],
+        path: &[&str],
+    ) -> crate::DOMElementInfo {
+        crate::DOMElementInfo {
+            selector: selector.to_string(),
+            tag: tag.to_string(),
+            attributes: attrs
+                .iter()
+                .map(|(k, v)| (k.to_string(), v.to_string()))
+                .collect(),
+            text_content: None,
+            path: path.iter().map(|s| s.to_string()).collect(),
+            position_in_parent: Some(0),
+        }
+    }
+
+    fn gen(map: &ElementMap) -> String {
+        generate_page_object(map, &GenerateOptions::default()).files[0]
+            .content
+            .clone()
+    }
+
+    fn one(selector: &str, tag: &str, attrs: &[(&str, &str)], text: Option<&str>) -> String {
+        let snapshot = DOMSnapshot {
+            html: String::new(),
+            elements: vec![crate::DOMElementInfo {
+                selector: selector.to_string(),
+                tag: tag.to_string(),
+                attributes: attrs
+                    .iter()
+                    .map(|(k, v)| (k.to_string(), v.to_string()))
+                    .collect(),
+                text_content: text.map(|t| t.to_string()),
+                path: vec![format!("{tag}:-")],
+                position_in_parent: None,
+            }],
+        };
+        let map = build_element_map(&snapshot, &MapOptions::default());
+        generate_page_object(&map, &GenerateOptions::default()).files[0]
+            .content
+            .clone()
+    }
+
+    #[test]
+    fn transliterate_cyrillic_to_latin() {
+        assert_eq!(transliterate("Между своими"), "mezhdu svoimi");
+        assert_eq!(transliterate("Оплатить"), "oplatit");
+        assert_eq!(transliterate("nav-link"), "nav-link");
+    }
+
+    // issue #05: names come from semantics, not tag+strategy+el-N.
+    #[test]
+    fn method_name_from_testid() {
+        assert!(one("x", "button", &[("data-testid", "remove-btn")], None)
+            .contains("Locator removeBtn()"));
+    }
+
+    #[test]
+    fn method_name_from_id_when_no_testid() {
+        assert!(one("x", "a", &[("id", "nav-link-payments")], None)
+            .contains("Locator navLinkPayments()"));
+    }
+
+    #[test]
+    fn method_name_from_aria_label() {
+        assert!(one("x", "button", &[("aria-label", "Log out")], None).contains("Locator logOut()"));
+    }
+
+    #[test]
+    fn method_name_from_cyrillic_text() {
+        let src = one("x", "a", &[], Some("Между своими"));
+        assert!(src.contains("Locator mezhduSvoimi()"), "{src}");
+    }
+
+    #[test]
+    fn method_name_has_no_strategy_or_synthetic_id() {
+        let src = one("x", "button", &[("data-testid", "remove-btn")], None);
+        assert!(!src.contains("buttondatatestid"));
+        assert!(!src.contains("El0"));
+    }
+
+    // issue #05: names must stay unique after disambiguation.
+    // The two elements collide on the NAME source ("pay") but have DIFFERENT
+    // selectors, so selector-dedup does not fold them and naming is exercised.
+    #[test]
+    fn colliding_names_get_numeric_suffix() {
+        let snapshot = DOMSnapshot {
+            html: String::new(),
+            elements: vec![
+                crate::DOMElementInfo {
+                    selector: "x".into(),
+                    tag: "button".into(),
+                    attributes: [("data-testid".to_string(), "pay".to_string())].into(),
+                    text_content: None,
+                    path: vec!["div:-".into(), "button:-".into()],
+                    position_in_parent: Some(0),
+                },
+                crate::DOMElementInfo {
+                    selector: "y".into(),
+                    tag: "button".into(),
+                    attributes: [("aria-label".to_string(), "Pay".to_string())].into(),
+                    text_content: None,
+                    path: vec!["section:-".into(), "button:-".into()],
+                    position_in_parent: Some(0),
+                },
+            ],
+        };
+        let map = build_element_map(&snapshot, &MapOptions::default());
+        let src = generate_page_object(&map, &GenerateOptions::default()).files[0]
+            .content
+            .clone();
+        assert!(src.contains("Locator pay()"), "{src}");
+        assert!(src.contains("Locator pay2()"), "{src}");
+    }
+
+    #[test]
+    fn prefix_to_css_builds_descendant_selector() {
+        assert_eq!(
+            prefix_to_css("div:->div:->aside:->nav:->a:-"),
+            "div div aside nav a"
+        );
+        assert_eq!(prefix_to_css(""), "*");
+    }
+
+    // issue #02: a list accessor must match all members, not the first member's
+    // unique id. Members with different ids -> structural shared selector.
+    #[test]
+    fn cluster_accessor_uses_shared_structural_selector() {
+        let snapshot = DOMSnapshot {
+            html: String::new(),
+            elements: vec![
+                el(
+                    "a[id=\"nav-1\"]",
+                    "a",
+                    &[("id", "nav-1")],
+                    &["div:-", "nav:-", "a:-"],
+                ),
+                el(
+                    "a[id=\"nav-2\"]",
+                    "a",
+                    &[("id", "nav-2")],
+                    &["div:-", "nav:-", "a:-"],
+                ),
+                el(
+                    "a[id=\"nav-3\"]",
+                    "a",
+                    &[("id", "nav-3")],
+                    &["div:-", "nav:-", "a:-"],
+                ),
+            ],
+        };
+        let map = build_element_map(&snapshot, &MapOptions::default());
+        let src = gen(&map);
+        assert!(src.contains(".nth(index)"), "expected a cluster accessor");
+        assert!(
+            src.contains("page.locator(\"div nav a\").nth(index)"),
+            "accessor should use the shared structural selector:\n{src}"
+        );
+        // the unique first-member id must NOT be the list selector
+        assert!(
+            !src.contains("#nav-1\").nth(index)"),
+            "list accessor still uses a unique member id:\n{src}"
+        );
+    }
+
+    // issue #02: when all members share the same selector, reuse it.
+    #[test]
+    fn cluster_accessor_reuses_shared_testid() {
+        let snapshot = DOMSnapshot {
+            html: String::new(),
+            elements: vec![
+                el(
+                    "x",
+                    "button",
+                    &[("data-testid", "remove-btn")],
+                    &["ul:-", "li:-", "button:-"],
+                ),
+                el(
+                    "x",
+                    "button",
+                    &[("data-testid", "remove-btn")],
+                    &["ul:-", "li:-", "button:-"],
+                ),
+            ],
+        };
+        let map = build_element_map(&snapshot, &MapOptions::default());
+        let src = gen(&map);
+        assert!(
+            src.contains("page.locator(\"[data-testid=\\\"remove-btn\\\"]\").nth(index)"),
+            "shared testid should be reused as the list selector:\n{src}"
+        );
+    }
+
+    // issue #04: identical selectors must not become many methods.
+    #[test]
+    fn duplicate_selectors_are_deduped() {
+        // six buttons, same data-testid, but each in a different container -> not
+        // one cluster, so they reach the individual-method loop.
+        let elements = (0..6)
+            .map(|i| {
+                let path = [format!("section{i}:-"), "button:-".to_string()];
+                crate::DOMElementInfo {
+                    selector: "x".to_string(),
+                    tag: "button".to_string(),
+                    attributes: [("data-testid".to_string(), "remove-btn".to_string())].into(),
+                    text_content: None,
+                    path: path.to_vec(),
+                    position_in_parent: Some(0),
+                }
+            })
+            .collect();
+        let map = build_element_map(
+            &DOMSnapshot {
+                html: String::new(),
+                elements,
+            },
+            &MapOptions::default(),
+        );
+        let src = gen(&map);
+        let count = src.matches("[data-testid=\\\"remove-btn\\\"]\");").count();
+        assert_eq!(
+            count, 1,
+            "expected exactly one deduped method, got {count}:\n{src}"
+        );
+    }
+
+    // issue #04: members emitted via items(index) are not emitted again as
+    // individual methods.
+    #[test]
+    fn cluster_members_not_emitted_individually() {
+        let snapshot = DOMSnapshot {
+            html: String::new(),
+            elements: vec![
+                el(
+                    "a[id=\"nav-1\"]",
+                    "a",
+                    &[("id", "nav-1")],
+                    &["div:-", "nav:-", "a:-"],
+                ),
+                el(
+                    "a[id=\"nav-2\"]",
+                    "a",
+                    &[("id", "nav-2")],
+                    &["div:-", "nav:-", "a:-"],
+                ),
+            ],
+        };
+        let map = build_element_map(&snapshot, &MapOptions::default());
+        let src = gen(&map);
+        // no individual (non-nth) method for a member id
+        assert!(
+            !src.contains("page.locator(\"#nav-1\");"),
+            "cluster member should not get its own method:\n{src}"
+        );
     }
 }
