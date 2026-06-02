@@ -18,6 +18,7 @@
 ### frap-playwright
 - `Frap.discover(page)`, `Frap.generatePageObject(page, dir, options)`
 - `withFrap`, `FrapExtension`, reports
+- Discover/PoG quality (`develop/java-v1.0.1`, issues #7–#15): `:has-text`, LIST accessor, dedup, semantic names, `innerText` snapshot — [docs/en/discover-page-object.md](../../docs/en/discover-page-object.md)
 
 ### Maven
 - Version `1.0.0`, coordinates `io.github.kotler-dev`

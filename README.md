@@ -78,7 +78,7 @@ One clear lifecycle for every locator:
 
 In a single pass, Frap builds a **page map** — a flat catalog of elements with a recommended selector and confidence score. Not a DOM tree, not `querySelector('*')`. This catalog is the foundation for PageObjects and baselines.
 
-API: `Frap.discover`, `buildElementMap`.
+API: `Frap.discover`, `buildElementMap`. **Java guide:** [docs/en/discover-page-object.md](docs/en/discover-page-object.md).
 
 ### Clustering
 
@@ -114,6 +114,8 @@ API: `captureAll`, `ContextTimeline`; `analyzeRca` → returns `RcaReport`.
 Workflow from zero to first tests:
 
 - Page map → filter interactive elements → group by clusters → read recommended selectors → generate Page Object skeleton → evolve with baseline fingerprints; UI change tracking across runs — **v1.2.0** (F009 feedback), **v2.0+** (F017 drift-report)
+
+**Java:** [Discover & Page Object](docs/en/discover-page-object.md) (locator rules, LIST `items(index)`, confidence).
 
 ---
 
@@ -174,6 +176,7 @@ Note: npm requires scoped install `@frap/...`; Maven uses `io.github.kotler-dev`
 
 | Topic | Link |
 |-------|------|
+| Discover & Page Object (Java) | [docs/en/discover-page-object.md](docs/en/discover-page-object.md) |
 | Examples (by language) | [examples/](examples/) |
 | FixtureConf demo app | [fixtures/fixtureconf/](fixtures/fixtureconf/) |
 | Java SDK | [sdk/java/README.md](sdk/java/README.md) |

@@ -130,6 +130,7 @@ See [VERIFICATION.md](./VERIFICATION.md) for full matrix.
 
 ## Documentation
 
+- **[Discover & Page Object](../../docs/en/discover-page-object.md)** — page map, clusters, generated locators, confidence (Java)
 - [frap-core-java](./frap-core-java/README.md) — Core RPC client API
 - [frap-playwright adapter](../../adapters/playwright-java/README.md) — Playwright integration
 - [Demo project](../../examples/java/playwright/) — Runnable example
@@ -146,6 +147,6 @@ See [VERIFICATION.md](./VERIFICATION.md) for full matrix.
 - ✅ Playwright Java adapter
 - ✅ Self-healing selectors
 - ✅ Page discovery and clustering
-- ✅ Page Object generation
+- ✅ Page Object generation (see [discover guide](../../docs/en/discover-page-object.md); quality fixes on `develop/java-v1.0.1`)
 - ⚠️ WebDriver/Selenium — roadmap v1.4
 - ⚠️ Windows bundled binary — build locally

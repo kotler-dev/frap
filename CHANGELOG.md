@@ -37,6 +37,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added (develop/java-v1.0.1)
+
+- Discover/Page Object quality batch (issues #7–#15): Playwright `:has-text` locators, LIST `items(index)` shared selector, PoG dedup and semantic method names, dual confidence documented, Java `innerText` snapshots, mega-LIST demotion (≥8 unique id members)
+- User guide: [docs/en/discover-page-object.md](./docs/en/discover-page-object.md)
+
 ### Planned
 
 - MVP-C: benchmark overhead < 10% vs baseline

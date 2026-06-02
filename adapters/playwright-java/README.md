@@ -20,6 +20,10 @@ Frap.generatePageObject(page, out, GenerateOptions.javaPlaywright("CatalogPage",
 
 Uses bundled `frap-core-rpc` from `frap-core-java` (no Rust toolchain for consumers).
 
+**User guide:** [docs/en/discover-page-object.md](../../docs/en/discover-page-object.md) — locator rules (`:has-text`, not `:contains()`), LIST `items(index)`, dedup, semantic method names, `confidence()` vs `locator().confidence()`, `innerText` snapshots.
+
+**Latest behavior** is on branch `develop/java-v1.0.1` until the next Maven release (Central 1.0.0 predates the #7–#15 fixes).
+
 ## Quick Start
 
 ```java
@@ -155,5 +159,6 @@ Default location: `target/frap-reports/conference/`
 
 ## See Also
 
+- [Discover & Page Object guide](../../docs/en/discover-page-object.md)
 - [sdk/java](../../sdk/java) — Core SDK and documentation index
 - [crates/core](../../../crates/core) — Rust core implementation
