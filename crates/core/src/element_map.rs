@@ -199,8 +199,7 @@ fn demote_heterogeneous_lists(clusters: &mut [Cluster], elements: &[ElementNode]
             .iter()
             .map(|e| e.recommended_selector.as_str())
             .collect();
-        if unique_selectors.len() == members.len() && members.len() >= MEGA_LIST_DEMOTE_THRESHOLD
-        {
+        if unique_selectors.len() == members.len() && members.len() >= MEGA_LIST_DEMOTE_THRESHOLD {
             cluster.cluster_type = ClusterType::Single;
         }
     }
@@ -214,9 +213,7 @@ fn is_repeated_component_cluster(members: &[&ElementNode]) -> bool {
         return true;
     }
     let first = members[0].recommended_selector.as_str();
-    members
-        .iter()
-        .all(|e| e.recommended_selector == first)
+    members.iter().all(|e| e.recommended_selector == first)
 }
 
 impl ElementMap {
