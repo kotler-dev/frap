@@ -137,7 +137,7 @@ pub fn build_element_map(snapshot: &DOMSnapshot, options: &MapOptions) -> Elemen
         });
     }
 
-    let clusters = cluster_members
+    let mut clusters: Vec<Cluster> = cluster_members
         .into_iter()
         .map(|(id, element_ids)| {
             let cluster_type = if element_ids.len() >= 2 {
@@ -152,7 +152,9 @@ pub fn build_element_map(snapshot: &DOMSnapshot, options: &MapOptions) -> Elemen
                 prefix_signature: cluster_prefix.get(&id).cloned().unwrap_or_default(),
             }
         })
-        .collect::<Vec<_>>();
+        .collect();
+
+    demote_heterogeneous_lists(&mut clusters, &elements);
 
     let timestamp_ms = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
@@ -170,6 +172,51 @@ pub fn build_element_map(snapshot: &DOMSnapshot, options: &MapOptions) -> Elemen
         },
     }
     .with_metadata_counts()
+}
+
+/// Minimum LIST size before demoting unique-id clusters (issue #9 mega-LIST).
+const MEGA_LIST_DEMOTE_THRESHOLD: usize = 8;
+
+/// Downgrades large LIST clusters that are not repeated components (issue #9):
+/// many unique id-based locators under the same path prefix are unrelated controls.
+fn demote_heterogeneous_lists(clusters: &mut [Cluster], elements: &[ElementNode]) {
+    for cluster in clusters.iter_mut() {
+        if cluster.cluster_type != ClusterType::List || cluster.element_ids.len() < 2 {
+            continue;
+        }
+        let members: Vec<&ElementNode> = cluster
+            .element_ids
+            .iter()
+            .filter_map(|id| elements.iter().find(|e| &e.id == id))
+            .collect();
+        if members.len() < 2 {
+            continue;
+        }
+        if is_repeated_component_cluster(&members) {
+            continue;
+        }
+        let unique_selectors: std::collections::HashSet<_> = members
+            .iter()
+            .map(|e| e.recommended_selector.as_str())
+            .collect();
+        if unique_selectors.len() == members.len() && members.len() >= MEGA_LIST_DEMOTE_THRESHOLD
+        {
+            cluster.cluster_type = ClusterType::Single;
+        }
+    }
+}
+
+fn is_repeated_component_cluster(members: &[&ElementNode]) -> bool {
+    if members
+        .iter()
+        .all(|e| e.locator.strategy == "data-testid" || e.locator.strategy == "data-id")
+    {
+        return true;
+    }
+    let first = members[0].recommended_selector.as_str();
+    members
+        .iter()
+        .all(|e| e.recommended_selector == first)
 }
 
 impl ElementMap {
@@ -617,5 +664,69 @@ mod tests {
         assert!(testid.1 >= id.1 && id.1 >= data_id.1 && data_id.1 >= none.1);
         assert!(testid.0 >= id.0 && testid.1 >= id.1);
         assert!(id.0 >= data_id.0 && id.1 >= data_id.1);
+    }
+
+    // issue #09: unrelated controls sharing a path prefix must not stay one mega-LIST.
+    #[test]
+    fn heterogeneous_unique_id_links_are_not_one_list() {
+        let deep_path = vec![
+            "div:-".into(),
+            "div:-".into(),
+            "main:-".into(),
+            "div:-".into(),
+            "div:-".into(),
+            "a:-".into(),
+        ];
+        let mut elements = Vec::new();
+        for i in 0..10 {
+            elements.push(DOMElementInfo {
+                selector: format!("a#nav-{i}"),
+                tag: "a".into(),
+                attributes: [("id".to_string(), format!("nav-{i}"))].into(),
+                text_content: Some(format!("Link {i}")),
+                path: deep_path.clone(),
+                position_in_parent: Some(i),
+            });
+        }
+        let map = build_element_map(
+            &DOMSnapshot {
+                html: String::new(),
+                elements,
+            },
+            &MapOptions::default(),
+        );
+        let mega_lists: Vec<_> = map
+            .clusters
+            .iter()
+            .filter(|c| {
+                c.cluster_type == ClusterType::List
+                    && c.element_ids.len() >= MEGA_LIST_DEMOTE_THRESHOLD
+            })
+            .collect();
+        assert!(
+            mega_lists.is_empty(),
+            "expected no mega-LIST for unique id links, got {:?}",
+            map.clusters
+        );
+    }
+
+    #[test]
+    fn repeated_data_testid_cards_stay_list_cluster() {
+        let map = build_element_map(
+            &card_snapshot(),
+            &MapOptions {
+                include_non_interactive: true,
+                ..Default::default()
+            },
+        );
+        let list_clusters: Vec<_> = map
+            .clusters
+            .iter()
+            .filter(|c| c.cluster_type == ClusterType::List)
+            .collect();
+        assert!(
+            !list_clusters.is_empty(),
+            "article cards with data-testid should remain LIST clusters"
+        );
     }
 }

@@ -83,6 +83,13 @@ export function createFrapSelectorEngine(config: FrapConfig): FrapSelectorEngine
   return engine;
 }
 
+function visibleTextContent(el: Element): string | undefined {
+  const raw = (((el as HTMLElement).innerText ?? el.textContent) || '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return raw || undefined;
+}
+
 function buildDOMSnapshot(doc: Document): DOMSnapshot {
   const elements: DOMElementInfo[] = [];
   const allElements = doc.querySelectorAll('*');
@@ -108,7 +115,7 @@ function buildDOMSnapshot(doc: Document): DOMSnapshot {
       selector,
       tag: el.tagName.toLowerCase(),
       attributes,
-      text_content: el.textContent || undefined,
+      text_content: visibleTextContent(el),
       path,
     });
   });

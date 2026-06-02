@@ -23,6 +23,14 @@ import java.util.Map;
 public class SnapshotBuilder {
     private static final Logger logger = LoggerFactory.getLogger(SnapshotBuilder.class);
 
+    /**
+     * Visible label for snapshots — skips nested {@code <style>}/{@code <script>} text.
+     * Mirrors TypeScript {@code wrapper.ts} (issue #14).
+     */
+    /** JS expression: visible text for snapshot fields (issue #14). */
+    private static final String VISIBLE_TEXT_EXPR =
+        "(((el.innerText ?? el.textContent) || '').replace(/\\s+/g, ' ').trim().substring(0, 100)) || undefined";
+
     private static final String SNAPSHOT_SCRIPT = """
         () => {
             const elements = [];
@@ -74,7 +82,7 @@ public class SnapshotBuilder {
                     selector: selector,
                     tag: tagName,
                     attributes: attributes,
-                    text_content: (el.textContent || '').substring(0, 100) || undefined,
+                    text_content: __VISIBLE_TEXT__,
                     path: path,
                     position_in_parent: positionInParent
                 });
@@ -85,7 +93,7 @@ public class SnapshotBuilder {
                 elements: elements
             };
         }
-        """;
+        """.replace("__VISIBLE_TEXT__", VISIBLE_TEXT_EXPR);
 
     private final Page page;
     private final ObjectMapper objectMapper;
@@ -182,11 +190,11 @@ public class SnapshotBuilder {
                     selector: selector,
                     tag: el.tagName.toLowerCase(),
                     attributes: attributes,
-                    text_content: (el.textContent || '').substring(0, 100) || undefined,
+                    text_content: __VISIBLE_TEXT__,
                     path: path
                 };
             }
-            """);
+            """.replace("__VISIBLE_TEXT__", VISIBLE_TEXT_EXPR));
 
         try {
             @SuppressWarnings("unchecked")
@@ -269,11 +277,11 @@ public class SnapshotBuilder {
                         selector: null,
                         tag: el.tagName.toLowerCase(),
                         attributes: attributes,
-                        text_content: (el.textContent || '').substring(0, 100) || undefined,
+                        text_content: __VISIBLE_TEXT__,
                         path: path
                     };
                 }
-                """);
+                """.replace("__VISIBLE_TEXT__", VISIBLE_TEXT_EXPR));
             if (raw == null) {
                 return null;
             }
