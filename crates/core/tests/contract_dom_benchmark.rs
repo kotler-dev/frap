@@ -1,7 +1,7 @@
 //! Contract: dom-benchmark fixtures (F019 / C012).
 
 use frap_core::{
-    build_element_map, validate_dom_benchmark, DomBenchmarkExpected, DOMSnapshot, MapOptions,
+    build_element_map, validate_dom_benchmark, DOMSnapshot, DomBenchmarkExpected, MapOptions,
 };
 use serde::Deserialize;
 use std::fs;
@@ -56,6 +56,5 @@ fn contract_one_page(page_id: &str) {
         serde_json::from_str(&expected_json).expect("parse expected");
 
     let map = build_element_map(&fixture.dom_snapshot, &fixture.options);
-    validate_dom_benchmark(&map, &expected)
-        .unwrap_or_else(|e| panic!("page {page_id}: {e}"));
+    validate_dom_benchmark(&map, &expected).unwrap_or_else(|e| panic!("page {page_id}: {e}"));
 }

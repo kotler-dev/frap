@@ -8,9 +8,7 @@ mod element_map;
 mod error;
 mod page_object;
 
-pub use discover_benchmark::{
-    validate_dom_benchmark, DomBenchmarkExpected, DomBenchmarkReport,
-};
+pub use discover_benchmark::{validate_dom_benchmark, DomBenchmarkExpected, DomBenchmarkReport};
 pub use element_map::{
     build_element_map, build_element_map_json, filter_element_map, filter_element_map_json,
     recommend_locator, Cluster, ClusterType, CoverageMode, ElementMap, ElementNode, FilterSpec,

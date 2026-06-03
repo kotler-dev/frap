@@ -217,10 +217,7 @@ fn find_click_root_ancestor<'a>(
 /// After per-element recommendations, align nested duplicates to the shallowest click root.
 fn promote_click_roots(snapshot: &[DOMElementInfo], nodes: &mut [ElementNode]) {
     for node in nodes.iter_mut() {
-        let Some(el) = snapshot
-            .iter()
-            .find(|e| e.selector == node.selector)
-        else {
+        let Some(el) = snapshot.iter().find(|e| e.selector == node.selector) else {
             continue;
         };
         let Some(root) = find_click_root_ancestor(snapshot, el) else {
@@ -252,7 +249,10 @@ fn is_fragile_locator(strategy: &str, confidence: f64) -> bool {
     strategy == "structural" || confidence < 0.55
 }
 
-fn collect_alternatives(element: &DOMElementInfo, primary: &LocatorRecommendation) -> Vec<LocatorRecommendation> {
+fn collect_alternatives(
+    element: &DOMElementInfo,
+    primary: &LocatorRecommendation,
+) -> Vec<LocatorRecommendation> {
     let mut alts = Vec::new();
     let candidates = [
         pick_locator(element),
@@ -282,11 +282,7 @@ fn pick_with_role_name(element: &DOMElementInfo) -> (&'static str, String) {
         if let Some(name) = accessible_name(element) {
             return (
                 "role",
-                format!(
-                    "role={}[name=\"{}\"]",
-                    role,
-                    escape_css_attr(&name)
-                ),
+                format!("role={}[name=\"{}\"]", role, escape_css_attr(&name)),
             );
         }
     }
@@ -297,11 +293,7 @@ fn pick_text_only(element: &DOMElementInfo) -> (&'static str, String) {
     if let Some(text) = element.text_content.as_deref().and_then(usable_text) {
         return (
             "text",
-            format!(
-                "{}:has-text(\"{}\")",
-                element.tag,
-                escape_css_attr(&text)
-            ),
+            format!("{}:has-text(\"{}\")", element.tag, escape_css_attr(&text)),
         );
     }
     ("structural", structural_selector(element))
@@ -884,11 +876,7 @@ mod tests {
                     attributes: [("role".to_string(), "button".to_string())].into(),
                     text_content: None,
                     accessible_name: Some("Калькулятор процентов".to_string()),
-                    path: vec![
-                        "section:-".into(),
-                        "div:-".into(),
-                        "div:-".into(),
-                    ],
+                    path: vec!["section:-".into(), "div:-".into(), "div:-".into()],
                     position_in_parent: Some(0),
                 },
             ],
@@ -922,7 +910,9 @@ mod tests {
         };
         let rec = recommend_locator(&el);
         assert_eq!(rec.strategy, "role");
-        assert!(rec.selector.contains("role=button[name=\"Калькулятор процентов\"]"));
+        assert!(rec
+            .selector
+            .contains("role=button[name=\"Калькулятор процентов\"]"));
     }
 
     // issue #01/#07: aria-label is preferred over visible text.

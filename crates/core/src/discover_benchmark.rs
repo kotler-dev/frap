@@ -86,10 +86,7 @@ pub fn validate_dom_benchmark(
             let found = map.elements.iter().any(|e| {
                 e.recommended_selector == *want
                     || e.locator.selector == *want
-                    || e
-                        .alternatives
-                        .iter()
-                        .any(|a| a.selector == *want)
+                    || e.alternatives.iter().any(|a| a.selector == *want)
             });
             if found {
                 matched += 1;
