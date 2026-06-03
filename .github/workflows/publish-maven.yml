@@ -5,6 +5,12 @@ on:
     tags:
       - 'java-v*'
   workflow_dispatch:
+    inputs:
+      git_ref:
+        description: 'Git ref to publish (must be a release tag, e.g. java-v1.1.0)'
+        required: true
+        default: 'java-v1.1.0'
+        type: string
 
 jobs:
   build-native:
@@ -123,6 +129,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.git_ref || github.ref }}
 
       - name: Download all platform binaries
         uses: actions/download-artifact@v4
@@ -146,6 +154,24 @@ jobs:
           echo "Staged native binaries:"
           ls -la "$DEST"
 
+      - name: Verify release version (no SNAPSHOT to Central)
+        id: coords
+        run: |
+          set -euo pipefail
+          CORE_VER="$(cd sdk/java/frap-core-java && mvn -q -DforceStdout help:evaluate -Dexpression=project.version)"
+          MCP_VER="$(cd sdk/java/frap-mcp && mvn -q -DforceStdout help:evaluate -Dexpression=project.version)"
+          MCP_CORE_VER="$(cd sdk/java/frap-mcp && mvn -q -DforceStdout help:evaluate -Dexpression=frap-core-java.version)"
+          echo "frap-core-java=${CORE_VER}, frap-playwright parent=${CORE_VER}, frap-mcp=${MCP_VER}, frap-core-java.version=${MCP_CORE_VER}"
+          if [[ "${CORE_VER}" == *SNAPSHOT* || "${MCP_VER}" == *SNAPSHOT* ]]; then
+            echo "::error::Maven Central publish requires release versions. Checkout tag java-v* (not SNAPSHOT branch HEAD)."
+            exit 1
+          fi
+          if [[ "${CORE_VER}" != "${MCP_CORE_VER}" ]]; then
+            echo "::error::frap-core-java (${CORE_VER}) must match frap-mcp frap-core-java.version (${MCP_CORE_VER})"
+            exit 1
+          fi
+          echo "core_java_version=${CORE_VER}" >> "$GITHUB_OUTPUT"
+
       - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
@@ -155,14 +181,19 @@ jobs:
           server-id: central
           server-username: CENTRAL_USERNAME
           server-password: CENTRAL_PASSWORD
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: GPG_PASSPHRASE
+
+      - name: Import GPG signing key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: |
+          echo "${GPG_PRIVATE_KEY}" | gpg --batch --import
+          gpg --list-secret-keys --keyid-format=long
 
       - name: Publish GPG key to keyserver
         run: |
-          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --import --batch --yes 2>/dev/null || true
-          gpg --list-keys --with-colons | grep fpr | head -1 | cut -d: -f10 | xargs gpg --send-keys --keyserver hkps://keys.openpgp.org 2>/dev/null || true
-          gpg --list-keys --with-colons | grep fpr | head -1 | cut -d: -f10 | xargs gpg --send-keys --keyserver keyserver.ubuntu.com 2>/dev/null || true
+          KEY_ID="$(gpg --list-secret-keys --keyid-format=long | awk '/^sec/ {print $2}' | head -1 | cut -d/ -f2)"
+          gpg --keyserver hkps://keys.openpgp.org --send-keys "${KEY_ID}" 2>/dev/null || true
+          gpg --keyserver keyserver.ubuntu.com --send-keys "${KEY_ID}" 2>/dev/null || true
           sleep 30
 
       - name: Install Core + Playwright for MCP reactor
@@ -193,8 +224,6 @@ jobs:
           server-id: central
           server-username: CENTRAL_USERNAME
           server-password: CENTRAL_PASSWORD
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: GPG_PASSPHRASE
 
       - name: Publish MCP modules to Maven Central
         run: |
@@ -203,6 +232,7 @@ jobs:
             -pl frap-mcp-tools,frap-mcp-stdio,frap-mcp-http,frap-mcp-http-local -am \
             -DskipTests \
             -DcentralPublishing.skip=false \
+            -Dfrap-core-java.version=${{ steps.coords.outputs.core_java_version }} \
             deploy
         env:
           CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}

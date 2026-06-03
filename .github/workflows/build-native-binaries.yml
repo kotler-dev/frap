@@ -218,21 +218,51 @@ jobs:
           echo "Staged binaries (bundled into the jar, not committed):"
           ls -la "$DEST"
 
-      - uses: actions/setup-java@v4
+      - name: Resolve and validate Maven coordinates
+        id: coords
+        run: |
+          set -euo pipefail
+          CORE_VER="$(cd sdk/java/frap-core-java && mvn -q -DforceStdout help:evaluate -Dexpression=project.version)"
+          MCP_CORE_VER="$(cd sdk/java/frap-mcp && mvn -q -DforceStdout help:evaluate -Dexpression=frap-core-java.version)"
+          echo "core_java_version=${CORE_VER}" >> "$GITHUB_OUTPUT"
+          echo "Resolved frap-core-java=${CORE_VER}, frap-mcp dependency=${MCP_CORE_VER}"
+          if [[ "${CORE_VER}" != "${MCP_CORE_VER}" ]]; then
+            echo "::error::frap-core-java (${CORE_VER}) must match frap-mcp frap-core-java.version (${MCP_CORE_VER})"
+            exit 1
+          fi
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            TAG_VER="${GITHUB_REF_NAME#java-v}"
+            if [[ "${CORE_VER}" != "${TAG_VER}" ]]; then
+              echo "::error::Tag ${GITHUB_REF_NAME} expects Maven ${TAG_VER} but pom has ${CORE_VER}"
+              exit 1
+            fi
+          fi
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Install frap-core-java (bundled natives, local repo)
+        run: |
+          cd sdk/java
+          mvn -B -pl frap-core-java -am install -DskipTests -Dgpg.skip=true
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
           cache: maven
 
-      - name: Install frap-core-java for MCP reactor
-        run: |
-          cd sdk/java
-          mvn -B -pl frap-core-java -am install -DskipTests -Dgpg.skip=true
-
       - name: Package MCP jars with all platform binaries bundled
-        run: >-
-          mvn -B -f sdk/java/frap-mcp/pom.xml
-          -pl frap-mcp-stdio,frap-mcp-http,frap-mcp-http-local -am package -DskipTests
+        run: |
+          mvn -B -f sdk/java/frap-mcp/pom.xml \
+            -pl frap-mcp-stdio,frap-mcp-http,frap-mcp-http-local -am \
+            -DskipTests \
+            -Dfrap-core-java.version=${{ steps.coords.outputs.core_java_version }}
 
       - name: Upload bundled MCP jars
         uses: actions/upload-artifact@v4

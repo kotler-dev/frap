@@ -117,7 +117,20 @@ GitHub Actions automatically:
 - Stages into `frap-core-java` JAR resources
 - Publishes `frap-core-java`, `frap-playwright`, then `frap-mcp-*` (Java 21)
 
+**Important:** deploy uploads to Sonatype staging; you must **Publish** in the Portal unless auto-publish is enabled for the namespace.
+
+```bash
+# Re-run deploy only from the release tag (never from SNAPSHOT branch HEAD):
+gh workflow run publish-maven.yml --ref release/java-v1.1.0 -f git_ref=java-v1.1.0
+```
+
 Monitor at: https://github.com/kotler-dev/frap/actions
+
+### 4b. Portal Publish (required for repo1)
+
+1. https://central.sonatype.com/publishing/deployments
+2. Publish **both** validated deployments @ **1.1.0** (Core SDK + MCP)
+3. Drop any stale **1.0.1** staging deployments
 
 ### 5. Verify on Central
 
