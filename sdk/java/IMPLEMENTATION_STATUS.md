@@ -13,7 +13,7 @@
 - `FrapCoreClient`: buildElementMap, filterElementMap, generatePageObject
 - `SnapshotStore` for JSON persistence
 - Contract tests (Java reference SDK)
-- Bundled native binaries (Linux x86_64 glibc/musl, macOS aarch64)
+- Bundled native binaries (6 platforms: Linux glibc/musl/aarch64, macOS x86_64/aarch64, Windows x64)
 
 ### frap-playwright
 - `Frap.discover(page)`, `Frap.generatePageObject(page, dir, options)`
@@ -40,11 +40,18 @@ cd frap/crates && cargo test -p frap-core contract_dom_benchmark
 cd frap/sdk/java && mvn -P java-unit verify
 ```
 
+## frap-mcp (0.1.0-SNAPSHOT, PR #21)
+
+- Reactor: `sdk/java/frap-mcp/` (Java 21, separate parent POM)
+- Runners: `frap-mcp-stdio` (file), `frap-mcp-http` (inline), `frap-mcp-http-local` (file + ingest)
+- 6 MCP tools; verify: `./scripts/run-frap-mcp-verify.sh` (JDK 21)
+- Cross-client E2E: `@Tag("mcp-e2e")` in `SnapshotScriptCrossClientE2eTest`
+
 ## On hold
 
 - `frap-core-native` on Maven Central (JNI experimental)
 - Selenium / WebDriver (F014 track B)
-- Windows bundled RPC binary
+- MCP on Maven Central (repo-only `0.1.0-SNAPSHOT`)
 - TypeScript SDK release (frozen; contracts remain in repo)
 
 ## Verify

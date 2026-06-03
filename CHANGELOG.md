@@ -41,6 +41,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Discover/Page Object quality batch (issues #7–#15): Playwright `:has-text` locators, LIST `items(index)` shared selector, PoG dedup and semantic method names, dual confidence documented, Java `innerText` snapshots, mega-LIST demotion (≥8 unique id members)
 - User guide: [docs/en/discover-page-object.md](./docs/en/discover-page-object.md)
+- **frap-mcp** (PR #21): Spring AI MCP server `0.1.0-SNAPSHOT` — 6 tools, stdio/http/http-local runners, file-mode artifacts, snapshot ingest, six-platform native binary CI packaging
+- `FrapRpcClient`: Windows x64 + Linux aarch64; `Cluster` DTO `member_tag` / `shared_selector`; `./scripts/run-frap-mcp-verify.sh`
 
 ### Planned
 

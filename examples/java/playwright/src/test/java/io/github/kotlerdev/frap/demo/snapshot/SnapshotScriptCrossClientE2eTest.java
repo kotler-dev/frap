@@ -65,7 +65,8 @@ import org.junit.jupiter.api.Test;
  * — proof the {@code fetch} hit ingest); that file exists under the work dir; and its contents are valid
  * JSON with {@code html} and an {@code elements} array. No {@code require} errors anywhere.</p>
  */
-@Tag("e2e")
+/** Separate from default {@code e2e} suite: requires Java 21 MCP jar ({@code frap-mcp-http-local}). */
+@Tag("mcp-e2e")
 @DisplayName("frap_snapshot_script file mode — real browser, three clients")
 class SnapshotScriptCrossClientE2eTest {
 
@@ -119,7 +120,7 @@ class SnapshotScriptCrossClientE2eTest {
         mcpEndpoint = URI.create("http://127.0.0.1:" + port + "/mcp");
 
         File jar = resolveHttpLocalJar();
-        String java = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+        String java = resolveMcpJavaBinary();
         serverProcess = new ProcessBuilder(
                 java,
                 "-jar", jar.getAbsolutePath(),
@@ -648,6 +649,50 @@ class SnapshotScriptCrossClientE2eTest {
     private static int freePort() throws IOException {
         try (ServerSocket socket = new ServerSocket(0)) {
             return socket.getLocalPort();
+        }
+    }
+
+    /** frap-mcp-http-local is Java 21; the demo module may run on Java 17. */
+    private static String resolveMcpJavaBinary() {
+        String override = System.getenv("FRAP_MCP_JAVA");
+        if (override != null && !override.isBlank()) {
+            return override;
+        }
+        String javaHome = System.getenv("JAVA_HOME");
+        if (javaHome != null && !javaHome.isBlank()) {
+            File candidate = new File(javaHome, "bin/java");
+            if (candidate.canExecute() && isJava21(candidate.getAbsolutePath())) {
+                return candidate.getAbsolutePath();
+            }
+        }
+        for (String home : new String[] {
+            System.getProperty("user.home") + "/.local/jdk-21.0.5+11/Contents/Home",
+            System.getProperty("user.home") + "/.sdkman/candidates/java/21.0.11-tem",
+            System.getProperty("user.home") + "/.sdkman/candidates/java/21.0.10-tem"
+        }) {
+            File candidate = new File(home, "bin/java");
+            if (candidate.canExecute() && isJava21(candidate.getAbsolutePath())) {
+                return candidate.getAbsolutePath();
+            }
+        }
+        throw new IllegalStateException(
+            "JDK 21 required to run frap-mcp-http-local.jar. Set FRAP_MCP_JAVA or JAVA_HOME "
+                + "(e.g. sdk install java 21.0.11-tem).");
+    }
+
+    private static boolean isJava21(String javaBin) {
+        try {
+            Process p = new ProcessBuilder(javaBin, "-version")
+                .redirectErrorStream(true)
+                .start();
+            String out = new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            p.waitFor(5, TimeUnit.SECONDS);
+            return out.contains("version \"21");
+        } catch (IOException | InterruptedException e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            return false;
         }
     }
 
