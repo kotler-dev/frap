@@ -18,7 +18,8 @@
 ### frap-playwright
 - `Frap.discover(page)`, `Frap.generatePageObject(page, dir, options)`
 - `withFrap`, `FrapExtension`, reports
-- Discover/PoG quality (`develop/java-v1.0.1`, issues #7–#15): `:has-text`, LIST accessor, dedup, semantic names, `innerText` snapshot — [docs/en/discover-page-object.md](../../docs/en/discover-page-object.md)
+- Discover/PoG quality (issues #7–#15): `:has-text`, LIST accessor, dedup, semantic names, `innerText` snapshot — [docs/en/discover-page-object.md](../../docs/en/discover-page-object.md)
+- Semantic pipeline (1.1.0): `develop/java-v1.1.1` successor to `develop/java-v1.0.1`
 
 ### Maven
 - Version `1.0.0`, coordinates `io.github.kotler-dev`
@@ -40,12 +41,17 @@ cd frap/crates && cargo test -p frap-core contract_dom_benchmark
 cd frap/sdk/java && mvn -P java-unit verify
 ```
 
-## frap-mcp (1.0.1, Maven Central)
+## frap-mcp (1.1.0, Maven Central)
 
 - Reactor: `sdk/java/frap-mcp/` (Java 21, separate parent POM)
 - Artifacts: `frap-mcp-tools`, `frap-mcp-stdio`, `frap-mcp-http`, `frap-mcp-http-local`
 - 6 MCP tools; verify: `./scripts/run-frap-mcp-verify.sh` (JDK 21)
 - Cross-client E2E: `@Tag("mcp-e2e")` in `SnapshotScriptCrossClientE2eTest`
+
+## Development (1.1.1-SNAPSHOT)
+
+- Integration branch: **`develop/java-v1.1.1`** — see [`DEVELOPMENT.md`](./DEVELOPMENT.md)
+- Follow-up: Java `SnapshotBuilder` a11y/scope parity with TS `snapshot.js` (matrix 1.1.0)
 
 ## On hold
 
