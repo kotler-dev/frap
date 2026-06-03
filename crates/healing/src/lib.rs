@@ -21,6 +21,14 @@ pub struct DOMElementInfo {
     pub path: Vec<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub position_in_parent: Option<usize>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub visible: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub computed_role: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub accessible_name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub scope_hint: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -269,6 +277,42 @@ mod tests {
     use super::*;
     use signature::{DOMToken, Signature};
 
+    #[test]
+    fn dom_element_info_a11y_fields_default_when_absent() {
+        // Old snapshot JSON without the a11y fields must still deserialize, with
+        // all four new fields defaulting to `None` (backward compatibility).
+        let without = r##"{
+            "selector": "#pay",
+            "tag": "button",
+            "attributes": {},
+            "text_content": "Pay",
+            "path": ["button:-"]
+        }"##;
+        let el: DOMElementInfo = serde_json::from_str(without).expect("deserialize legacy");
+        assert_eq!(el.visible, None);
+        assert_eq!(el.computed_role, None);
+        assert_eq!(el.accessible_name, None);
+        assert_eq!(el.scope_hint, None);
+
+        // A snapshot carrying the new fields deserializes them into `Some(..)`.
+        let with = r##"{
+            "selector": "#pay",
+            "tag": "button",
+            "attributes": {},
+            "text_content": "Pay",
+            "path": ["button:-"],
+            "visible": true,
+            "computed_role": "button",
+            "accessible_name": "Pay",
+            "scope_hint": "form#checkout"
+        }"##;
+        let el: DOMElementInfo = serde_json::from_str(with).expect("deserialize a11y");
+        assert_eq!(el.visible, Some(true));
+        assert_eq!(el.computed_role.as_deref(), Some("button"));
+        assert_eq!(el.accessible_name.as_deref(), Some("Pay"));
+        assert_eq!(el.scope_hint.as_deref(), Some("form#checkout"));
+    }
+
     fn create_test_signature() -> Signature {
         Signature {
             path: vec![DOMToken {
@@ -298,6 +342,10 @@ mod tests {
                 accessible_name: None,
                 path: vec!["button:submit".to_string()],
                 position_in_parent: None,
+                visible: None,
+                computed_role: None,
+                accessible_name: None,
+                scope_hint: None,
             }],
         }
     }
@@ -321,6 +369,10 @@ mod tests {
                 accessible_name: None,
                 path: vec!["button:-".to_string()],
                 position_in_parent: None,
+                visible: None,
+                computed_role: None,
+                accessible_name: None,
+                scope_hint: None,
             }],
         };
 
