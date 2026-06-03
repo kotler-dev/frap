@@ -564,7 +564,7 @@ fn should_include_element(element: &DOMElementInfo, options: &MapOptions) -> boo
                 || element
                     .attributes
                     .get("contenteditable")
-                    .is_some_and(|v| v == "true" || v == "")
+                    .is_some_and(|v| v == "true" || v.is_empty())
         }
     }
 }
