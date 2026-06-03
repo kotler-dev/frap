@@ -36,7 +36,7 @@ jobs:
             build_cmd: cd crates && cargo build --release -p frap-core --bin frap-core-rpc --target x86_64-pc-windows-msvc
             install_musl: false
             install_aarch64_cross: false
-          - os: macos-13
+          - os: macos-15-intel
             target: host
             binary_name: frap-core-rpc-macos-x86_64
             build_cmd: cd crates && cargo build --release -p frap-core --bin frap-core-rpc
