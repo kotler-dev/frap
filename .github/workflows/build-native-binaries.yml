@@ -224,6 +224,11 @@ jobs:
           java-version: '21'
           cache: maven
 
+      - name: Install frap-core-java for MCP reactor
+        run: |
+          cd sdk/java
+          mvn -B -pl frap-core-java -am install -DskipTests -Dgpg.skip=true
+
       - name: Package MCP jars with all platform binaries bundled
         run: >-
           mvn -B -f sdk/java/frap-mcp/pom.xml
