@@ -164,7 +164,6 @@ mod tests {
                 position_in_parent: None,
                 visible: None,
                 computed_role: None,
-                accessible_name: None,
                 scope_hint: None,
             }],
         }
@@ -248,7 +247,6 @@ mod tests {
                     position_in_parent: None,
                     visible: None,
                     computed_role: None,
-                    accessible_name: None,
                     scope_hint: None,
                 }],
             },
@@ -329,7 +327,6 @@ mod tests {
                     position_in_parent: None,
                     visible: None,
                     computed_role: None,
-                    accessible_name: None,
                     scope_hint: None,
                 },
                 DOMElementInfo {
@@ -342,7 +339,6 @@ mod tests {
                     position_in_parent: None,
                     visible: None,
                     computed_role: None,
-                    accessible_name: None,
                     scope_hint: None,
                 },
             ],

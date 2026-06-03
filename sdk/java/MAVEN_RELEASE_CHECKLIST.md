@@ -45,16 +45,20 @@ Add to https://github.com/kotler-dev/frap/settings/secrets/actions:
 - [x] `io.github.kotler-dev:frap-core-java:1.0.0`
 - [x] `io.github.kotler-dev:frap-playwright:1.0.0`
 
-### 5. Release Scope for 1.0.1 (current)
+### 5. Release Scope for 1.1.0 (current)
 
-Publish to Maven Central (tag `java-v1.0.1`, workflow [publish-maven.yml](../../.github/workflows/publish-maven.yml)):
+Publish to Maven Central (tag `java-v1.1.0`, branch `release/java-v1.1.0`, workflow [publish-maven.yml](../../.github/workflows/publish-maven.yml)):
 
-- [ ] `io.github.kotler-dev:frap-core-java:1.0.1` (6 bundled natives in JAR)
-- [ ] `io.github.kotler-dev:frap-playwright:1.0.1`
-- [ ] `io.github.kotler-dev:frap-mcp-tools:1.0.1`
-- [ ] `io.github.kotler-dev:frap-mcp-stdio:1.0.1` (executable fat jar, JDK 21)
-- [ ] `io.github.kotler-dev:frap-mcp-http:1.0.1`
-- [ ] `io.github.kotler-dev:frap-mcp-http-local:1.0.1`
+- [ ] `io.github.kotler-dev:frap-core-java:1.1.0` (6 bundled natives in JAR)
+- [ ] `io.github.kotler-dev:frap-playwright:1.1.0`
+- [ ] `io.github.kotler-dev:frap-mcp-tools:1.1.0`
+- [ ] `io.github.kotler-dev:frap-mcp-stdio:1.1.0` (executable fat jar, JDK 21 sidecar)
+- [ ] `io.github.kotler-dev:frap-mcp-http:1.1.0`
+- [ ] `io.github.kotler-dev:frap-mcp-http-local:1.1.0`
+
+### 5a. Release Scope for 1.0.1 (superseded — do not publish staging)
+
+- Staging 1.0.1: **Drop/Close** in Sonatype Portal; release line is **1.1.0** only.
 
 Do not publish:
 
@@ -62,18 +66,18 @@ Do not publish:
 
 Pre-tag gates: [VERIFICATION.md](./VERIFICATION.md), `./scripts/run-frap-mcp-verify.sh` (JDK 21).
 
-## Release Steps (1.0.1)
+## Release Steps (1.1.0)
 
 ### 1. Prepare Release
 
 ```bash
-# Update version (remove -SNAPSHOT)
+# On branch release/java-v1.1.0
 cd sdk/java
-mvn versions:set -DnewVersion=1.0.1
-mvn versions:commit
-
-# Verify
-git diff sdk/java/pom.xml
+mvn versions:set -DnewVersion=1.1.0 -DgenerateBackupPoms=false
+cd frap-mcp
+mvn versions:set -DnewVersion=1.1.0 -DgenerateBackupPoms=false
+# Set frap-core-java.version=1.1.0 in frap-mcp/pom.xml
+# Set spring.ai.mcp.server.version=1.1.0 in application.properties (3 runners)
 ```
 
 ### 2. Run Full Build
@@ -101,8 +105,9 @@ git add sdk/java/
 git commit -m "Release 1.0.0"
 
 # Create tag
-git tag -a java-v1.0.1 -m "Java SDK 1.0.1 — Core, Playwright, MCP on Maven Central"
-git push origin java-v1.0.1
+git tag -a java-v1.1.0 -m "Frap v1.1.0 — Core semantic locators, Java SDK, MCP on Maven Central"
+git push origin release/java-v1.1.0
+git push origin java-v1.1.0
 ```
 
 ### 4. CI Release
@@ -120,9 +125,12 @@ Wait 10-30 minutes, then verify:
 
 ```bash
 # Check Maven Central
-curl "https://repo1.maven.org/maven2/io/github/kotler-dev/frap-core-java/1.0.1/frap-core-java-1.0.1.pom"
-curl "https://repo1.maven.org/maven2/io/github/kotler-dev/frap-playwright/1.0.1/frap-playwright-1.0.1.pom"
-curl "https://repo1.maven.org/maven2/io/github/kotler-dev/frap-mcp-stdio/1.0.1/frap-mcp-stdio-1.0.1.pom"
+curl "https://repo1.maven.org/maven2/io/github/kotler-dev/frap-core-java/1.1.0/frap-core-java-1.1.0.pom"
+curl "https://repo1.maven.org/maven2/io/github/kotler-dev/frap-playwright/1.1.0/frap-playwright-1.1.0.pom"
+curl "https://repo1.maven.org/maven2/io/github/kotler-dev/frap-mcp-stdio/1.1.0/frap-mcp-stdio-1.1.0.pom"
+curl "https://repo1.maven.org/maven2/io/github/kotler-dev/frap-mcp-tools/1.1.0/frap-mcp-tools-1.1.0.pom"
+curl "https://repo1.maven.org/maven2/io/github/kotler-dev/frap-mcp-http/1.1.0/frap-mcp-http-1.1.0.pom"
+curl "https://repo1.maven.org/maven2/io/github/kotler-dev/frap-mcp-http-local/1.1.0/frap-mcp-http-local-1.1.0.pom"
 
 # Or use in test project
 mvn dependency:resolve -DincludeArtifactIds=frap-core-java
@@ -141,7 +149,7 @@ cd smoke-consumer && mvn compile exec:java
 ```bash
 # Update to next SNAPSHOT
 cd sdk/java
-mvn versions:set -DnewVersion=1.0.1-SNAPSHOT
+mvn versions:set -DnewVersion=1.1.1-SNAPSHOT -DgenerateBackupPoms=false
 mvn versions:commit
 
 git add sdk/java/

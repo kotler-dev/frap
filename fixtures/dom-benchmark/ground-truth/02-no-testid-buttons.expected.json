@@ -3,8 +3,8 @@
   "min_elements": 2,
   "min_list_clusters": 0,
   "expected_primary_selectors": [
-    "button:has-text(\"Pay\")",
-    "button:has-text(\"Cancel\")"
+    "Pay",
+    "Cancel"
   ],
   "min_primary_match_ratio": 1.0,
   "max_fragile_ratio": 0.5

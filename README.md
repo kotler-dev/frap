@@ -168,7 +168,7 @@ Names in the table are the target Core/RPC contract; concrete SDKs may differ (e
 | npm | `@frap/sdk` | `@frap/playwright` | — |
 | Maven | `io.github.kotler-dev:frap-core-java` | `io.github.kotler-dev:frap-playwright` | `frap-mcp-stdio`, `frap-mcp-http`, `frap-mcp-http-local` |
 
-Maven **1.0.1**: six-platform bundled `frap-core-rpc`, F019 discover improvements, MCP tools — see [Java SDK](sdk/java/README.md) and [frap-mcp](sdk/java/frap-mcp/README.md).
+Maven **1.1.0**: Core semantic locators, F019 discover, six-platform bundled `frap-core-rpc`, MCP tools — see [Java SDK](sdk/java/README.md) and [frap-mcp](sdk/java/frap-mcp/README.md).
 
 Note: npm requires scoped install `@frap/...`; Maven uses `io.github.kotler-dev` groupId.
 
@@ -195,7 +195,8 @@ Note: npm requires scoped install `@frap/...`; Maven uses `io.github.kotler-dev`
 ## Roadmap
 
 - **1.0.0** — core + Java SDK: page map, locator recovery, reports, context and RCA, PO generation (Maven Central)
-- **1.0.1** — Java: F019 discover/PoG quality, dom-benchmark, six-platform RPC, MCP on Maven Central (`java-v1.0.1`)
+- **1.1.0** — Java: Core semantic locator pipeline, PoG `getBy*` APIs, MCP on Maven Central (`java-v1.1.0`)
+- **1.0.1** — Java: F019 discover/PoG quality, dom-benchmark, six-platform RPC, MCP (`java-v1.0.1`, superseded by 1.1.0)
 - **1.2.0** — feedback loop (F009), npm parity for discover/PO
 - **1.4+** — CDP source (incl. web accessibility tree), WebDriver/Selenide (F014)
 - **2.0+** — structural contracts and drift gate (F017), visual fingerprints (F007), health score (F010), multi-platform and accessibility tree (F006)

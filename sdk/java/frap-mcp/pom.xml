@@ -14,7 +14,7 @@
 
     <groupId>io.github.kotler-dev</groupId>
     <artifactId>frap-mcp-parent</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.0</version>
     <packaging>pom</packaging>
 
     <name>Frap MCP Parent</name>
@@ -27,7 +27,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <spring-ai.version>1.1.7</spring-ai.version>
-        <frap-core-java.version>1.0.1</frap-core-java.version>
+        <frap-core-java.version>1.1.0</frap-core-java.version>
         <central-publishing-maven-plugin.version>0.7.0</central-publishing-maven-plugin.version>
         <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
         <maven-gpg-plugin.version>3.2.7</maven-gpg-plugin.version>

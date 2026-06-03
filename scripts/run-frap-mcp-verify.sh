@@ -36,4 +36,7 @@ if [[ ! -x "${FRAP_CORE_BIN}" ]]; then
 fi
 echo "[frap-mcp] FRAP_CORE_BIN=${FRAP_CORE_BIN}"
 
+echo "[frap-mcp] installing local frap-core-java (required for extended LocatorRecommendation DTO)..."
+mvn -f "${ROOT_DIR}/sdk/java/pom.xml" -pl frap-core-java -am install -DskipTests -q
+
 mvn -f sdk/java/frap-mcp/pom.xml verify "$@"

@@ -101,14 +101,16 @@ class DomBenchmarkE2eTest {
     }
 
     @Test
-    void siblingLabelPromotesCalcBtnId() throws IOException {
+    void siblingLabelUsesAccessibleName() throws IOException {
         Path html = resolvePage("09-sibling-label.html");
         page.navigate("file://" + html.toAbsolutePath());
 
         ElementMap map = Frap.discover(page, MapOptions.semanticCatalog());
         assertThat(map.elements()).hasSizeGreaterThanOrEqualTo(1);
-        assertThat(map.elements().stream().map(e -> e.recommendedSelector()))
-            .anyMatch(s -> "#calc-btn".equals(s));
+        assertThat(map.elements().stream())
+            .anyMatch(e ->
+                "Калькулятор процентов".equals(e.locator().value())
+                    || "Калькулятор процентов".equals(e.accessibleName()));
     }
 
     @Test
@@ -118,7 +120,8 @@ class DomBenchmarkE2eTest {
 
         ElementMap map = Frap.discover(page, MapOptions.semanticCatalog());
         assertThat(map.elements()).isNotEmpty();
-        assertThat(map.elements().get(0).recommendedSelector()).contains("aria-label");
+        assertThat(map.elements().stream())
+            .anyMatch(e -> "Submit order".equals(e.locator().value()));
     }
 
     private static Path resolvePage(String name) {

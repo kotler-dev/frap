@@ -1,7 +1,15 @@
 //! Ground-truth validation for dom-benchmark fixtures (F019).
 
-use crate::element_map::{ClusterType, ElementMap};
+use crate::element_map::{ClusterType, ElementMap, ElementNode};
 use serde::Deserialize;
+
+fn is_fragile(element: &ElementNode) -> bool {
+    element.locator.strategy == "css"
+        && (element.recommended_selector.contains("nth-of-type")
+            || element.recommended_selector.contains("nth-child")
+            || element.locator.selector.contains("nth-of-type")
+            || element.locator.selector.contains("nth-child"))
+}
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct DomBenchmarkExpected {
@@ -61,7 +69,7 @@ pub fn validate_dom_benchmark(
         ));
     }
 
-    let fragile_count = map.elements.iter().filter(|e| e.fragile).count();
+    let fragile_count = map.elements.iter().filter(|e| is_fragile(e)).count();
     let fragile_ratio = if element_count == 0 {
         0.0
     } else {
@@ -86,7 +94,7 @@ pub fn validate_dom_benchmark(
             let found = map.elements.iter().any(|e| {
                 e.recommended_selector == *want
                     || e.locator.selector == *want
-                    || e.alternatives.iter().any(|a| a.selector == *want)
+                    || e.locator.value.as_deref() == Some(want.as_str())
             });
             if found {
                 matched += 1;
@@ -133,6 +141,9 @@ mod tests {
                 accessible_name: None,
                 path: vec!["button:-".to_string()],
                 position_in_parent: None,
+                visible: None,
+                computed_role: None,
+                scope_hint: None,
             }],
         };
         let map = build_element_map(&snap, &MapOptions::default());

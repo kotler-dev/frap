@@ -6,11 +6,13 @@ independent Maven projects**:
 
 | Project | Parent POM | Java | What it is |
 |---------|-----------|------|------------|
-| **Core SDK** | `io.github.kotler-dev:frap-sdk-parent:1.0.1` | 17 | The Java client for the frap engine + adapters |
-| **MCP server** | `io.github.kotler-dev:frap-mcp-parent:1.0.1` | 21 | Spring AI MCP server exposing frap as tools (stdio + http + http-local) |
+| **Core SDK** | `io.github.kotler-dev:frap-sdk-parent:1.1.0` | 17 | The Java client for the frap engine + adapters |
+| **MCP server** | `io.github.kotler-dev:frap-mcp-parent:1.1.0` | 21 | Spring AI MCP **sidecar** (stdio + http + http-local) |
 
 > They are separate reactors (different parent POMs, different Java levels). The
-> MCP project depends on `frap-core-java` as a normal Maven artifact.
+> MCP project depends on `frap-core-java` as a normal Maven artifact. **MCP is optional:**
+> PoG, discover, and healing work on **JDK 17** without MCP. Run MCP as a **JDK 21 sidecar**
+> (stdio or HTTP) for LLM agent integration — not in-process in Playwright tests.
 
 ---
 
@@ -121,7 +123,7 @@ public interface FrapCoreClient extends AutoCloseable {
 <dependency>
     <groupId>io.github.kotler-dev</groupId>
     <artifactId>frap-core-java</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
@@ -370,14 +372,14 @@ on supported platforms.
 
 ## Versions
 
-- **Core SDK**: `frap-core-java` / `frap-playwright` **1.0.1** on Maven Central.
-- **MCP server**: `frap-mcp-tools`, `frap-mcp-stdio`, `frap-mcp-http`, `frap-mcp-http-local` **1.0.1** on Maven Central (JDK 21 for runners).
+- **Core SDK**: `frap-core-java` / `frap-playwright` **1.1.0** on Maven Central.
+- **MCP server**: `frap-mcp-tools`, `frap-mcp-stdio`, `frap-mcp-http`, `frap-mcp-http-local` **1.1.0** on Maven Central (**JDK 21** sidecar runners only).
 
-**Core SDK (1.0.1 line)**
+**Core SDK (1.1.0 line)**
 
 - ✅ Playwright Java adapter
 - ✅ Self-healing selectors
 - ✅ Page discovery and clustering (F019: dom-benchmark, semantic coverage)
-- ✅ Page Object generation — [discover guide](../../docs/en/discover-page-object.md)
+- ✅ Page Object generation — semantic Playwright APIs (`getByTestId`, `getByRole`, …) — [discover guide](../../docs/en/discover-page-object.md)
 - ✅ Six-platform bundled `frap-core-rpc` (Linux glibc/musl/aarch64, macOS, Windows x64)
 - ⚠️ WebDriver/Selenium — roadmap v1.4

@@ -38,6 +38,14 @@ const BASE_TEXT: f64 = 0.80;
 const BASE_ID: f64 = 0.75;
 const BASE_CSS: f64 = 0.40;
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum CoverageMode {
+    #[default]
+    Actionable,
+    Semantic,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct MapOptions {
     #[serde(default)]
@@ -46,6 +54,8 @@ pub struct MapOptions {
     pub include_non_interactive: bool,
     #[serde(default)]
     pub max_elements: Option<usize>,
+    #[serde(default)]
+    pub coverage_mode: CoverageMode,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -1232,7 +1242,9 @@ pub fn build_element_map(snapshot: &DOMSnapshot, options: &MapOptions) -> Elemen
     let indexes = SnapshotIndexes::build(&snapshot.elements);
 
     for (idx, element) in snapshot.elements.iter().take(limit).enumerate() {
-        if !options.include_non_interactive && !is_interactive(element) {
+        let include_non_interactive =
+            options.include_non_interactive || options.coverage_mode == CoverageMode::Semantic;
+        if !include_non_interactive && !is_interactive(element) {
             continue;
         }
 

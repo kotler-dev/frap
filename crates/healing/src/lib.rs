@@ -26,8 +26,6 @@ pub struct DOMElementInfo {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub computed_role: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub accessible_name: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub scope_hint: Option<String>,
 }
 
@@ -344,7 +342,6 @@ mod tests {
                 position_in_parent: None,
                 visible: None,
                 computed_role: None,
-                accessible_name: None,
                 scope_hint: None,
             }],
         }
@@ -371,7 +368,6 @@ mod tests {
                 position_in_parent: None,
                 visible: None,
                 computed_role: None,
-                accessible_name: None,
                 scope_hint: None,
             }],
         };
