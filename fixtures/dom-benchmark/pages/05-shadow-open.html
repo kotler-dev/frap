@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html lang="en"><body>
+<div id="host"></div>
+<script>
+  const host = document.getElementById('host');
+  const root = host.attachShadow({ mode: 'open' });
+  root.innerHTML = '<button data-testid="shadow-pay">Pay in shadow</button>';
+</script>
+</body></html>

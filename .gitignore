@@ -72,3 +72,11 @@ pkg/
 sdk/typescript/wasm/
 sdk/typescript/wasm-node/
 *.wasm
+
+# Claude Code / Serena
+.claude/
+.serena/
+logs/
+
+# Throwaway locator-quality analysis artifacts (see specs/locator-quality-findings.md)
+.frap-analysis/

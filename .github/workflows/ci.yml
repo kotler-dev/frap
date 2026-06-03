@@ -6,7 +6,6 @@ on:
   push:
     tags:
       - 'v*'
-      - 'java-v*'
   workflow_dispatch:
 
 jobs:

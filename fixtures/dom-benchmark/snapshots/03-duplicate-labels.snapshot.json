@@ -1,0 +1,24 @@
+{
+  "dom_snapshot": {
+    "html": "<div>",
+    "elements": [
+      {
+        "selector": "button",
+        "tag": "button",
+        "attributes": {},
+        "text_content": "Pay",
+        "path": ["div:-", "button:-"],
+        "position_in_parent": 0
+      },
+      {
+        "selector": "button",
+        "tag": "button",
+        "attributes": {},
+        "text_content": "Pay",
+        "path": ["div:-", "button:-"],
+        "position_in_parent": 1
+      }
+    ]
+  },
+  "options": {}
+}

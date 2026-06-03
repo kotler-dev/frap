@@ -42,6 +42,7 @@ class PageObjectGenerationTest {
                     "button",
                     Map.of("data-testid", "submit"),
                     "OK",
+                    null,
                     List.of("button:-"),
                     null
                 )
@@ -58,7 +59,10 @@ class PageObjectGenerationTest {
         String source = artifact.files().get(0).content();
         assertThat(source).contains("public class CheckoutPage");
         assertThat(source).contains("package com.example.pages");
-        assertThat(source).contains("page.locator");
+        // data-testid='submit' is now emitted via the semantic Playwright API (getByTestId),
+        // not a raw page.locator CSS selector.
+        assertThat(source).contains("public Locator");
+        assertThat(source).contains("getByTestId(\"submit\")");
     }
 
 }

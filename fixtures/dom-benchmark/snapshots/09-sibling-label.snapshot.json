@@ -1,0 +1,26 @@
+{
+  "dom_snapshot": {
+    "html": "<body>",
+    "elements": [
+      {
+        "selector": "div[id=\"calc-btn\"]",
+        "tag": "div",
+        "attributes": { "id": "calc-btn", "class": "services-pl-section__btn" },
+        "text_content": "Калькулятор процентов",
+        "accessible_name": "Калькулятор процентов",
+        "path": ["body:-", "div:-"],
+        "position_in_parent": 0
+      },
+      {
+        "selector": "div",
+        "tag": "div",
+        "attributes": { "role": "button", "tabindex": "0", "class": "services-pl-section__calc" },
+        "text_content": null,
+        "accessible_name": "Калькулятор процентов",
+        "path": ["body:-", "div:-", "div:-"],
+        "position_in_parent": 0
+      }
+    ]
+  },
+  "options": { "coverage_mode": "semantic" }
+}

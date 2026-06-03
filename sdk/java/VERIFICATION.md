@@ -25,6 +25,19 @@ cd sdk/java
 mvn -P release -pl frap-core-java,../../adapters/playwright-java -am package -DskipTests
 ```
 
+## Level 4b — frap-mcp (JDK 21)
+
+```bash
+./scripts/run-frap-mcp-verify.sh
+```
+
+Optional cross-client browser e2e (requires MCP jar built):
+
+```bash
+cd sdk/java/frap-mcp && mvn -pl frap-mcp-http-local -am package -DskipTests
+cd examples/java/playwright && mvn test -Dgroups=mcp-e2e
+```
+
 ## Level 5 — Smoke consumer (Maven only)
 
 ```bash

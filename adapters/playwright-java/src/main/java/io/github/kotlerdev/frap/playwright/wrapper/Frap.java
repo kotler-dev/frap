@@ -1,5 +1,6 @@
 package io.github.kotlerdev.frap.playwright.wrapper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import io.github.kotlerdev.frap.core.client.FrapCoreClient;
@@ -26,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Frap {
     private static final Logger logger = LoggerFactory.getLogger(Frap.class);
+    private static final ObjectMapper DISCOVER_JSON = new ObjectMapper().findAndRegisterModules();
 
     private static final Map<String, Signature> recordedSignatures = new ConcurrentHashMap<>();
     private static final ThreadLocal<FrapCoreClient> clientHolder = new ThreadLocal<>();
@@ -95,13 +97,47 @@ public class Frap {
         DOMSnapshot snapshot = new SnapshotBuilder(page).build();
         MapOptions opts = options != null ? options : MapOptions.defaults();
         if (opts.url() == null && page.url() != null) {
-            opts = new MapOptions(page.url(), opts.includeNonInteractive(), opts.maxElements());
+            opts = new MapOptions(
+                page.url(),
+                opts.includeNonInteractive(),
+                opts.maxElements(),
+                opts.coverageMode()
+            );
         }
         return getOrCreateClient().buildElementMap(snapshot, opts);
     }
 
     public static ElementMap discover(Page page) throws IOException {
-        return discover(page, new MapOptions(page.url(), true, null));
+        return discover(page, MapOptions.semanticCatalog());
+    }
+
+    /**
+     * Runs discover and writes the element map JSON to {@code outputPath}.
+     */
+    public static Path discoverToFile(Page page, Path outputPath, MapOptions options) throws IOException {
+        ElementMap map = discover(page, options);
+        if (outputPath.getParent() != null) {
+            Files.createDirectories(outputPath.getParent());
+        }
+        Files.writeString(outputPath, DISCOVER_JSON.writeValueAsString(map));
+        logger.info("[frap] Wrote element map: {}", outputPath);
+        return outputPath;
+    }
+
+    public static Path discoverToFile(Page page, Path outputPath) throws IOException {
+        return discoverToFile(page, outputPath, MapOptions.semanticCatalog());
+    }
+
+    /**
+     * Writes a pre-built element map to JSON (no second snapshot).
+     */
+    public static Path writeElementMap(ElementMap map, Path outputPath) throws IOException {
+        if (outputPath.getParent() != null) {
+            Files.createDirectories(outputPath.getParent());
+        }
+        Files.writeString(outputPath, DISCOVER_JSON.writeValueAsString(map));
+        logger.info("[frap] Wrote element map: {}", outputPath);
+        return outputPath;
     }
 
     /**
@@ -110,6 +146,14 @@ public class Frap {
     public static List<Path> generatePageObject(Page page, Path outputDir, GenerateOptions options)
         throws IOException {
         ElementMap map = discover(page);
+        return generatePageObject(map, outputDir, options);
+    }
+
+    /**
+     * Generates Page Object sources from an existing element map (no re-discover).
+     */
+    public static List<Path> generatePageObject(ElementMap map, Path outputDir, GenerateOptions options)
+        throws IOException {
         GeneratedArtifact artifact = getOrCreateClient().generatePageObject(
             map,
             options != null ? options : GenerateOptions.javaPlaywright("GeneratedPage", null)

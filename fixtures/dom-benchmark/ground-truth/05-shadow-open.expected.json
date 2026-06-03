@@ -1,0 +1,7 @@
+{
+  "page_id": "05-shadow-open",
+  "min_elements": 1,
+  "min_list_clusters": 0,
+  "expected_primary_selectors": ["[data-testid=\"shadow-pay\"]"],
+  "min_primary_match_ratio": 1.0
+}

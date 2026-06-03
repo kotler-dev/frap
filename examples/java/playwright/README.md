@@ -131,7 +131,7 @@ Static file or custom server — see [DEMO_SERVER.md](DEMO_SERVER.md).
 <dependency>
     <groupId>io.github.kotler-dev</groupId>
     <artifactId>frap-playwright</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <scope>test</scope>
 </dependency>
 ```

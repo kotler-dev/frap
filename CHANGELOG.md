@@ -41,6 +41,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - MVP-C: benchmark overhead < 10% vs baseline
 
+## [Java SDK 1.1.0] - 2026-06-03
+
+### Added
+
+- **Core semantic locator pipeline** (CLASSIFY→SCOPE→LOCATE→VERIFY→HEAL): improved PoG with `getByTestId`, `getByRole`, `getByText`, scoped locators; `LocatorRecommendation` fields `scope`, `filter_text`, `match_count`
+- **dom-benchmark** ground truth aligned to semantic `locator.value` (pages 01–09)
+- **frap-mcp** 1.1.0 on Maven Central (JDK 21 sidecar runners; library stack stays JDK 17)
+- Six-platform bundled `frap-core-rpc` unchanged (Rust workspace 0.1.0)
+
+### Changed
+
+- CI: `java-v*` tags no longer trigger full `ci.yml` — Maven publish via `publish-maven.yml` only
+
+### Documentation
+
+- JDK 17 library / JDK 21 MCP sidecar deployment model in getting-started, API reference, sdk README
+- Tag: `java-v1.1.0` from branch `release/java-v1.1.0` → workflow `publish-maven.yml`
+
+## [Java SDK 1.0.1] - 2026-06-03
+
+### Added
+
+- Discover/Page Object quality (F019, issues #7–#15): `:has-text` locators, LIST accessors, semantic PoG names, `innerText` snapshots, dom-benchmark fixtures
+- **frap-mcp** 1.0.1 on Maven Central: 6 MCP tools; runners `frap-mcp-stdio`, `frap-mcp-http`, `frap-mcp-http-local` (JDK 21)
+- Six-platform bundled `frap-core-rpc` (Linux glibc/musl/aarch64, macOS x86_64/aarch64, Windows x64)
+- `FrapRpcClient` platform matrix; `Cluster` DTO `member_tag` / `shared_selector`
+
+### Documentation
+
+- [docs/en/discover-page-object.md](./docs/en/discover-page-object.md), [sdk/java/frap-mcp/README.md](./sdk/java/frap-mcp/README.md)
+- Tag: `java-v1.0.1` → workflow `publish-maven.yml`
+
 ## [Java SDK 1.0.0] - 2026-05-30
 
 ### Added
