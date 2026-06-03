@@ -261,7 +261,7 @@ jobs:
         run: |
           mvn -B -f sdk/java/frap-mcp/pom.xml \
             -pl frap-mcp-stdio,frap-mcp-http,frap-mcp-http-local -am \
-            -DskipTests \
+            package -DskipTests \
             -Dfrap-core-java.version=${{ steps.coords.outputs.core_java_version }}
 
       - name: Upload bundled MCP jars
