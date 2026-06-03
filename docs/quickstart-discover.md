@@ -14,6 +14,19 @@ page.navigate("https://your-app.example/catalog");
 // or: page.setContent(htmlString);
 ```
 
+## Which mode?
+
+You do not need level names L1–L4 in daily work:
+
+| Need | Use |
+|------|-----|
+| Full catalog for the page (LLM, exploration) | `MapOptions.semanticCatalog()` — default |
+| Only buttons/inputs/links | `MapOptions.actionable()` |
+| Repeating cards or rows | After discover, print `LIST` clusters (see step 3) |
+| Stable locators for tests | Prefer `fragile: false` and `strategy` `data-testid` or `role` |
+
+Details: [discover-scope.md](../../project/architecture/discover-scope.md).
+
 ## 2. Discover
 
 ```java

@@ -16,17 +16,19 @@ cd frap/crates && cargo test -p frap-core contract_dom_benchmark
 
 ## Pages
 
-| Page | Pattern |
-|------|---------|
-| 01-catalog-list | LIST clusters, data-testid cards |
-| 02-no-testid-buttons | text / role locators |
-| 03-duplicate-labels | duplicate visible text (DP005 manual review) |
-| 04-aria-only | aria-label primary |
-| 05-shadow-open | button in open shadow root |
-| 06-contenteditable | contenteditable region |
-| 07-role-button | role=button on div |
-| 08-generated-id | ember-style id demoted |
-| 09-sibling-label | sibling `<label>` → `#calc-btn` (C013 Sber tile) |
+Coverage levels: [discover-scope.md](../../../project/architecture/discover-scope.md) (L1–L4). Proposal: [discover-coverage-proposal.md](../../../project/architecture/discover-coverage-proposal.md).
+
+| Page | Pattern | Levels tested |
+|------|---------|---------------|
+| 01-catalog-list | LIST clusters, data-testid cards | L2 + **L3** (DP004) |
+| 02-no-testid-buttons | text / role locators | L2 |
+| 03-duplicate-labels | duplicate visible text (DP005 manual review) | L2 + ambiguity |
+| 04-aria-only | aria-label primary | L2 |
+| 05-shadow-open | button in open shadow root | L2 + shadow |
+| 06-contenteditable | contenteditable region | L2 |
+| 07-role-button | role=button on div | L2 |
+| 08-generated-id | ember-style id demoted | L2 |
+| 09-sibling-label | sibling `<label>` → `#calc-btn` (C013 Sber tile) | L2 (accessible name) |
 
 ## Policy
 
