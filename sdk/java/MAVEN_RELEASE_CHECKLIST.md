@@ -49,12 +49,12 @@ Add to https://github.com/kotler-dev/frap/settings/secrets/actions:
 
 Publish to Maven Central (tag `java-v1.1.0`, branch `release/java-v1.1.0`, workflow [publish-maven.yml](../../.github/workflows/publish-maven.yml)):
 
-- [ ] `io.github.kotler-dev:frap-core-java:1.1.0` (6 bundled natives in JAR)
-- [ ] `io.github.kotler-dev:frap-playwright:1.1.0`
-- [ ] `io.github.kotler-dev:frap-mcp-tools:1.1.0`
-- [ ] `io.github.kotler-dev:frap-mcp-stdio:1.1.0` (executable fat jar, JDK 21 sidecar)
-- [ ] `io.github.kotler-dev:frap-mcp-http:1.1.0`
-- [ ] `io.github.kotler-dev:frap-mcp-http-local:1.1.0`
+- [x] `io.github.kotler-dev:frap-core-java:1.1.0` (6 bundled natives in JAR) — staged, **Portal Publish** pending
+- [x] `io.github.kotler-dev:frap-playwright:1.1.0` — staged, **Portal Publish** pending
+- [x] `io.github.kotler-dev:frap-mcp-tools:1.1.0` — staged, **Portal Publish** pending
+- [x] `io.github.kotler-dev:frap-mcp-stdio:1.1.0` — staged, **Portal Publish** pending
+- [x] `io.github.kotler-dev:frap-mcp-http:1.1.0` — staged, **Portal Publish** pending
+- [x] `io.github.kotler-dev:frap-mcp-http-local:1.1.0` — staged, **Portal Publish** pending
 
 ### 5a. Release Scope for 1.0.1 (superseded — do not publish staging)
 
