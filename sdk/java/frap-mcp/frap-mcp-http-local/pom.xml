@@ -62,6 +62,10 @@
             <plugin>
                 <groupId>org.sonatype.central</groupId>
                 <artifactId>central-publishing-maven-plugin</artifactId>
+                <configuration>
+                    <!-- Last module in reactor: upload staged frap-mcp-* artifacts -->
+                    <skipPublishing>false</skipPublishing>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
