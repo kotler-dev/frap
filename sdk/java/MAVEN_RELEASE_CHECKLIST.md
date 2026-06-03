@@ -45,16 +45,22 @@ Add to https://github.com/kotler-dev/frap/settings/secrets/actions:
 - [x] `io.github.kotler-dev:frap-core-java:1.0.0`
 - [x] `io.github.kotler-dev:frap-playwright:1.0.0`
 
-### 5. Release Scope for 1.1.0 (current)
+### 5. Release Scope for 1.1.0 (shipped)
 
-Publish to Maven Central (tag `java-v1.1.0`, branch `release/java-v1.1.0`, workflow [publish-maven.yml](../../.github/workflows/publish-maven.yml)):
+Published to Maven Central (tag `java-v1.1.0`):
 
-- [x] `io.github.kotler-dev:frap-core-java:1.1.0` (6 bundled natives in JAR) — staged, **Portal Publish** pending
-- [x] `io.github.kotler-dev:frap-playwright:1.1.0` — staged, **Portal Publish** pending
-- [x] `io.github.kotler-dev:frap-mcp-tools:1.1.0` — staged, **Portal Publish** pending
-- [x] `io.github.kotler-dev:frap-mcp-stdio:1.1.0` — staged, **Portal Publish** pending
-- [x] `io.github.kotler-dev:frap-mcp-http:1.1.0` — staged, **Portal Publish** pending
-- [x] `io.github.kotler-dev:frap-mcp-http-local:1.1.0` — staged, **Portal Publish** pending
+- [x] `io.github.kotler-dev:frap-core-java:1.1.0`
+- [x] `io.github.kotler-dev:frap-playwright:1.1.0`
+- [x] `io.github.kotler-dev:frap-mcp-tools:1.1.0`
+- [x] `io.github.kotler-dev:frap-mcp-stdio:1.1.0`
+- [x] `io.github.kotler-dev:frap-mcp-http:1.1.0`
+- [x] `io.github.kotler-dev:frap-mcp-http-local:1.1.0`
+
+### 5b. Next release (1.1.1)
+
+- Development branch: **`develop/java-v1.1.1`**
+- Workspace version: **1.1.1-SNAPSHOT**
+- Release branch (when ready): `release/java-v1.1.1` → tag `java-v1.1.1`
 
 ### 5a. Release Scope for 1.0.1 (superseded — do not publish staging)
 

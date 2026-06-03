@@ -6,8 +6,10 @@ independent Maven projects**:
 
 | Project | Parent POM | Java | What it is |
 |---------|-----------|------|------------|
-| **Core SDK** | `io.github.kotler-dev:frap-sdk-parent:1.1.0` | 17 | The Java client for the frap engine + adapters |
-| **MCP server** | `io.github.kotler-dev:frap-mcp-parent:1.1.0` | 21 | Spring AI MCP **sidecar** (stdio + http + http-local) |
+| **Core SDK** | `io.github.kotler-dev:frap-sdk-parent` | 17 | The Java client for the frap engine + adapters |
+| **MCP server** | `io.github.kotler-dev:frap-mcp-parent` | 21 | Spring AI MCP **sidecar** (stdio + http + http-local) |
+
+**Released:** Maven Central **1.1.0** · **Development:** workspace **1.1.1-SNAPSHOT** on branch **`develop/java-v1.1.1`** — see [`DEVELOPMENT.md`](./DEVELOPMENT.md).
 
 > They are separate reactors (different parent POMs, different Java levels). The
 > MCP project depends on `frap-core-java` as a normal Maven artifact. **MCP is optional:**
@@ -363,7 +365,7 @@ on supported platforms.
 - [`frap-mcp/README.md`](./frap-mcp/README.md) — MCP server, tools, modes (deep dive)
 - [Playwright adapter](../../adapters/playwright-java/README.md) — Playwright integration
 - [Demo](../../examples/java/playwright/) — runnable example
-- [`IMPLEMENTATION_STATUS.md`](./IMPLEMENTATION_STATUS.md) — shipped vs in-progress
+- [`DEVELOPMENT.md`](./DEVELOPMENT.md) — **`develop/java-v1.1.1`**, SNAPSHOT workflow for contributors
 - [`VERIFICATION.md`](./VERIFICATION.md) — test levels & acceptance matrix
 - [`MAVEN_RELEASE_CHECKLIST.md`](./MAVEN_RELEASE_CHECKLIST.md) — Maven Central publication
 - [Rust core](../../crates/core/README.md) — native RPC binary
@@ -372,10 +374,10 @@ on supported platforms.
 
 ## Versions
 
-- **Core SDK**: `frap-core-java` / `frap-playwright` **1.1.0** on Maven Central.
-- **MCP server**: `frap-mcp-tools`, `frap-mcp-stdio`, `frap-mcp-http`, `frap-mcp-http-local` **1.1.0** on Maven Central (**JDK 21** sidecar runners only).
+- **Released (Maven Central):** `frap-core-java`, `frap-playwright`, `frap-mcp-*` @ **1.1.0**
+- **Development (git):** **1.1.1-SNAPSHOT** on branch **`develop/java-v1.1.1`**
 
-**Core SDK (1.1.0 line)**
+**Core SDK (1.1.x line)**
 
 - ✅ Playwright Java adapter
 - ✅ Self-healing selectors
