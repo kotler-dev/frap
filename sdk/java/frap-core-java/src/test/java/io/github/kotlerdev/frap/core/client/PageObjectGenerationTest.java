@@ -42,6 +42,7 @@ class PageObjectGenerationTest {
                     "button",
                     Map.of("data-testid", "submit"),
                     "OK",
+                    null,
                     List.of("button:-"),
                     null
                 )

@@ -1,0 +1,16 @@
+{
+  "dom_snapshot": {
+    "html": "<body>",
+    "elements": [
+      {
+        "selector": "div",
+        "tag": "div",
+        "attributes": { "contenteditable": "true" },
+        "text_content": "Edit notes here",
+        "path": ["div:-"],
+        "position_in_parent": 0
+      }
+    ]
+  },
+  "options": { "coverage_mode": "semantic" }
+}

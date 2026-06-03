@@ -27,6 +27,7 @@ public final class SmokeMain {
                         "button",
                         Map.of("data-testid", "ok"),
                         "OK",
+                        null,
                         List.of("button:-"),
                         null
                     )

@@ -46,9 +46,10 @@ Core picks the most stable locator per element. Rules consumers can rely on:
 | 2 | `id` (non-generated) | `#checkout` |
 | 3 | `data-id` | `[data-id="row-1"]` |
 | 4 | `name` | `[name="email"]` |
-| 5 | `aria-label` | `button[aria-label="Close"]` |
-| 6 | visible text | `button:has-text("Pay")` |
-| 7 | structural | `button:nth-of-type(2)` |
+| 5 | `role` + accessible name | `role=button[name="Pay now"]` |
+| 6 | `aria-label` | `button[aria-label="Close"]` |
+| 7 | visible text | `button:has-text("Pay")` |
+| 8 | structural | `button:nth-of-type(2)` |
 
 **Playwright compatibility**
 
@@ -59,6 +60,22 @@ Core picks the most stable locator per element. Rules consumers can rely on:
 **Snapshot text (Java adapter)**
 
 `SnapshotBuilder` records **visible** text via `innerText` (with `textContent` fallback), so inline CSS inside SVG/icons does not pollute `text_content`. TypeScript `wrapper.ts` uses the same pattern for healing snapshots.
+
+**Accessible name (all adapters)**
+
+During snapshot capture, adapters pre-compute `accessible_name` per element (HTML-AAM–style):
+
+1. `aria-label`
+2. `aria-labelledby` (resolved reference ids)
+3. `label[for]` matching the element `id`
+4. Wrapped `<label>` (control inside label)
+5. Sibling `<label>` in the same parent (icon/SVG buttons with external caption)
+
+Core prefers `accessible_name` over raw `text_content` when recommending `role=…[name="…"]` locators. Elements with `id` are included in the snapshot selector scope so `label[for]` targets are captured even without visible inner text.
+
+**Nested click targets (same link / same accessible name)**
+
+When several nested nodes share the same `href` or snapshot `accessible_name` (icon `role=button`, caption label, wrapper `#id`), Core promotes the **shallowest** ancestor in the snapshot path as the recommended locator — typically `#calc-btn` over inner `role=button[…]`, so Playwright clicks the full tile area, not only the inner SVG/text box.
 
 ---
 

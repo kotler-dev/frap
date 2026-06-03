@@ -15,6 +15,9 @@ pub struct DOMElementInfo {
     pub tag: String,
     pub attributes: HashMap<String, String>,
     pub text_content: Option<String>,
+    /// Pre-computed accessible name (aria-label, aria-labelledby, label[for], wrapped/sibling label).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub accessible_name: Option<String>,
     pub path: Vec<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub position_in_parent: Option<usize>,
@@ -292,6 +295,7 @@ mod tests {
                 tag: "button".to_string(),
                 attributes: [("data-testid".to_string(), "checkout-pay".to_string())].into(),
                 text_content: Some("Pay".to_string()),
+                accessible_name: None,
                 path: vec!["button:submit".to_string()],
                 position_in_parent: None,
             }],
@@ -314,6 +318,7 @@ mod tests {
                 tag: "button".to_string(),
                 attributes: HashMap::new(),
                 text_content: Some("Pay".to_string()),
+                accessible_name: None,
                 path: vec!["button:-".to_string()],
                 position_in_parent: None,
             }],

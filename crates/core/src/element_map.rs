@@ -3,11 +3,27 @@
 use crate::CoreError;
 use clustering::DOMElementClusterer;
 use healing::{DOMElementInfo, DOMSnapshot, HealingEngine};
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use signature::Signature;
 use std::collections::{HashMap, HashSet};
 
 const INTERACTIVE_TAGS: &[&str] = &["button", "a", "input", "select", "textarea"];
+
+fn deserialize_alternatives<'de, D>(deserializer: D) -> Result<Vec<LocatorRecommendation>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let opt = Option::<Vec<LocatorRecommendation>>::deserialize(deserializer)?;
+    Ok(opt.unwrap_or_default())
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum CoverageMode {
+    #[default]
+    Actionable,
+    Semantic,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct MapOptions {
@@ -17,6 +33,8 @@ pub struct MapOptions {
     pub include_non_interactive: bool,
     #[serde(default)]
     pub max_elements: Option<usize>,
+    #[serde(default)]
+    pub coverage_mode: CoverageMode,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -29,7 +47,7 @@ pub struct FilterSpec {
     pub tags: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct LocatorRecommendation {
     pub selector: String,
     pub strategy: String,
@@ -55,6 +73,18 @@ pub struct ElementNode {
     /// monotonic by quality (`data-testid` ≥ `id` ≥ `data-id` ≥ text ≥ none).
     pub confidence: f64,
     pub locator: LocatorRecommendation,
+    /// True when the recommended locator is weak (structural or low selector confidence).
+    #[serde(default)]
+    pub fragile: bool,
+    #[serde(
+        default,
+        skip_serializing_if = "Vec::is_empty",
+        deserialize_with = "deserialize_alternatives"
+    )]
+    pub alternatives: Vec<LocatorRecommendation>,
+    /// Accessible name from snapshot (label[for], aria-labelledby, sibling label, …).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub accessible_name: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -90,12 +120,207 @@ pub struct ElementMap {
 }
 
 pub fn recommend_locator(element: &DOMElementInfo) -> LocatorRecommendation {
-    let (strategy, selector) = pick_locator(element);
+    locator_from_pick(pick_locator(element))
+}
+
+fn recommend_locator_with_click_root(
+    element: &DOMElementInfo,
+    snapshot: &[DOMElementInfo],
+) -> LocatorRecommendation {
+    let own = recommend_locator(element);
+    let Some(root) = find_click_root_ancestor(snapshot, element) else {
+        return own;
+    };
+    let root_loc = recommend_locator(root);
+    if click_area_score(&root_loc) > click_area_score(&own) {
+        root_loc
+    } else {
+        own
+    }
+}
+
+fn locator_from_pick((strategy, selector): (&'static str, String)) -> LocatorRecommendation {
     LocatorRecommendation {
         selector,
         strategy: strategy.to_string(),
         confidence: strategy_score(strategy),
     }
+}
+
+/// Prefer locators that hit the full clickable region (container id/href over inner role/text).
+fn click_area_score(loc: &LocatorRecommendation) -> i32 {
+    match loc.strategy.as_str() {
+        "data-testid" => 50,
+        "id" => 45,
+        "data-id" => 40,
+        "name" => 35,
+        "role" => 25,
+        "aria-label" => 20,
+        "text" => 15,
+        _ => 0,
+    }
+}
+
+fn path_is_strict_ancestor_prefix(ancestor: &[String], descendant: &[String]) -> bool {
+    descendant.len() > ancestor.len() && descendant.starts_with(ancestor)
+}
+
+/// Groups nested controls that share the same href or explicit accessible name.
+fn click_target_key(element: &DOMElementInfo) -> Option<String> {
+    if let Some(href) = element.attributes.get("href") {
+        let h = href.trim();
+        if !h.is_empty() && h != "#" && !h.starts_with("javascript:") {
+            return Some(format!("href:{h}"));
+        }
+    }
+    let name = element.accessible_name.as_deref()?.trim();
+    if name.is_empty() {
+        return None;
+    }
+    // Same caption on wrapper div and inner role=button must share one click target.
+    Some(format!("name:{name}"))
+}
+
+fn is_clickable_surface(element: &DOMElementInfo) -> bool {
+    is_interactive(element)
+        || (element.attributes.contains_key("id")
+            && element
+                .accessible_name
+                .as_ref()
+                .is_some_and(|n| !n.trim().is_empty()))
+}
+
+fn find_click_root_ancestor<'a>(
+    snapshot: &'a [DOMElementInfo],
+    element: &DOMElementInfo,
+) -> Option<&'a DOMElementInfo> {
+    let key = click_target_key(element)?;
+    let mut best: Option<(&'a DOMElementInfo, usize)> = None;
+    for candidate in snapshot {
+        if click_target_key(candidate).as_deref() != Some(key.as_str()) {
+            continue;
+        }
+        if !path_is_strict_ancestor_prefix(&candidate.path, &element.path) {
+            continue;
+        }
+        if !is_clickable_surface(candidate) {
+            continue;
+        }
+        let depth = candidate.path.len();
+        if best.map(|(_, d)| depth < d).unwrap_or(true) {
+            best = Some((candidate, depth));
+        }
+    }
+    best.map(|(c, _)| c)
+}
+
+/// After per-element recommendations, align nested duplicates to the shallowest click root.
+fn promote_click_roots(snapshot: &[DOMElementInfo], nodes: &mut [ElementNode]) {
+    for node in nodes.iter_mut() {
+        let Some(el) = snapshot
+            .iter()
+            .find(|e| e.selector == node.selector)
+        else {
+            continue;
+        };
+        let Some(root) = find_click_root_ancestor(snapshot, el) else {
+            continue;
+        };
+        if root.selector == el.selector {
+            continue;
+        }
+        let root_loc = recommend_locator(root);
+        if click_area_score(&root_loc) <= click_area_score(&node.locator) {
+            continue;
+        }
+        let prev = node.locator.clone();
+        if !node
+            .alternatives
+            .iter()
+            .any(|a| a.selector == prev.selector)
+        {
+            node.alternatives.insert(0, prev);
+            node.alternatives.truncate(3);
+        }
+        node.locator = root_loc.clone();
+        node.recommended_selector = root_loc.selector.clone();
+        node.fragile = is_fragile_locator(&root_loc.strategy, root_loc.confidence);
+    }
+}
+
+fn is_fragile_locator(strategy: &str, confidence: f64) -> bool {
+    strategy == "structural" || confidence < 0.55
+}
+
+fn collect_alternatives(element: &DOMElementInfo, primary: &LocatorRecommendation) -> Vec<LocatorRecommendation> {
+    let mut alts = Vec::new();
+    let candidates = [
+        pick_locator(element),
+        pick_with_role_name(element),
+        pick_text_only(element),
+    ];
+    for (strategy, selector) in candidates {
+        let rec = LocatorRecommendation {
+            selector: selector.clone(),
+            strategy: strategy.to_string(),
+            confidence: strategy_score(strategy),
+        };
+        if rec.selector != primary.selector
+            && !alts
+                .iter()
+                .any(|a: &LocatorRecommendation| a.selector == rec.selector)
+        {
+            alts.push(rec);
+        }
+    }
+    alts.truncate(3);
+    alts
+}
+
+fn pick_with_role_name(element: &DOMElementInfo) -> (&'static str, String) {
+    if let Some(role) = element.attributes.get("role") {
+        if let Some(name) = accessible_name(element) {
+            return (
+                "role",
+                format!(
+                    "role={}[name=\"{}\"]",
+                    role,
+                    escape_css_attr(&name)
+                ),
+            );
+        }
+    }
+    ("structural", structural_selector(element))
+}
+
+fn pick_text_only(element: &DOMElementInfo) -> (&'static str, String) {
+    if let Some(text) = element.text_content.as_deref().and_then(usable_text) {
+        return (
+            "text",
+            format!(
+                "{}:has-text(\"{}\")",
+                element.tag,
+                escape_css_attr(&text)
+            ),
+        );
+    }
+    ("structural", structural_selector(element))
+}
+
+fn accessible_name(element: &DOMElementInfo) -> Option<String> {
+    if let Some(name) = element.accessible_name.as_ref() {
+        let t = name.trim();
+        if !t.is_empty() {
+            return Some(t.to_string());
+        }
+    }
+    if let Some(label) = element.attributes.get("aria-label") {
+        let t = label.trim();
+        if !t.is_empty() {
+            return Some(t.to_string());
+        }
+    }
+    element.text_content.as_deref().and_then(usable_text)
 }
 
 pub fn build_element_map(snapshot: &DOMSnapshot, options: &MapOptions) -> ElementMap {
@@ -107,7 +332,7 @@ pub fn build_element_map(snapshot: &DOMSnapshot, options: &MapOptions) -> Elemen
     let limit = options.max_elements.unwrap_or(snapshot.elements.len());
 
     for (idx, element) in snapshot.elements.iter().take(limit).enumerate() {
-        if !options.include_non_interactive && !is_interactive(element) {
+        if !should_include_element(element, options) {
             continue;
         }
 
@@ -122,8 +347,10 @@ pub fn build_element_map(snapshot: &DOMSnapshot, options: &MapOptions) -> Elemen
             .or_default()
             .push(element_id.clone());
 
-        let locator = recommend_locator(element);
+        let locator = recommend_locator_with_click_root(element, snapshot.elements.as_slice());
         let confidence = stability_confidence(&signature);
+        let fragile = is_fragile_locator(&locator.strategy, locator.confidence);
+        let alternatives = collect_alternatives(element, &locator);
 
         elements.push(ElementNode {
             id: element_id,
@@ -133,9 +360,14 @@ pub fn build_element_map(snapshot: &DOMSnapshot, options: &MapOptions) -> Elemen
             signature,
             cluster_id: Some(cluster_id),
             confidence,
-            locator,
+            locator: locator.clone(),
+            fragile,
+            alternatives,
+            accessible_name: element.accessible_name.clone(),
         });
     }
+
+    promote_click_roots(snapshot.elements.as_slice(), &mut elements);
 
     let mut clusters: Vec<Cluster> = cluster_members
         .into_iter()
@@ -326,8 +558,33 @@ pub fn filter_element_map_json(map_json: &str, spec_json: &str) -> Result<String
     Ok(serde_json::to_string(&filtered)?)
 }
 
+fn should_include_element(element: &DOMElementInfo, options: &MapOptions) -> bool {
+    if options.include_non_interactive {
+        return true;
+    }
+    match options.coverage_mode {
+        CoverageMode::Actionable => is_interactive(element),
+        CoverageMode::Semantic => {
+            is_interactive(element)
+                || element.attributes.contains_key("data-testid")
+                || element.attributes.contains_key("data-id")
+                || element.attributes.contains_key("role")
+                || element
+                    .attributes
+                    .get("contenteditable")
+                    .is_some_and(|v| v == "true" || v == "")
+        }
+    }
+}
+
 fn is_interactive(element: &DOMElementInfo) -> bool {
     is_interactive_tag(&element.tag)
+        || element.attributes.get("role").is_some_and(|r| {
+            matches!(
+                r.as_str(),
+                "button" | "link" | "textbox" | "checkbox" | "radio" | "combobox"
+            )
+        })
 }
 
 fn is_interactive_tag(tag: &str) -> bool {
@@ -361,6 +618,10 @@ fn pick_locator(element: &DOMElementInfo) -> (&'static str, String) {
     }
     if let Some(name) = element.attributes.get("name") {
         return ("name", format!("[name=\"{}\"]", escape_css_attr(name)));
+    }
+    let (role_strategy, role_sel) = pick_with_role_name(element);
+    if role_strategy == "role" {
+        return (role_strategy, role_sel);
     }
     if let Some(label) = element.attributes.get("aria-label") {
         let label = label.trim();
@@ -438,6 +699,7 @@ fn strategy_score(strategy: &str) -> f64 {
         "id" => 0.85,
         "data-id" => 0.8,
         "name" => 0.7,
+        "role" => 0.72,
         "aria-label" => 0.65,
         "text" => 0.55,
         _ => 0.4,
@@ -483,6 +745,7 @@ mod tests {
                     tag: "article".to_string(),
                     attributes: [("data-testid".to_string(), "card-1".to_string())].into(),
                     text_content: Some("Card 1".to_string()),
+                    accessible_name: None,
                     path: vec!["div:-".to_string(), "article:-".to_string()],
                     position_in_parent: Some(0),
                 },
@@ -491,6 +754,7 @@ mod tests {
                     tag: "article".to_string(),
                     attributes: [("data-testid".to_string(), "card-2".to_string())].into(),
                     text_content: Some("Card 2".to_string()),
+                    accessible_name: None,
                     path: vec!["div:-".to_string(), "article:-".to_string()],
                     position_in_parent: Some(1),
                 },
@@ -499,6 +763,7 @@ mod tests {
                     tag: "button".to_string(),
                     attributes: HashMap::new(),
                     text_content: Some("Buy".to_string()),
+                    accessible_name: None,
                     path: vec!["button:-".to_string()],
                     position_in_parent: None,
                 },
@@ -550,6 +815,7 @@ mod tests {
                 .map(|(k, v)| (k.to_string(), v.to_string()))
                 .collect(),
             text_content: text.map(|t| t.to_string()),
+            accessible_name: None,
             path: vec![format!("{tag}:-")],
             position_in_parent: Some(0),
         }
@@ -580,6 +846,83 @@ mod tests {
         let rec = recommend_locator(&el("a", &[], Some("Pay by QR")));
         assert_eq!(rec.strategy, "text");
         assert_eq!(rec.selector, "a:has-text(\"Pay by QR\")");
+    }
+
+    #[test]
+    fn accessible_name_from_label_for() {
+        let el = DOMElementInfo {
+            selector: "[id=\"calc-btn\"]".to_string(),
+            tag: "div".to_string(),
+            attributes: [("role".to_string(), "button".to_string())].into(),
+            text_content: Some("".to_string()),
+            accessible_name: Some("Калькулятор процентов".to_string()),
+            path: vec![],
+            position_in_parent: None,
+        };
+        let rec = recommend_locator(&el);
+        assert_eq!(rec.strategy, "role");
+        assert!(rec.selector.contains("Калькулятор процентов"));
+    }
+
+    #[test]
+    fn nested_click_target_promotes_container_id() {
+        let snapshot = DOMSnapshot {
+            html: String::new(),
+            elements: vec![
+                DOMElementInfo {
+                    selector: "div[id=\"calc-btn\"]".to_string(),
+                    tag: "div".to_string(),
+                    attributes: [("id".to_string(), "calc-btn".to_string())].into(),
+                    text_content: None,
+                    accessible_name: Some("Калькулятор процентов".to_string()),
+                    path: vec!["section:-".into(), "div:-".into()],
+                    position_in_parent: Some(0),
+                },
+                DOMElementInfo {
+                    selector: "div".to_string(),
+                    tag: "div".to_string(),
+                    attributes: [("role".to_string(), "button".to_string())].into(),
+                    text_content: None,
+                    accessible_name: Some("Калькулятор процентов".to_string()),
+                    path: vec![
+                        "section:-".into(),
+                        "div:-".into(),
+                        "div:-".into(),
+                    ],
+                    position_in_parent: Some(0),
+                },
+            ],
+        };
+        let map = build_element_map(
+            &snapshot,
+            &MapOptions {
+                coverage_mode: CoverageMode::Semantic,
+                ..Default::default()
+            },
+        );
+        let inner = map
+            .elements
+            .iter()
+            .find(|e| e.selector == "div")
+            .expect("inner role button");
+        assert_eq!(inner.recommended_selector, "#calc-btn");
+        assert_eq!(inner.locator.strategy, "id");
+    }
+
+    #[test]
+    fn accessible_name_from_sibling_label() {
+        let el = DOMElementInfo {
+            selector: "div[role=\"button\"]".to_string(),
+            tag: "div".to_string(),
+            attributes: [("role".to_string(), "button".to_string())].into(),
+            text_content: None,
+            accessible_name: Some("Калькулятор процентов".to_string()),
+            path: vec![],
+            position_in_parent: None,
+        };
+        let rec = recommend_locator(&el);
+        assert_eq!(rec.strategy, "role");
+        assert!(rec.selector.contains("role=button[name=\"Калькулятор процентов\"]"));
     }
 
     // issue #01/#07: aria-label is preferred over visible text.
@@ -641,6 +984,7 @@ mod tests {
                         .map(|(k, v)| (k.to_string(), v.to_string()))
                         .collect(),
                     text_content: text.map(|t| t.to_string()),
+                    accessible_name: None,
                     path: vec!["button:-".into()],
                     position_in_parent: None,
                 }],
@@ -681,6 +1025,7 @@ mod tests {
                 tag: "a".into(),
                 attributes: [("id".to_string(), format!("nav-{i}"))].into(),
                 text_content: Some(format!("Link {i}")),
+                accessible_name: None,
                 path: deep_path.clone(),
                 position_in_parent: Some(i),
             });

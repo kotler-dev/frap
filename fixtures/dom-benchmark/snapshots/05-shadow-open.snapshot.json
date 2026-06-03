@@ -1,0 +1,16 @@
+{
+  "dom_snapshot": {
+    "html": "<div id=\"host\">",
+    "elements": [
+      {
+        "selector": "[data-testid=\"shadow-pay\"]",
+        "tag": "button",
+        "attributes": { "data-testid": "shadow-pay" },
+        "text_content": "Pay in shadow",
+        "path": ["div:-", "button:-"],
+        "position_in_parent": 0
+      }
+    ]
+  },
+  "options": {}
+}

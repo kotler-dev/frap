@@ -369,6 +369,7 @@ mod tests {
                 tag: "button".to_string(),
                 attributes: [("data-testid".to_string(), "submit".to_string())].into(),
                 text_content: Some("OK".to_string()),
+                accessible_name: None,
                 path: vec!["button:-".to_string()],
                 position_in_parent: None,
             }],
@@ -402,6 +403,7 @@ mod tests {
                 .map(|(k, v)| (k.to_string(), v.to_string()))
                 .collect(),
             text_content: None,
+            accessible_name: None,
             path: path.iter().map(|s| s.to_string()).collect(),
             position_in_parent: Some(0),
         }
@@ -424,6 +426,7 @@ mod tests {
                     .map(|(k, v)| (k.to_string(), v.to_string()))
                     .collect(),
                 text_content: text.map(|t| t.to_string()),
+                accessible_name: None,
                 path: vec![format!("{tag}:-")],
                 position_in_parent: None,
             }],
@@ -485,6 +488,7 @@ mod tests {
                     tag: "button".into(),
                     attributes: [("data-testid".to_string(), "pay".to_string())].into(),
                     text_content: None,
+                    accessible_name: None,
                     path: vec!["div:-".into(), "button:-".into()],
                     position_in_parent: Some(0),
                 },
@@ -493,6 +497,7 @@ mod tests {
                     tag: "button".into(),
                     attributes: [("aria-label".to_string(), "Pay".to_string())].into(),
                     text_content: None,
+                    accessible_name: None,
                     path: vec!["section:-".into(), "button:-".into()],
                     position_in_parent: Some(0),
                 },
@@ -597,6 +602,7 @@ mod tests {
                     tag: "button".to_string(),
                     attributes: [("data-testid".to_string(), "remove-btn".to_string())].into(),
                     text_content: None,
+                    accessible_name: None,
                     path: path.to_vec(),
                     position_in_parent: Some(0),
                 }

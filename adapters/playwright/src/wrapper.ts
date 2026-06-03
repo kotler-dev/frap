@@ -11,6 +11,7 @@ import {
   type HealPolicy,
 } from '@frap/sdk';
 import type { WithFrapOptions } from './config';
+import { ACCESSIBLE_NAME_JS } from './accessible-name';
 import {
   buildSemantics,
   enrichDebugReport,
@@ -208,11 +209,13 @@ async function buildSnapshotFromPage(page: Page): Promise<DOMSnapshot> {
   console.log('[frap] Building DOM snapshot (optimized)...');
 
   try {
-    return await page.evaluate(() => {
+    return await page.evaluate((accessibleNameHelpers) => {
+      // eslint-disable-next-line no-eval
+      eval(accessibleNameHelpers);
+      const labelMap = buildLabelMap();
       const elements: DOMElementInfo[] = [];
-      // Only get interactive elements and elements with data-testid - much faster than querySelectorAll('*')
       const interactiveElements = document.querySelectorAll(
-        'button, input, a, select, textarea, [data-testid], [data-id], li[id], [role="button"], [role="link"], [role="input"]'
+        'button, input, a, select, textarea, [contenteditable="true"], [contenteditable=""], [data-testid], [data-id], [id], li[id], [role="button"], [role="link"], [role="textbox"], [role="checkbox"]'
       );
 
       interactiveElements.forEach((el) => {
@@ -271,6 +274,7 @@ async function buildSnapshotFromPage(page: Page): Promise<DOMSnapshot> {
           tag: tagName,
           attributes,
           text_content: visibleText ? visibleText.substring(0, 100) : undefined,
+          accessible_name: computeAccessibleName(el, labelMap),
           path,
           position_in_parent: positionInParent,
         });
@@ -280,7 +284,7 @@ async function buildSnapshotFromPage(page: Page): Promise<DOMSnapshot> {
         html: document.documentElement?.outerHTML?.substring(0, 1000) || '',
         elements,
       };
-    });
+    }, ACCESSIBLE_NAME_JS);
   } catch (e) {
     console.error('[frap] Failed to build DOM snapshot:', e);
     // Return empty snapshot as fallback

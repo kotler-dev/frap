@@ -81,7 +81,7 @@ class DiscoveryPageObjectE2eTest {
 
     @Test
     void discoverFindsListClustersWithRepeatedElements() throws IOException {
-        ElementMap map = Frap.discover(page, MapOptions.defaults());
+        ElementMap map = Frap.discover(page, MapOptions.semanticCatalog());
 
         assertThat(map.elements()).isNotEmpty();
 

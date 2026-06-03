@@ -55,6 +55,7 @@ class FrapCoreClientTest {
             "button",
             Map.of("data-testid", "checkout-pay"),
             "Pay",
+            null,
             List.of("button:submit"),
             null
         );
@@ -95,6 +96,7 @@ class FrapCoreClientTest {
             "button",
             Map.of("data-testid", "pay-btn"),
             "Pay",
+            null,
             List.of("button:submit"),
             null
         );

@@ -31,15 +31,74 @@ public class SnapshotBuilder {
     private static final String VISIBLE_TEXT_EXPR =
         "(((el.innerText ?? el.textContent) || '').replace(/\\s+/g, ' ').trim().substring(0, 100)) || undefined";
 
+    private static final String ACCESSIBLE_NAME_JS = """
+        function buildLabelMap() {
+            const labelMap = new Map();
+            document.querySelectorAll('label[for]').forEach((label) => {
+                const forId = label.getAttribute('for');
+                const text = (label.innerText || '').replace(/\\s+/g, ' ').trim();
+                if (forId && text) labelMap.set(forId, text);
+            });
+            document.querySelectorAll('label').forEach((label) => {
+                if (!label.hasAttribute('for')) {
+                    const control = label.querySelector('input, button, select, textarea, [role="button"]');
+                    if (control && control.id) {
+                        const text = (label.innerText || '').replace(/\\s+/g, ' ').trim();
+                        if (text) labelMap.set(control.id, text);
+                    }
+                }
+            });
+            return labelMap;
+        }
+        function computeAccessibleName(el, labelMap) {
+            const ariaLabel = el.getAttribute('aria-label');
+            if (ariaLabel && ariaLabel.trim()) return ariaLabel.trim();
+            const labelledBy = el.getAttribute('aria-labelledby');
+            if (labelledBy) {
+                const texts = labelledBy.split(/\\s+/).map((id) => document.getElementById(id))
+                    .filter(Boolean)
+                    .map((ref) => (ref.innerText || '').replace(/\\s+/g, ' ').trim())
+                    .filter(Boolean);
+                if (texts.length) return texts.join(' ');
+            }
+            if (el.id && labelMap.has(el.id)) return labelMap.get(el.id);
+            const parentLabel = el.closest('label');
+            if (parentLabel && !parentLabel.hasAttribute('for')) {
+                const clone = parentLabel.cloneNode(true);
+                clone.querySelectorAll('input, button, select, textarea, [role="button"]').forEach((e) => e.remove());
+                const text = (clone.innerText || '').replace(/\\s+/g, ' ').trim();
+                if (text) return text;
+            }
+            const directCaption = el.querySelector(':scope > label');
+            if (directCaption) {
+                const text = (directCaption.innerText || '').replace(/\\s+/g, ' ').trim();
+                if (text) return text;
+            }
+            const parent = el.parentElement;
+            if (parent) {
+                const siblingLabels = Array.from(parent.children).filter(
+                    (child) => child.tagName === 'LABEL' && !child.contains(el)
+                );
+                for (const label of siblingLabels) {
+                    const text = (label.innerText || '').replace(/\\s+/g, ' ').trim();
+                    if (text) return text;
+                }
+            }
+            return undefined;
+        }
+        """;
+
     private static final String SNAPSHOT_SCRIPT = """
         () => {
+        """ + ACCESSIBLE_NAME_JS + """
             const elements = [];
-            // Only interactive elements and elements with data-testid - much faster than querySelectorAll('*')
-            const interactiveElements = document.querySelectorAll(
-                'button, input, a, select, textarea, [data-testid], [data-id], li[id], [role="button"], [role="link"], [role="input"]'
-            );
+            const seen = new Set();
+            const labelMap = buildLabelMap();
+            const SELECTOR = 'button, input, a, select, textarea, [contenteditable="true"], [contenteditable=""], [data-testid], [data-id], [id], li[id], [role="button"], [role="link"], [role="textbox"], [role="checkbox"]';
 
-            interactiveElements.forEach((el) => {
+            function pushElement(el) {
+                if (!el || seen.has(el)) return;
+                seen.add(el);
                 const attributes = {};
                 const attrs = Array.from(el.attributes);
                 for (const attr of attrs) {
@@ -83,10 +142,22 @@ public class SnapshotBuilder {
                     tag: tagName,
                     attributes: attributes,
                     text_content: __VISIBLE_TEXT__,
+                    accessible_name: computeAccessibleName(el, labelMap),
                     path: path,
                     position_in_parent: positionInParent
                 });
-            });
+            }
+
+            function collectFromRoot(root) {
+                root.querySelectorAll(SELECTOR).forEach((el) => pushElement(el));
+                root.querySelectorAll('*').forEach((node) => {
+                    if (node.shadowRoot) {
+                        collectFromRoot(node.shadowRoot);
+                    }
+                });
+            }
+
+            collectFromRoot(document);
 
             return {
                 html: (document.documentElement?.outerHTML || '').substring(0, 1000),
@@ -137,6 +208,7 @@ public class SnapshotBuilder {
         @SuppressWarnings("unchecked")
         Map<String, String> attributes = (Map<String, String>) raw.get("attributes");
         String textContent = (String) raw.get("text_content");
+        String accessibleName = (String) raw.get("accessible_name");
         @SuppressWarnings("unchecked")
         List<String> path = (List<String>) raw.get("path");
 
@@ -151,6 +223,7 @@ public class SnapshotBuilder {
             tag != null ? tag : "unknown",
             attributes != null ? attributes : Map.of(),
             textContent,
+            accessibleName,
             path != null ? path : List.of(),
             positionInParent
         );
@@ -167,10 +240,12 @@ public class SnapshotBuilder {
             logger.debug("Skipping signature extraction for non-CSS selector: {}", selector);
             return null;
         }
-        String script = String.format("""
+        String script = """
             (selector) => {
+            """ + ACCESSIBLE_NAME_JS + """
                 const el = document.querySelector(selector);
                 if (!el) return null;
+                const labelMap = buildLabelMap();
 
                 const attributes = {};
                 const attrs = Array.from(el.attributes);
@@ -191,10 +266,11 @@ public class SnapshotBuilder {
                     tag: el.tagName.toLowerCase(),
                     attributes: attributes,
                     text_content: __VISIBLE_TEXT__,
+                    accessible_name: computeAccessibleName(el, labelMap),
                     path: path
                 };
             }
-            """.replace("__VISIBLE_TEXT__", VISIBLE_TEXT_EXPR));
+            """.replace("__VISIBLE_TEXT__", VISIBLE_TEXT_EXPR);
 
         try {
             @SuppressWarnings("unchecked")
@@ -259,6 +335,8 @@ public class SnapshotBuilder {
             @SuppressWarnings("unchecked")
             Map<String, Object> raw = (Map<String, Object>) handle.evaluate("""
                 (el) => {
+                """ + ACCESSIBLE_NAME_JS + """
+                    const labelMap = buildLabelMap();
                     const attributes = {};
                     const attrs = Array.from(el.attributes || []);
                     for (const attr of attrs) {
@@ -278,6 +356,7 @@ public class SnapshotBuilder {
                         tag: el.tagName.toLowerCase(),
                         attributes: attributes,
                         text_content: __VISIBLE_TEXT__,
+                        accessible_name: computeAccessibleName(el, labelMap),
                         path: path
                     };
                 }

@@ -97,6 +97,7 @@ class DtoSerializationTest {
             "button",
             Map.of("data-testid", "btn"),
             "Click me",
+            null,
             List.of("button:action"),
             null
         );
@@ -127,6 +128,7 @@ class DtoSerializationTest {
             "button",
             Map.of("data-testid", "checkout-pay"),
             "Pay",
+            null,
             List.of("button:submit"),
             null
         );

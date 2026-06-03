@@ -3,13 +3,17 @@
 //! Language SDKs (TypeScript WASM, future FFI/JSON-RPC) should depend on this crate,
 //! not on the algorithm crates directly.
 
+mod discover_benchmark;
 mod element_map;
 mod error;
 mod page_object;
 
+pub use discover_benchmark::{
+    validate_dom_benchmark, DomBenchmarkExpected, DomBenchmarkReport,
+};
 pub use element_map::{
     build_element_map, build_element_map_json, filter_element_map, filter_element_map_json,
-    recommend_locator, Cluster, ClusterType, ElementMap, ElementNode, FilterSpec,
+    recommend_locator, Cluster, ClusterType, CoverageMode, ElementMap, ElementNode, FilterSpec,
     LocatorRecommendation, MapMetadata, MapOptions,
 };
 pub use page_object::{
@@ -157,6 +161,7 @@ mod tests {
                 tag: "button".to_string(),
                 attributes: [("data-testid".to_string(), "checkout-pay".to_string())].into(),
                 text_content: Some("Pay".to_string()),
+                accessible_name: None,
                 path: vec!["button:submit".to_string()],
                 position_in_parent: None,
             }],
@@ -231,6 +236,7 @@ mod tests {
                     )]
                     .into(),
                     text_content: Some("Смотреть доклад".to_string()),
+                    accessible_name: None,
                     path: vec![
                         "body:-".to_string(),
                         "main:-".to_string(),
@@ -312,6 +318,7 @@ mod tests {
                     tag: "button".to_string(),
                     attributes: [("data-testid".to_string(), "pay-a".to_string())].into(),
                     text_content: Some("Pay".to_string()),
+                    accessible_name: None,
                     path: vec!["button:submit".to_string()],
                     position_in_parent: None,
                 },
@@ -320,6 +327,7 @@ mod tests {
                     tag: "button".to_string(),
                     attributes: [("data-testid".to_string(), "pay-b".to_string())].into(),
                     text_content: Some("Pay".to_string()),
+                    accessible_name: None,
                     path: vec!["button:submit".to_string()],
                     position_in_parent: None,
                 },

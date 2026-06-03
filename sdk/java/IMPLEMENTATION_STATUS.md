@@ -25,6 +25,21 @@
 - `smoke-consumer` module for local Maven-only verification
 - Release workflow: `.github/workflows/publish-maven.yml`
 
+## F019 / 1.0.1 (discover ground truth)
+
+- Core: `validate_dom_benchmark`, `CoverageMode`, `fragile`, `alternatives`, role+name ranking
+- Fixtures: `fixtures/dom-benchmark/` (9 pages, incl. `09-sibling-label` / C013 pattern)
+- Java: `MapOptions.semanticCatalog()`, `discoverToFile`, `DomBenchmarkE2eTest`
+- Live manual: C013 `run-sber-explore.sh` → `project/artifacts/sber-person-giga/`
+- Docs: `frap/docs/quickstart-discover.md`, `java-sdk-1.0.1-matrix.md`
+
+Verify:
+
+```bash
+cd frap/crates && cargo test -p frap-core contract_dom_benchmark
+cd frap/sdk/java && mvn -P java-unit verify
+```
+
 ## On hold
 
 - `frap-core-native` on Maven Central (JNI experimental)
