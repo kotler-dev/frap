@@ -1,0 +1,16 @@
+{
+  "dom_snapshot": {
+    "html": "<body>",
+    "elements": [
+      {
+        "selector": "div",
+        "tag": "div",
+        "attributes": { "role": "button", "tabindex": "0" },
+        "text_content": "Custom action",
+        "path": ["div:-"],
+        "position_in_parent": 0
+      }
+    ]
+  },
+  "options": { "coverage_mode": "semantic" }
+}

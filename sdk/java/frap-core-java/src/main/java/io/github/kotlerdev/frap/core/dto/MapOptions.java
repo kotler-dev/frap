@@ -7,9 +7,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public record MapOptions(
     @JsonProperty("url") String url,
     @JsonProperty("include_non_interactive") Boolean includeNonInteractive,
-    @JsonProperty("max_elements") Integer maxElements
+    @JsonProperty("max_elements") Integer maxElements,
+    @JsonProperty("coverage_mode") CoverageMode coverageMode
 ) {
     public static MapOptions defaults() {
-        return new MapOptions(null, false, null);
+        return new MapOptions(null, false, null, CoverageMode.ACTIONABLE);
+    }
+
+    public static MapOptions semanticCatalog() {
+        return new MapOptions(null, true, null, CoverageMode.SEMANTIC);
     }
 }

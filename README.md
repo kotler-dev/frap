@@ -78,7 +78,7 @@ One clear lifecycle for every locator:
 
 In a single pass, Frap builds a **page map** — a flat catalog of elements with a recommended selector and confidence score. Not a DOM tree, not `querySelector('*')`. This catalog is the foundation for PageObjects and baselines.
 
-API: `Frap.discover`, `buildElementMap`.
+API: `Frap.discover`, `buildElementMap`. **Java guide:** [docs/en/discover-page-object.md](docs/en/discover-page-object.md).
 
 ### Clustering
 
@@ -114,6 +114,8 @@ API: `captureAll`, `ContextTimeline`; `analyzeRca` → returns `RcaReport`.
 Workflow from zero to first tests:
 
 - Page map → filter interactive elements → group by clusters → read recommended selectors → generate Page Object skeleton → evolve with baseline fingerprints; UI change tracking across runs — **v1.2.0** (F009 feedback), **v2.0+** (F017 drift-report)
+
+**Java:** [Discover & Page Object](docs/en/discover-page-object.md) (locator rules, LIST `items(index)`, confidence).
 
 ---
 
@@ -161,10 +163,12 @@ Names in the table are the target Core/RPC contract; concrete SDKs may differ (e
 
 ## Packages
 
-| Registry | SDK / Core | Playwright |
-|----------|------------|------------|
-| npm | `@frap/sdk` | `@frap/playwright` |
-| Maven | `io.github.kotler-dev:frap-core-java` | `io.github.kotler-dev:frap-playwright` |
+| Registry | SDK / Core | Playwright | MCP (agents) |
+|----------|------------|------------|----------------|
+| npm | `@frap/sdk` | `@frap/playwright` | — |
+| Maven | `io.github.kotler-dev:frap-core-java` | `io.github.kotler-dev:frap-playwright` | `frap-mcp-stdio`, `frap-mcp-http`, `frap-mcp-http-local` |
+
+Maven **1.1.0**: Core semantic locators, F019 discover, six-platform bundled `frap-core-rpc`, MCP tools — see [Java SDK](sdk/java/README.md) and [frap-mcp](sdk/java/frap-mcp/README.md).
 
 Note: npm requires scoped install `@frap/...`; Maven uses `io.github.kotler-dev` groupId.
 
@@ -174,9 +178,11 @@ Note: npm requires scoped install `@frap/...`; Maven uses `io.github.kotler-dev`
 
 | Topic | Link |
 |-------|------|
+| Discover & Page Object (Java) | [docs/en/discover-page-object.md](docs/en/discover-page-object.md) |
 | Examples (by language) | [examples/](examples/) |
 | FixtureConf demo app | [fixtures/fixtureconf/](fixtures/fixtureconf/) |
 | Java SDK | [sdk/java/README.md](sdk/java/README.md) |
+| Java MCP | [sdk/java/frap-mcp/README.md](sdk/java/frap-mcp/README.md) |
 | TypeScript SDK | [sdk/typescript/README.md](sdk/typescript/README.md) |
 | Java example (Playwright) | [examples/java/playwright/](examples/java/playwright/) |
 | TypeScript example (Playwright) | [examples/typescript/playwright/](examples/typescript/playwright/) |
@@ -189,7 +195,9 @@ Note: npm requires scoped install `@frap/...`; Maven uses `io.github.kotler-dev`
 ## Roadmap
 
 - **1.0.0** — core + Java SDK: page map, locator recovery, reports, context and RCA, PO generation (Maven Central)
-- **1.2.0** — feedback loop (F009), MCP, npm parity for discover/PO
+- **1.1.0** — Java: Core semantic locator pipeline, PoG `getBy*` APIs, MCP on Maven Central (`java-v1.1.0`)
+- **1.0.1** — Java: F019 discover/PoG quality, dom-benchmark, six-platform RPC, MCP (`java-v1.0.1`, superseded by 1.1.0)
+- **1.2.0** — feedback loop (F009), npm parity for discover/PO
 - **1.4+** — CDP source (incl. web accessibility tree), WebDriver/Selenide (F014)
 - **2.0+** — structural contracts and drift gate (F017), visual fingerprints (F007), health score (F010), multi-platform and accessibility tree (F006)
 

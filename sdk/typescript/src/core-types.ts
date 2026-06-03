@@ -39,6 +39,7 @@ export interface DOMElementInfo {
   tag: string;
   attributes: Record<string, string>;
   text_content?: string;
+  accessible_name?: string;
   path: string[];
   position_in_parent?: number;
 }

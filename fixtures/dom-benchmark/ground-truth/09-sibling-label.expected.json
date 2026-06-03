@@ -1,0 +1,8 @@
+{
+  "page_id": "09-sibling-label",
+  "min_elements": 1,
+  "min_list_clusters": 0,
+  "expected_primary_selectors": ["Калькулятор процентов"],
+  "min_primary_match_ratio": 1.0,
+  "max_fragile_ratio": 0.0
+}

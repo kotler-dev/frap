@@ -11,6 +11,7 @@ import {
   type HealPolicy,
 } from '@frap/sdk';
 import type { WithFrapOptions } from './config';
+import { ACCESSIBLE_NAME_JS } from './accessible-name';
 import {
   buildSemantics,
   enrichDebugReport,
@@ -208,11 +209,13 @@ async function buildSnapshotFromPage(page: Page): Promise<DOMSnapshot> {
   console.log('[frap] Building DOM snapshot (optimized)...');
 
   try {
-    return await page.evaluate(() => {
+    return await page.evaluate((accessibleNameHelpers) => {
+      // eslint-disable-next-line no-eval
+      eval(accessibleNameHelpers);
+      const labelMap = buildLabelMap();
       const elements: DOMElementInfo[] = [];
-      // Only get interactive elements and elements with data-testid - much faster than querySelectorAll('*')
       const interactiveElements = document.querySelectorAll(
-        'button, input, a, select, textarea, [data-testid], [data-id], li[id], [role="button"], [role="link"], [role="input"]'
+        'button, input, a, select, textarea, [contenteditable="true"], [contenteditable=""], [data-testid], [data-id], [id], li[id], [role="button"], [role="link"], [role="textbox"], [role="checkbox"]'
       );
 
       interactiveElements.forEach((el) => {
@@ -234,15 +237,26 @@ async function buildSnapshotFromPage(page: Page): Promise<DOMSnapshot> {
         const testId = el.getAttribute('data-testid');
         const dataId = el.getAttribute('data-id');
         const tagName = el.tagName.toLowerCase();
+        // Visible text only: innerText skips <style>/<script> and hidden nodes,
+        // unlike textContent which leaks inline CSS/JS into the locator.
+        const visibleText = (((el as HTMLElement).innerText ?? el.textContent) || '')
+          .replace(/\s+/g, ' ')
+          .trim();
+        const ariaLabel = el.getAttribute('aria-label')?.trim();
         if (testId) {
           selector = `[data-testid="${testId}"]`;
         } else if (dataId) {
           selector = `${tagName}[data-id="${dataId}"]`;
         } else if (el.id) {
           selector = `${tagName}[id="${el.id}"]`;
+        } else if (ariaLabel) {
+          selector = `${tagName}[aria-label="${ariaLabel.replace(/"/g, '\\"')}"]`;
+        } else if (visibleText) {
+          // Valid Playwright text pseudo-class, NOT the jQuery `:contains`.
+          const label = visibleText.substring(0, 40).replace(/"/g, '\\"');
+          selector = `${tagName}:has-text("${label}")`;
         } else {
-          const text = el.textContent?.substring(0, 20) || '';
-          selector = `${tagName}:contains("${text}")`;
+          selector = tagName;
         }
 
         let positionInParent: number | undefined;
@@ -259,7 +273,8 @@ async function buildSnapshotFromPage(page: Page): Promise<DOMSnapshot> {
           selector,
           tag: tagName,
           attributes,
-          text_content: el.textContent?.substring(0, 100) || undefined,
+          text_content: visibleText ? visibleText.substring(0, 100) : undefined,
+          accessible_name: computeAccessibleName(el, labelMap),
           path,
           position_in_parent: positionInParent,
         });
@@ -269,7 +284,7 @@ async function buildSnapshotFromPage(page: Page): Promise<DOMSnapshot> {
         html: document.documentElement?.outerHTML?.substring(0, 1000) || '',
         elements,
       };
-    });
+    }, ACCESSIBLE_NAME_JS);
   } catch (e) {
     console.error('[frap] Failed to build DOM snapshot:', e);
     // Return empty snapshot as fallback
@@ -324,7 +339,8 @@ async function extractSignatureFromPage(page: Page, selector: string): Promise<a
         path: tokens,
         prefix: tokens.slice(0, 5).map((t: any) => `${t.tag}:${t.role || '-'}`).join('>'),
         stable_attrs,
-        text_content: el.textContent || undefined,
+        // innerText skips <style>/<script>, unlike textContent.
+        text_content: ((el as HTMLElement).innerText ?? el.textContent) || undefined,
         children_hash: 0,
         depth: tokens.length,
       };

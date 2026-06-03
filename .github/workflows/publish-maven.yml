@@ -5,82 +5,237 @@ on:
     tags:
       - 'java-v*'
   workflow_dispatch:
+    inputs:
+      git_ref:
+        description: 'Git ref to publish (must be a release tag, e.g. java-v1.1.0)'
+        required: true
+        default: 'java-v1.1.0'
+        type: string
 
 jobs:
   build-native:
     strategy:
+      fail-fast: true
       matrix:
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             binary_name: frap-core-rpc-linux-x86_64
+            build_cmd: cd crates && cargo build --release -p frap-core --bin frap-core-rpc --target x86_64-unknown-linux-gnu
+            install_musl: false
+            install_aarch64_cross: false
           - os: ubuntu-latest
             target: x86_64-unknown-linux-musl
             binary_name: frap-core-rpc-linux-x86_64-musl
+            build_cmd: cd crates && cargo build --release -p frap-core --bin frap-core-rpc --target x86_64-unknown-linux-musl
+            install_musl: true
+            install_aarch64_cross: false
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            binary_name: frap-core-rpc-linux-aarch64
+            build_cmd: cd crates && cargo build --release -p frap-core --bin frap-core-rpc --target aarch64-unknown-linux-gnu
+            install_musl: false
+            install_aarch64_cross: true
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            binary_name: frap-core-rpc-win-x64.exe
+            build_cmd: cd crates && cargo build --release -p frap-core --bin frap-core-rpc --target x86_64-pc-windows-msvc
+            install_musl: false
+            install_aarch64_cross: false
+          - os: macos-15-intel
+            target: host
+            binary_name: frap-core-rpc-macos-x86_64
+            build_cmd: cd crates && cargo build --release -p frap-core --bin frap-core-rpc
+            install_musl: false
+            install_aarch64_cross: false
           - os: macos-latest
             target: aarch64-apple-darwin
             binary_name: frap-core-rpc-macos-aarch64
+            build_cmd: cd crates && cargo build --release -p frap-core --bin frap-core-rpc --target aarch64-apple-darwin
+            install_musl: false
+            install_aarch64_cross: false
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+
       - uses: dtolnay/rust-toolchain@stable
+        if: matrix.target == 'host'
+      - uses: dtolnay/rust-toolchain@stable
+        if: matrix.target != 'host'
         with:
           targets: ${{ matrix.target }}
+
+      - name: Install musl tools
+        if: matrix.install_musl
+        run: sudo apt-get update && sudo apt-get install -y musl-tools
+
+      - name: Install aarch64 cross-linker
+        if: matrix.install_aarch64_cross
+        run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu
+
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: crates
-      - name: Install musl tools
-        if: contains(matrix.target, 'musl')
-        run: sudo apt-get update && sudo apt-get install -y musl-tools
-      - run: cd crates && cargo build --release -p frap-core --bin frap-core-rpc --target ${{ matrix.target }}
-      - run: |
-          mkdir -p sdk/java/frap-core-java/src/main/resources/META-INF/native
-          cp crates/target/${{ matrix.target }}/release/frap-core-rpc \
-             sdk/java/frap-core-java/src/main/resources/META-INF/native/${{ matrix.binary_name }}
+
+      - name: Build frap-core-rpc
+        run: ${{ matrix.build_cmd }}
+        env:
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
+
+      - name: Stage binary for upload
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST="sdk/java/frap-core-java/src/main/resources/META-INF/native"
+          mkdir -p "$DEST"
+          case "${{ matrix.binary_name }}" in
+            frap-core-rpc-linux-x86_64)
+              SRC="crates/target/x86_64-unknown-linux-gnu/release/frap-core-rpc"
+              ;;
+            frap-core-rpc-linux-x86_64-musl)
+              SRC="crates/target/x86_64-unknown-linux-musl/release/frap-core-rpc"
+              ;;
+            frap-core-rpc-linux-aarch64)
+              SRC="crates/target/aarch64-unknown-linux-gnu/release/frap-core-rpc"
+              ;;
+            frap-core-rpc-win-x64.exe)
+              SRC="crates/target/x86_64-pc-windows-msvc/release/frap-core-rpc.exe"
+              ;;
+            frap-core-rpc-macos-x86_64)
+              SRC="crates/target/release/frap-core-rpc"
+              ;;
+            frap-core-rpc-macos-aarch64)
+              SRC="crates/target/aarch64-apple-darwin/release/frap-core-rpc"
+              ;;
+            *)
+              echo "Unknown binary_name: ${{ matrix.binary_name }}"
+              exit 1
+              ;;
+          esac
+          cp "$SRC" "$DEST/${{ matrix.binary_name }}"
+          if [[ "${{ matrix.binary_name }}" != *.exe ]]; then
+            chmod 0755 "$DEST/${{ matrix.binary_name }}"
+          fi
+          ls -la "$DEST"
+
       - uses: actions/upload-artifact@v4
         with:
-          name: native-binaries-${{ matrix.target }}
-          path: sdk/java/frap-core-java/src/main/resources/META-INF/native/
+          name: ${{ matrix.binary_name }}
+          path: sdk/java/frap-core-java/src/main/resources/META-INF/native/${{ matrix.binary_name }}
+          retention-days: 7
 
   publish:
     needs: build-native
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Java
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.git_ref || github.ref }}
+
+      - name: Download all platform binaries
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Stage binaries into frap-core-java resources
+        run: |
+          set -euo pipefail
+          DEST="sdk/java/frap-core-java/src/main/resources/META-INF/native"
+          mkdir -p "$DEST"
+          for artifact_dir in dist/*/; do
+            name="$(basename "$artifact_dir")"
+            file="$(find "$artifact_dir" -type f | head -n 1)"
+            cp "$file" "$DEST/$name"
+            case "$name" in
+              *.exe) ;;
+              *) chmod 0755 "$DEST/$name" ;;
+            esac
+          done
+          echo "Staged native binaries:"
+          ls -la "$DEST"
+
+      - name: Verify release version (no SNAPSHOT to Central)
+        id: coords
+        run: |
+          set -euo pipefail
+          CORE_VER="$(cd sdk/java/frap-core-java && mvn -q -DforceStdout help:evaluate -Dexpression=project.version)"
+          MCP_VER="$(cd sdk/java/frap-mcp && mvn -q -DforceStdout help:evaluate -Dexpression=project.version)"
+          MCP_CORE_VER="$(cd sdk/java/frap-mcp && mvn -q -DforceStdout help:evaluate -Dexpression=frap-core-java.version)"
+          echo "frap-core-java=${CORE_VER}, frap-playwright parent=${CORE_VER}, frap-mcp=${MCP_VER}, frap-core-java.version=${MCP_CORE_VER}"
+          if [[ "${CORE_VER}" == *SNAPSHOT* || "${MCP_VER}" == *SNAPSHOT* ]]; then
+            echo "::error::Maven Central publish requires release versions. Checkout tag java-v* (not SNAPSHOT branch HEAD)."
+            exit 1
+          fi
+          if [[ "${CORE_VER}" != "${MCP_CORE_VER}" ]]; then
+            echo "::error::frap-core-java (${CORE_VER}) must match frap-mcp frap-core-java.version (${MCP_CORE_VER})"
+            exit 1
+          fi
+          echo "core_java_version=${CORE_VER}" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'temurin'
+          distribution: temurin
           cache: maven
           server-id: central
           server-username: CENTRAL_USERNAME
           server-password: CENTRAL_PASSWORD
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: GPG_PASSPHRASE
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: native-binaries-*
-          merge-multiple: true
-          path: sdk/java/frap-core-java/src/main/resources/META-INF/native/
-      - name: Make binaries executable
-        run: chmod +x sdk/java/frap-core-java/src/main/resources/META-INF/native/*
+
+      - name: Import GPG signing key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: |
+          echo "${GPG_PRIVATE_KEY}" | gpg --batch --import
+          gpg --list-secret-keys --keyid-format=long
+
       - name: Publish GPG key to keyserver
         run: |
-          # Export public key and send to keyserver
-          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --import --batch --yes 2>/dev/null || true
-          gpg --list-keys --with-colons | grep fpr | head -1 | cut -d: -f10 | xargs gpg --send-keys --keyserver hkps://keys.openpgp.org 2>/dev/null || true
-          gpg --list-keys --with-colons | grep fpr | head -1 | cut -d: -f10 | xargs gpg --send-keys --keyserver keyserver.ubuntu.com 2>/dev/null || true
-          sleep 30  # Wait for key propagation
-      - name: Publish to Maven Central
+          KEY_ID="$(gpg --list-secret-keys --keyid-format=long | awk '/^sec/ {print $2}' | head -1 | cut -d/ -f2)"
+          gpg --keyserver hkps://keys.openpgp.org --send-keys "${KEY_ID}" 2>/dev/null || true
+          gpg --keyserver keyserver.ubuntu.com --send-keys "${KEY_ID}" 2>/dev/null || true
+          sleep 30
+
+      - name: Install Core + Playwright for MCP reactor
         run: |
           cd sdk/java
-          mvn -P release -pl frap-core-java,../../adapters/playwright-java \
-            -Dgpg.passphrase="${GPG_PASSPHRASE}" \
+          mvn -B -pl frap-core-java,../../adapters/playwright-java -am install \
+            -DskipTests -Dgpg.skip=true
+
+      - name: Publish Core SDK to Maven Central
+        run: |
+          cd sdk/java
+          mvn -B -P release -pl frap-core-java,../../adapters/playwright-java \
             -DskipTests \
             -DcentralPublishing.skip=false \
-            deploy --batch-mode
+            deploy
         env:
           CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
           CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: temurin
+          cache: maven
+          server-id: central
+          server-username: CENTRAL_USERNAME
+          server-password: CENTRAL_PASSWORD
+
+      - name: Publish MCP modules to Maven Central
+        run: |
+          cd sdk/java/frap-mcp
+          mvn -B -P release \
+            -pl frap-mcp-tools,frap-mcp-stdio,frap-mcp-http,frap-mcp-http-local -am \
+            -DskipTests \
+            -DcentralPublishing.skip=false \
+            -Dfrap-core-java.version=${{ steps.coords.outputs.core_java_version }} \
+            deploy
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}

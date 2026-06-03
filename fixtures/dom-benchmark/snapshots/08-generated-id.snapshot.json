@@ -1,0 +1,16 @@
+{
+  "dom_snapshot": {
+    "html": "<body>",
+    "elements": [
+      {
+        "selector": "button[id=\"ember50234-abcd\"]",
+        "tag": "button",
+        "attributes": { "id": "ember50234-abcd" },
+        "text_content": "Go",
+        "path": ["button:-"],
+        "position_in_parent": null
+      }
+    ]
+  },
+  "options": {}
+}

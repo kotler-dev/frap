@@ -4,6 +4,7 @@ type SelectorEngine = {
   queryAll?(root: Element | Document, selector: string): Element[] | Promise<Element[]>;
 };
 import { HealingEngine, FrapConfig, createHealingEngine, DOMSnapshot, DOMElementInfo } from '@frap/sdk';
+import { buildLabelMap, computeAccessibleName } from './accessible-name';
 
 interface FrapSelectorEngine extends SelectorEngine {
   _healingEngine?: HealingEngine;
@@ -83,8 +84,16 @@ export function createFrapSelectorEngine(config: FrapConfig): FrapSelectorEngine
   return engine;
 }
 
+function visibleTextContent(el: Element): string | undefined {
+  const raw = (((el as HTMLElement).innerText ?? el.textContent) || '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return raw || undefined;
+}
+
 function buildDOMSnapshot(doc: Document): DOMSnapshot {
   const elements: DOMElementInfo[] = [];
+  const labelMap = buildLabelMap(doc);
   const allElements = doc.querySelectorAll('*');
   
   allElements.forEach((el, index) => {
@@ -108,7 +117,8 @@ function buildDOMSnapshot(doc: Document): DOMSnapshot {
       selector,
       tag: el.tagName.toLowerCase(),
       attributes,
-      text_content: el.textContent || undefined,
+      text_content: visibleTextContent(el),
+      accessible_name: computeAccessibleName(el, labelMap, doc),
       path,
     });
   });

@@ -1,0 +1,16 @@
+{
+  "dom_snapshot": {
+    "html": "<body>",
+    "elements": [
+      {
+        "selector": "button",
+        "tag": "button",
+        "attributes": { "aria-label": "Submit order" },
+        "text_content": "",
+        "path": ["button:-"],
+        "position_in_parent": null
+      }
+    ]
+  },
+  "options": {}
+}

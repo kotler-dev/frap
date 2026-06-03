@@ -55,23 +55,23 @@ Persist snapshots locally with `SnapshotStore` (optional).
 | Linux | x86_64 |
 | macOS | x86_64, aarch64 |
 
-Windows is not supported in 1.0.0 (set `FRAP_CORE_BIN` to a custom build if needed).
+Windows x64 is bundled in 1.0.1 (or set `FRAP_CORE_BIN` for a custom build).
 
-## Maven Coordinates (Maven Central 1.0.0)
+## Maven Coordinates (Maven Central 1.0.1)
 
 ```xml
 <!-- RPC client (subprocess) - Available on Maven Central -->
 <dependency>
     <groupId>io.github.kotler-dev</groupId>
     <artifactId>frap-core-java</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 
 <!-- Playwright adapter - Available on Maven Central -->
 <dependency>
     <groupId>io.github.kotler-dev</groupId>
     <artifactId>frap-playwright</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <scope>test</scope>
 </dependency>
 ```
