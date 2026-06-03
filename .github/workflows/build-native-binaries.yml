@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+      - 'java-v*'
     branches:
       - main
     paths:
@@ -224,7 +225,7 @@ jobs:
       - name: Package MCP jars with all platform binaries bundled
         run: >-
           mvn -B -f sdk/java/frap-mcp/pom.xml
-          -pl frap-mcp-stdio,frap-mcp-http -am package -DskipTests
+          -pl frap-mcp-stdio,frap-mcp-http,frap-mcp-http-local -am package -DskipTests
 
       - name: Upload bundled MCP jars
         uses: actions/upload-artifact@v4
@@ -233,6 +234,7 @@ jobs:
           path: |
             sdk/java/frap-mcp/frap-mcp-stdio/target/frap-mcp-stdio.jar
             sdk/java/frap-mcp/frap-mcp-http/target/frap-mcp-http.jar
+            sdk/java/frap-mcp/frap-mcp-http-local/target/frap-mcp-http-local.jar
           retention-days: 30
 
       - name: Attach jars to the GitHub Release (tag builds only)
@@ -242,3 +244,4 @@ jobs:
           files: |
             sdk/java/frap-mcp/frap-mcp-stdio/target/frap-mcp-stdio.jar
             sdk/java/frap-mcp/frap-mcp-http/target/frap-mcp-http.jar
+            sdk/java/frap-mcp/frap-mcp-http-local/target/frap-mcp-http-local.jar

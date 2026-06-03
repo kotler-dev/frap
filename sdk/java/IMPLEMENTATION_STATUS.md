@@ -40,10 +40,10 @@ cd frap/crates && cargo test -p frap-core contract_dom_benchmark
 cd frap/sdk/java && mvn -P java-unit verify
 ```
 
-## frap-mcp (0.1.0-SNAPSHOT, PR #21)
+## frap-mcp (1.0.1, Maven Central)
 
 - Reactor: `sdk/java/frap-mcp/` (Java 21, separate parent POM)
-- Runners: `frap-mcp-stdio` (file), `frap-mcp-http` (inline), `frap-mcp-http-local` (file + ingest)
+- Artifacts: `frap-mcp-tools`, `frap-mcp-stdio`, `frap-mcp-http`, `frap-mcp-http-local`
 - 6 MCP tools; verify: `./scripts/run-frap-mcp-verify.sh` (JDK 21)
 - Cross-client E2E: `@Tag("mcp-e2e")` in `SnapshotScriptCrossClientE2eTest`
 
@@ -51,7 +51,6 @@ cd frap/sdk/java && mvn -P java-unit verify
 
 - `frap-core-native` on Maven Central (JNI experimental)
 - Selenium / WebDriver (F014 track B)
-- MCP on Maven Central (repo-only `0.1.0-SNAPSHOT`)
 - TypeScript SDK release (frozen; contracts remain in repo)
 
 ## Verify

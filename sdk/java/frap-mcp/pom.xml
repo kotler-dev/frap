@@ -14,7 +14,7 @@
 
     <groupId>io.github.kotler-dev</groupId>
     <artifactId>frap-mcp-parent</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>1.0.1</version>
     <packaging>pom</packaging>
 
     <name>Frap MCP Parent</name>
@@ -27,7 +27,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <spring-ai.version>1.1.7</spring-ai.version>
-        <frap-core-java.version>1.0.1-SNAPSHOT</frap-core-java.version>
+        <frap-core-java.version>1.0.1</frap-core-java.version>
+        <central-publishing-maven-plugin.version>0.7.0</central-publishing-maven-plugin.version>
+        <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
+        <maven-gpg-plugin.version>3.2.7</maven-gpg-plugin.version>
+        <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>3.8.0</maven-javadoc-plugin.version>
+        <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
     <modules>
@@ -36,6 +42,20 @@
         <module>frap-mcp-http</module>
         <module>frap-mcp-http-local</module>
     </modules>
+
+    <scm>
+        <connection>scm:git:git://github.com/kotler-dev/frap.git</connection>
+        <developerConnection>scm:git:ssh://github.com:kotler-dev/frap.git</developerConnection>
+        <url>https://github.com/kotler-dev/frap/tree/main</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>kotlerdev</id>
+            <name>Anton Mikhailov</name>
+            <url>https://github.com/kotler-dev</url>
+        </developer>
+    </developers>
 
     <dependencyManagement>
         <dependencies>
@@ -51,6 +71,11 @@
                 <artifactId>frap-core-java</artifactId>
                 <version>${frap-core-java.version}</version>
             </dependency>
+            <dependency>
+                <groupId>io.github.kotler-dev</groupId>
+                <artifactId>frap-mcp-tools</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -60,4 +85,103 @@
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>flatten-maven-plugin</artifactId>
+                        <version>${flatten-maven-plugin.version}</version>
+                        <configuration>
+                            <flattenMode>oss</flattenMode>
+                            <updatePomFile>true</updatePomFile>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>flatten</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>flatten</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>flatten.clean</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>${maven-source-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${maven-javadoc-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven-gpg-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.sonatype.central</groupId>
+                    <artifactId>central-publishing-maven-plugin</artifactId>
+                    <version>${central-publishing-maven-plugin.version}</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <publishingServerId>central</publishingServerId>
+                        <checksums>all</checksums>
+                        <skipPublishing>true</skipPublishing>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>

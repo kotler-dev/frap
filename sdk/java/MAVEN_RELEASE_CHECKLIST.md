@@ -40,28 +40,36 @@ Add to https://github.com/kotler-dev/frap/settings/secrets/actions:
 > gpg --keyserver keyserver.ubuntu.com --send-keys D8B424D9603C9A7F
 > ```
 
-### 4. Release Scope for 1.0.0
+### 4. Release Scope for 1.0.0 (shipped)
 
-API surface in `frap-core-rpc`: `heal`, `analyze_rca`, `build_element_map`, `filter_element_map`, `generate_page_object`.
+- [x] `io.github.kotler-dev:frap-core-java:1.0.0`
+- [x] `io.github.kotler-dev:frap-playwright:1.0.0`
 
-Publish to Maven Central:
+### 5. Release Scope for 1.0.1 (current)
 
-- [ ] `io.github.kotler-dev:frap-core-java:1.0.0`
-- [ ] `io.github.kotler-dev:frap-playwright:1.0.0`
+Publish to Maven Central (tag `java-v1.0.1`, workflow [publish-maven.yml](../../.github/workflows/publish-maven.yml)):
 
-Do not publish in 1.0.0:
+- [ ] `io.github.kotler-dev:frap-core-java:1.0.1` (6 bundled natives in JAR)
+- [ ] `io.github.kotler-dev:frap-playwright:1.0.1`
+- [ ] `io.github.kotler-dev:frap-mcp-tools:1.0.1`
+- [ ] `io.github.kotler-dev:frap-mcp-stdio:1.0.1` (executable fat jar, JDK 21)
+- [ ] `io.github.kotler-dev:frap-mcp-http:1.0.1`
+- [ ] `io.github.kotler-dev:frap-mcp-http-local:1.0.1`
 
-- [ ] `frap-core-native` (kept in repository for local/experimental JNI flow)
-- [ ] `examples/java/playwright` (demo-only module)
+Do not publish:
 
-## Release Steps
+- `frap-core-native`, `examples/java/playwright`, parent POMs
+
+Pre-tag gates: [VERIFICATION.md](./VERIFICATION.md), `./scripts/run-frap-mcp-verify.sh` (JDK 21).
+
+## Release Steps (1.0.1)
 
 ### 1. Prepare Release
 
 ```bash
 # Update version (remove -SNAPSHOT)
 cd sdk/java
-mvn versions:set -DnewVersion=1.0.0
+mvn versions:set -DnewVersion=1.0.1
 mvn versions:commit
 
 # Verify
@@ -93,16 +101,16 @@ git add sdk/java/
 git commit -m "Release 1.0.0"
 
 # Create tag
-git tag -a java-v1.0.0 -m "Java SDK 1.0.0 — Maven Central"
-git push origin java-v1.0.0
+git tag -a java-v1.0.1 -m "Java SDK 1.0.1 — Core, Playwright, MCP on Maven Central"
+git push origin java-v1.0.1
 ```
 
 ### 4. CI Release
 
 GitHub Actions automatically:
-- Builds native binaries for Linux/macOS
-- Extracts them to resources
-- Publishes `frap-core-java` and `frap-playwright` to Maven Central
+- Builds native binaries for 6 platforms
+- Stages into `frap-core-java` JAR resources
+- Publishes `frap-core-java`, `frap-playwright`, then `frap-mcp-*` (Java 21)
 
 Monitor at: https://github.com/kotler-dev/frap/actions
 
@@ -112,8 +120,9 @@ Wait 10-30 minutes, then verify:
 
 ```bash
 # Check Maven Central
-curl "https://repo1.maven.org/maven2/io/github/kotler-dev/frap-core-java/1.0.0/frap-core-java-1.0.0.pom"
-curl "https://repo1.maven.org/maven2/io/github/kotler-dev/frap-playwright/1.0.0/frap-playwright-1.0.0.pom"
+curl "https://repo1.maven.org/maven2/io/github/kotler-dev/frap-core-java/1.0.1/frap-core-java-1.0.1.pom"
+curl "https://repo1.maven.org/maven2/io/github/kotler-dev/frap-playwright/1.0.1/frap-playwright-1.0.1.pom"
+curl "https://repo1.maven.org/maven2/io/github/kotler-dev/frap-mcp-stdio/1.0.1/frap-mcp-stdio-1.0.1.pom"
 
 # Or use in test project
 mvn dependency:resolve -DincludeArtifactIds=frap-core-java

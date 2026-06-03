@@ -8,31 +8,49 @@
     <parent>
         <groupId>io.github.kotler-dev</groupId>
         <artifactId>frap-mcp-parent</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>1.0.1</version>
     </parent>
 
     <artifactId>frap-mcp-tools</artifactId>
     <name>Frap MCP Tools</name>
     <description>Transport-neutral @McpTool service over frap-core-java (plain library jar)</description>
+    <url>https://github.com/kotler-dev/frap</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git://github.com/kotler-dev/frap.git</connection>
+        <developerConnection>scm:git:ssh://github.com:kotler-dev/frap.git</developerConnection>
+        <url>https://github.com/kotler-dev/frap/tree/main</url>
+    </scm>
 
     <dependencies>
-        <!-- frap core (bundles the native frap-core-rpc binary) -->
         <dependency>
             <groupId>io.github.kotler-dev</groupId>
             <artifactId>frap-core-java</artifactId>
         </dependency>
-
-        <!-- Spring AI MCP server: provides @McpTool / @McpToolParam annotations and types -->
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-mcp-server</artifactId>
         </dependency>
-
-        <!-- Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

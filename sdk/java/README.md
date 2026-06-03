@@ -6,8 +6,8 @@ independent Maven projects**:
 
 | Project | Parent POM | Java | What it is |
 |---------|-----------|------|------------|
-| **Core SDK** | `io.github.kotler-dev:frap-sdk-parent:1.0.1-SNAPSHOT` | 17 | The Java client for the frap engine + adapters |
-| **MCP server** | `io.github.kotler-dev:frap-mcp-parent:0.1.0-SNAPSHOT` | 21 | Spring AI MCP server exposing frap as tools (stdio + http) |
+| **Core SDK** | `io.github.kotler-dev:frap-sdk-parent:1.0.1` | 17 | The Java client for the frap engine + adapters |
+| **MCP server** | `io.github.kotler-dev:frap-mcp-parent:1.0.1` | 21 | Spring AI MCP server exposing frap as tools (stdio + http + http-local) |
 
 > They are separate reactors (different parent POMs, different Java levels). The
 > MCP project depends on `frap-core-java` as a normal Maven artifact.
@@ -121,7 +121,7 @@ public interface FrapCoreClient extends AutoCloseable {
 <dependency>
     <groupId>io.github.kotler-dev</groupId>
     <artifactId>frap-core-java</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
@@ -370,8 +370,8 @@ on supported platforms.
 
 ## Versions
 
-- **Core SDK**: `frap-core-java` / `frap-playwright` **1.0.1-SNAPSHOT** on `develop/java-v1.0.1` (1.0.0 published on Maven Central).
-- **MCP server**: `frap-mcp-*` **0.1.0-SNAPSHOT** (repo only) — 6 tools; runners: stdio (file), http (inline), http-local (file + ingest).
+- **Core SDK**: `frap-core-java` / `frap-playwright` **1.0.1** on Maven Central.
+- **MCP server**: `frap-mcp-tools`, `frap-mcp-stdio`, `frap-mcp-http`, `frap-mcp-http-local` **1.0.1** on Maven Central (JDK 21 for runners).
 
 **Core SDK (1.0.1 line)**
 

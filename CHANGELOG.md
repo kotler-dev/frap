@@ -37,16 +37,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added (develop/java-v1.0.1)
-
-- Discover/Page Object quality batch (issues #7–#15): Playwright `:has-text` locators, LIST `items(index)` shared selector, PoG dedup and semantic method names, dual confidence documented, Java `innerText` snapshots, mega-LIST demotion (≥8 unique id members)
-- User guide: [docs/en/discover-page-object.md](./docs/en/discover-page-object.md)
-- **frap-mcp** (PR #21): Spring AI MCP server `0.1.0-SNAPSHOT` — 6 tools, stdio/http/http-local runners, file-mode artifacts, snapshot ingest, six-platform native binary CI packaging
-- `FrapRpcClient`: Windows x64 + Linux aarch64; `Cluster` DTO `member_tag` / `shared_selector`; `./scripts/run-frap-mcp-verify.sh`
-
 ### Planned
 
 - MVP-C: benchmark overhead < 10% vs baseline
+
+## [Java SDK 1.0.1] - 2026-06-03
+
+### Added
+
+- Discover/Page Object quality (F019, issues #7–#15): `:has-text` locators, LIST accessors, semantic PoG names, `innerText` snapshots, dom-benchmark fixtures
+- **frap-mcp** 1.0.1 on Maven Central: 6 MCP tools; runners `frap-mcp-stdio`, `frap-mcp-http`, `frap-mcp-http-local` (JDK 21)
+- Six-platform bundled `frap-core-rpc` (Linux glibc/musl/aarch64, macOS x86_64/aarch64, Windows x64)
+- `FrapRpcClient` platform matrix; `Cluster` DTO `member_tag` / `shared_selector`
+
+### Documentation
+
+- [docs/en/discover-page-object.md](./docs/en/discover-page-object.md), [sdk/java/frap-mcp/README.md](./sdk/java/frap-mcp/README.md)
+- Tag: `java-v1.0.1` → workflow `publish-maven.yml`
 
 ## [Java SDK 1.0.0] - 2026-05-30
 

@@ -115,7 +115,7 @@ var button = Frap.withFrap(
 <dependency>
     <groupId>io.github.kotler-dev</groupId>
     <artifactId>frap-playwright</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <scope>test</scope>
 </dependency>
 ```
