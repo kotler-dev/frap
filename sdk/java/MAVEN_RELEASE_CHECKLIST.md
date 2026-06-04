@@ -56,16 +56,36 @@ Published to Maven Central (tag `java-v1.1.0`):
 - [x] `io.github.kotler-dev:frap-mcp-http:1.1.0`
 - [x] `io.github.kotler-dev:frap-mcp-http-local:1.1.0`
 
-### 5c. Release Scope for 1.1.1 (shipped)
+## Pre-publish: Quality Digest (blocker)
 
-Published to Maven Central (tag `java-v1.1.1`):
+**Do not** run `publish-maven` or Sonatype Publish until all items are checked.
 
-- [x] `io.github.kotler-dev:frap-core-java:1.1.1`
-- [x] `io.github.kotler-dev:frap-playwright:1.1.1`
-- [x] `io.github.kotler-dev:frap-mcp-tools:1.1.1`
-- [x] `io.github.kotler-dev:frap-mcp-stdio:1.1.1`
-- [x] `io.github.kotler-dev:frap-mcp-http:1.1.1`
-- [x] `io.github.kotler-dev:frap-mcp-http-local:1.1.1`
+| # | Item | Done |
+|---|------|------|
+| 1 | `cargo test -p frap-core --test contract_locator_quality --test contract_dom_benchmark` | [ ] |
+| 2 | `mvn -P java-unit verify` + `./scripts/run-java-e2e.sh` | [ ] |
+| 3 | `./scripts/run-frap-mcp-verify.sh` (JDK 21) | [ ] |
+| 4 | `./scripts/quality-report.sh --release <ver> --baseline-tag java-v<prev>` | [ ] |
+| 5 | `docs/quality/en/releases/v<ver>-digest.md` — sections 3, 4, 7, 9 filled | [ ] |
+| 6 | `docs/quality/ru/releases/v<ver>-digest.md` — RU mirror | [ ] |
+| 7 | `CHANGELOG.md` + `docs/quality/{en,ru}/releases/README.md` | [ ] |
+
+Agent rule: [`.cursor/rules/release-quality-digest.mdc`](../../.cursor/rules/release-quality-digest.mdc) (workspace).
+
+**v1.1.1:** EN [`docs/quality/en/releases/v1.1.1-digest.md`](../docs/quality/en/releases/v1.1.1-digest.md), baseline `java-v1.1.0`.
+
+---
+
+### 5c. Release Scope for 1.1.1
+
+Target Maven Central (tag `java-v1.1.1`):
+
+- [ ] `io.github.kotler-dev:frap-core-java:1.1.1`
+- [ ] `io.github.kotler-dev:frap-playwright:1.1.1`
+- [ ] `io.github.kotler-dev:frap-mcp-tools:1.1.1`
+- [ ] `io.github.kotler-dev:frap-mcp-stdio:1.1.1`
+- [ ] `io.github.kotler-dev:frap-mcp-http:1.1.1`
+- [ ] `io.github.kotler-dev:frap-mcp-http-local:1.1.1`
 
 ### 5b. Next release (1.2.0)
 
