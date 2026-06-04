@@ -80,3 +80,6 @@ logs/
 
 # Throwaway locator-quality analysis artifacts (see specs/locator-quality-findings.md)
 .frap-analysis/
+
+# MCP / frap-core-java runtime extract + work dir (frap.runtime.dir)
+**/.frap/
