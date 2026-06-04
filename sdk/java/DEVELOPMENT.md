@@ -5,7 +5,7 @@
 | | |
 |---|---|
 | **Branch** | `develop/java-v1.1.1` |
-| **Maven (workspace)** | `1.1.1-SNAPSHOT` |
+| **Maven (workspace)** | `1.2.0-SNAPSHOT` |
 | **Last release** | **1.1.1** — tag `java-v1.1.1`, Maven Central |
 
 Fork and open PRs **into `develop/java-v1.1.1`**, not directly into `main`.

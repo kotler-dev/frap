@@ -37,6 +37,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Java SDK 1.2.0-SNAPSHOT
+
+- Development branch: **`develop/java-v1.1.1`**
+- Maven workspace: `1.2.0-SNAPSHOT`
+
 ### Planned
 
 - MVP-C: benchmark overhead < 10% vs baseline

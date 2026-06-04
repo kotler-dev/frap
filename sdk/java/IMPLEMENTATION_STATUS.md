@@ -54,7 +54,7 @@ cd frap/sdk/java && mvn -P java-unit verify
 - `SnapshotBuilder`: `computed_role`, `scope_hint`, `visible` (parity with MCP `snapshot.js`)
 - Matrix: `project/release/java/java-sdk-1.1.1-matrix.md`
 
-## Development (1.1.1-SNAPSHOT → 1.2.0-SNAPSHOT after release)
+## Development (1.2.0-SNAPSHOT)
 
 - Integration branch: **`develop/java-v1.1.1`** — see [`DEVELOPMENT.md`](./DEVELOPMENT.md)
 
