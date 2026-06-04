@@ -4,16 +4,16 @@
 
 | | |
 |---|---|
-| **Branch** | `develop/java-v1.1.1` |
+| **Branch** | `develop/java-v1.2.0` |
 | **Maven (workspace)** | `1.2.0-SNAPSHOT` |
 | **Last release** | **1.1.1** — tag `java-v1.1.1`, Maven Central |
 
-Fork and open PRs **into `develop/java-v1.1.1`**, not directly into `main`.
+Fork and open PRs **into `develop/java-v1.2.0`**, not directly into `main`.
 
 ```bash
 git fetch origin
-git checkout develop/java-v1.1.1
-git pull origin develop/java-v1.1.1
+git checkout develop/java-v1.2.0
+git pull origin develop/java-v1.2.0
 git checkout -b feat/my-change
 ```
 
@@ -58,7 +58,7 @@ MCP startup logs resolved paths (`frap runtime: dir=...`) — check `logs/frap-m
 
 ## Release line (maintainers)
 
-Next Maven release target: **1.2.0** on `develop/java-v1.1.1` after **1.1.1** is on Central.  
+Next Maven release target: **1.2.0** on `develop/java-v1.2.0` after **1.1.1** is on Central.  
 See [`MAVEN_RELEASE_CHECKLIST.md`](./MAVEN_RELEASE_CHECKLIST.md).
 
 Frozen backup: `develop/java-v1.0.1` (pre–1.1.0 line).
