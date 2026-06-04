@@ -172,6 +172,30 @@ jobs:
           fi
           echo "core_java_version=${CORE_VER}" >> "$GITHUB_OUTPUT"
 
+      - name: Verify release quality digest (EN)
+        run: |
+          set -euo pipefail
+          VER="${{ steps.coords.outputs.core_java_version }}"
+          DIGEST="docs/quality/en/releases/v${VER}-digest.md"
+          if [[ ! -f "${DIGEST}" ]]; then
+            echo "::error::Missing ${DIGEST}. Complete Release Quality Digest before Maven publish."
+            exit 1
+          fi
+          for heading in "## 3. Locator quality" "## 4. Discover" "## 7. Test pyramid" "## 9. Before / after"; do
+            grep -qF "${heading}" "${DIGEST}" || {
+              echo "::error::Digest ${DIGEST} missing required section: ${heading}"
+              exit 1
+            }
+          done
+          echo "Quality digest OK: ${DIGEST}"
+
+      - name: Upload quality digest (EN)
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-digest-en-v${{ steps.coords.outputs.core_java_version }}
+          path: docs/quality/en/releases/v${{ steps.coords.outputs.core_java_version }}-digest.md
+          if-no-files-found: error
+
       - name: Setup Java 17
         uses: actions/setup-java@v4
         with:

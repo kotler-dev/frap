@@ -61,8 +61,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Documentation
 
 - [java-sdk-1.1.1-matrix.md](../project/release/java/java-sdk-1.1.1-matrix.md)
+- **Release Quality Digest:** `docs/quality/en/releases/v1.1.1-digest.md`, `docs/quality/ru/releases/v1.1.1-digest.md`
 - Validation: **C012** (CI dom-benchmark), **C013** (optional live explore)
-- Tag: `java-v1.1.1` → `publish-maven.yml`
+- Tag: `java-v1.1.1` → `publish-maven.yml` (digest gate in CI)
 
 ## [Java SDK 1.1.0] - 2026-06-03
 
