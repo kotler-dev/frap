@@ -6,7 +6,7 @@
 |---|---|
 | **Branch** | `develop/java-v1.1.1` |
 | **Maven (workspace)** | `1.1.1-SNAPSHOT` |
-| **Last release** | **1.1.0** — tag `java-v1.1.0`, Maven Central |
+| **Last release** | **1.1.1** — tag `java-v1.1.1`, Maven Central |
 
 Fork and open PRs **into `develop/java-v1.1.1`**, not directly into `main`.
 
@@ -34,41 +34,31 @@ cd ../..
 
 ## Consumers (released artifacts)
 
-Use **1.1.0** from Maven Central — not SNAPSHOT from this branch:
+Use **1.1.1** from Maven Central — not SNAPSHOT from this branch:
 
 ```xml
 <dependency>
   <groupId>io.github.kotler-dev</groupId>
   <artifactId>frap-core-java</artifactId>
-  <version>1.1.0</version>
+  <version>1.1.1</version>
 </dependency>
 ```
 
 ## Hosts that block `/tmp` (noexec / security policy)
 
-**1.1.1-SNAPSHOT** on `develop/java-v1.1.1` extracts the native binary under
-`<jar-dir>/.frap/bin/` (not `/tmp`). Override:
+**1.1.1+** extracts the native binary under `<jar-dir>/.frap/bin/` (not `/tmp`). Override:
 
 ```bash
-java -Dfrap.runtime.dir="$PWD/.frap" -jar frap-mcp-http-local/target/frap-mcp-http-local.jar
-```
-
-Until **1.1.1** is on Maven Central, consumers on **1.1.0** must use a workaround:
-
-```bash
-# Extract binary next to the jar (Linux x86_64 glibc example)
-jar xf frap-mcp-http-local-1.1.0.jar BOOT-INF/lib/frap-core-java-1.1.0.jar
-unzip -p BOOT-INF/lib/frap-core-java-1.1.0.jar META-INF/native/frap-core-rpc-linux-x86_64 > ./frap-core-rpc
-chmod +x ./frap-core-rpc
-export FRAP_CORE_BIN="$PWD/frap-core-rpc"
-java -jar frap-mcp-http-local-1.1.0.jar --frap.io.work-dir="$PWD/frap-work"
+java -Dfrap.runtime.dir="$PWD/.frap" -jar frap-mcp-http-local.jar
 ```
 
 MCP startup logs resolved paths (`frap runtime: dir=...`) — check `logs/frap-mcp.log` or console (http-local).
 
+**Upgrade from 1.1.0:** bump coordinates to `1.1.1`; remove manual `FRAP_CORE_BIN` extract workaround if you added it for `/tmp` policy.
+
 ## Release line (maintainers)
 
-Next Maven release target: **1.1.1** → branch `release/java-v1.1.1`, tag `java-v1.1.1` (not created yet; ship when feature work on `develop/java-v1.1.1` is ready).  
+Next Maven release target: **1.2.0** on `develop/java-v1.1.1` after **1.1.1** is on Central.  
 See [`MAVEN_RELEASE_CHECKLIST.md`](./MAVEN_RELEASE_CHECKLIST.md).
 
 Frozen backup: `develop/java-v1.0.1` (pre–1.1.0 line).

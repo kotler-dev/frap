@@ -79,7 +79,7 @@ public class FrapFileTools {
           • domSnapshotPath (string, required) — absolute path to that snapshot JSON file.
               - its content is the raw { "html": ..., "elements": [...] } from the snapshot JS
               - frap does NOT create this file; you write it yourself
-              - example: /tmp/frap/snapshot-main.json
+              - example: <frap.runtime.dir>/work/snapshot-main.json
           • options (object, optional) — { url, include_non_interactive, max_elements }
 
         OUTPUT
@@ -102,12 +102,12 @@ public class FrapFileTools {
         EXAMPLE
           call:
           {
-            "domSnapshotPath": "/tmp/frap/snapshot-main.json",
+            "domSnapshotPath": "<frap.runtime.dir>/work/snapshot-main.json",
             "options": { "url": "https://example.com/app/main" }
           }
           result:
           {
-            "element_map_path": "/tmp/frap/element-map-3f2a.json",
+            "element_map_path": "<frap.runtime.dir>/work/element-map-3f2a.json",
             "summary": {
               "element_count": 57,
               "cluster_count": 7,
@@ -132,7 +132,7 @@ public class FrapFileTools {
         STEP 1. That file's entire content must be the raw object returned by the \
         frap_snapshot_script JavaScript, i.e. { html: <string>, elements: [ ... ] }, \
         written as valid UTF-8 JSON with NO extra wrapper. Example: \
-        /tmp/frap/snapshot-main.json. Do NOT pass the snapshot object itself here — only \
+        <frap.runtime.dir>/work/snapshot-main.json. Do NOT pass the snapshot object itself here — only \
         its path; do NOT edit the file.""";
 
     private static final String BUILD_OPTIONS_PARAM =
@@ -158,7 +158,7 @@ public class FrapFileTools {
         INPUT
           • elementMapPath (string, required) — the ABSOLUTE path that frap_build_element_map
             returned in its 'element_map_path' output field.
-              - example: /tmp/frap/element-map-3f2a.json
+              - example: <frap.runtime.dir>/work/element-map-3f2a.json
           • filter (object, required) — describes what to keep:
               { interactive_only, min_cluster_size, tags }
 
@@ -176,12 +176,12 @@ public class FrapFileTools {
         EXAMPLE
           call:
           {
-            "elementMapPath": "/tmp/frap/element-map-3f2a.json",
+            "elementMapPath": "<frap.runtime.dir>/work/element-map-3f2a.json",
             "filter": { "interactive_only": true, "min_cluster_size": 2, "tags": ["a", "button"] }
           }
           result:
           {
-            "element_map_path": "/tmp/frap/element-map-filtered-9c1d.json",
+            "element_map_path": "<frap.runtime.dir>/work/element-map-filtered-9c1d.json",
             "summary": {
               "element_count": 31,
               "cluster_count": 4
@@ -198,7 +198,7 @@ public class FrapFileTools {
         """
         (string, required) The ABSOLUTE path to an ElementMap JSON file, exactly as \
         returned in the 'element_map_path' field of frap_build_element_map. Example: \
-        /tmp/frap/element-map-3f2a.json. Pass the path; do not edit the file.""";
+        <frap.runtime.dir>/work/element-map-3f2a.json. Pass the path; do not edit the file.""";
 
     private static final String FILTER_FILTER_PARAM =
         """
@@ -222,7 +222,7 @@ public class FrapFileTools {
         INPUT
           • elementMapPath (string, required) — the ABSOLUTE path that frap_build_element_map
             (or frap_filter_element_map) returned in its 'element_map_path' output field.
-              - example: /tmp/frap/element-map-3f2a.json
+              - example: <frap.runtime.dir>/work/element-map-3f2a.json
           • language (string, required) — target output format / framework.
           • className (string, required) — class name for the generated Page Object.
           • packageName (string, required) — package / namespace for the generated class.
@@ -242,16 +242,16 @@ public class FrapFileTools {
         EXAMPLE
           call:
           {
-            "elementMapPath": "/tmp/frap/element-map-3f2a.json",
+            "elementMapPath": "<frap.runtime.dir>/work/element-map-3f2a.json",
             "language": "java_playwright",
             "className": "MainPage",
             "packageName": "com.example.pages"
           }
           result:
           {
-            "file_paths": ["/tmp/frap/com/example/pages/MainPage.java"],
+            "file_paths": ["<frap.runtime.dir>/work/com/example/pages/MainPage.java"],
             "file_count": 1,
-            "work_dir": "/tmp/frap"
+            "work_dir": "<frap.runtime.dir>/work"
           }
 
         PIPELINE
@@ -264,7 +264,7 @@ public class FrapFileTools {
         """
         (string, required) The ABSOLUTE path to the ElementMap JSON file, exactly as \
         returned in the 'element_map_path' field of frap_build_element_map (or \
-        frap_filter_element_map). Example: /tmp/frap/element-map-3f2a.json. Pass the path; \
+        frap_filter_element_map). Example: <frap.runtime.dir>/work/element-map-3f2a.json. Pass the path; \
         do not edit the file.""";
 
     private static final String GENERATE_LANGUAGE_PARAM =
@@ -298,7 +298,7 @@ public class FrapFileTools {
           • domSnapshotPath (string, required) — the ABSOLUTE path to a file containing a
             FRESH { html, elements } snapshot, obtained by running frap_snapshot_script in
             the page RIGHT NOW and saving its returned object to disk.
-              - example: /tmp/frap/snapshot-fresh.json
+              - example: <frap.runtime.dir>/work/snapshot-fresh.json
           • primarySelector (string, required) — your old/broken selector string.
           • originalSignature (object, optional) — that element's structural fingerprint,
             copied from the element's 'signature' field in an ElementMap you built earlier.
@@ -318,7 +318,7 @@ public class FrapFileTools {
         EXAMPLE
           call:
           {
-            "domSnapshotPath": "/tmp/frap/snapshot-fresh.json",
+            "domSnapshotPath": "<frap.runtime.dir>/work/snapshot-fresh.json",
             "primarySelector": "#nav-link-main",
             "minConfidence": 0.85
           }
@@ -335,7 +335,7 @@ public class FrapFileTools {
         (string, required) The ABSOLUTE path to a file whose content is a FRESH \
         { html, elements } snapshot object produced by re-running frap_snapshot_script in \
         the page now and saving its return value to disk as raw JSON. Example: \
-        /tmp/frap/snapshot-fresh.json. Pass the path; do not edit the file.""";
+        <frap.runtime.dir>/work/snapshot-fresh.json. Pass the path; do not edit the file.""";
 
     private static final String HEAL_PRIMARYSELECTOR_PARAM =
         """

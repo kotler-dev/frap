@@ -88,9 +88,52 @@ public class SnapshotBuilder {
         }
         """;
 
+    /** Mirrors {@code frap-mcp-tools/.../snapshot.js} collector fields for Core semantic pipeline. */
+    private static final String COLLECTOR_FIELDS_JS = """
+        function isVisible(el) {
+            return el.getClientRects().length > 0 || el.offsetParent !== null;
+        }
+        const TEXT_INPUT = { text: 1, search: 1, email: 1, tel: 1, url: 1, password: 1, number: 1 };
+        const BUTTON_INPUT = { submit: 1, button: 1, reset: 1 };
+        function computedRole(el, tag) {
+            const explicit = el.getAttribute('role');
+            if (explicit) return explicit;
+            if (tag === 'a') return 'link';
+            if (tag === 'button') return 'button';
+            if (tag === 'textarea') return 'textbox';
+            if (tag === 'select') return 'combobox';
+            if (tag === 'nav') return 'navigation';
+            if (tag === 'input') {
+                const t = (el.getAttribute('type') || 'text').toLowerCase();
+                if (TEXT_INPUT[t]) return 'textbox';
+                if (t === 'checkbox') return 'checkbox';
+                if (t === 'radio') return 'radio';
+                if (BUTTON_INPUT[t]) return 'button';
+            }
+            return null;
+        }
+        const LANDMARKS = { HEADER: 1, FOOTER: 1, NAV: 1, MAIN: 1, ASIDE: 1, FORM: 1 };
+        function scopeHint(el) {
+            let cur = el.parentElement;
+            let depth = 0;
+            while (cur && depth < 25) {
+                if (LANDMARKS[cur.tagName]) {
+                    let sel = cur.tagName.toLowerCase();
+                    if (cur.id) sel += '#' + CSS.escape(cur.id);
+                    const al = cur.getAttribute('aria-label');
+                    if (al) sel += '[aria-label="' + al + '"]';
+                    return sel;
+                }
+                cur = cur.parentElement;
+                depth++;
+            }
+            return null;
+        }
+        """;
+
     private static final String SNAPSHOT_SCRIPT = """
         () => {
-        """ + ACCESSIBLE_NAME_JS + """
+        """ + ACCESSIBLE_NAME_JS + COLLECTOR_FIELDS_JS + """
             const elements = [];
             const seen = new Set();
             const labelMap = buildLabelMap();
@@ -144,7 +187,10 @@ public class SnapshotBuilder {
                     text_content: __VISIBLE_TEXT__,
                     accessible_name: computeAccessibleName(el, labelMap),
                     path: path,
-                    position_in_parent: positionInParent
+                    position_in_parent: positionInParent,
+                    visible: isVisible(el),
+                    computed_role: computedRole(el, tagName),
+                    scope_hint: scopeHint(el)
                 });
             }
 
@@ -218,6 +264,10 @@ public class SnapshotBuilder {
             positionInParent = number.intValue();
         }
 
+        Boolean visible = raw.get("visible") instanceof Boolean b ? b : null;
+        String computedRole = (String) raw.get("computed_role");
+        String scopeHint = (String) raw.get("scope_hint");
+
         return new DOMElementInfo(
             selector != null ? selector : "",
             tag != null ? tag : "unknown",
@@ -225,7 +275,10 @@ public class SnapshotBuilder {
             textContent,
             accessibleName,
             path != null ? path : List.of(),
-            positionInParent
+            positionInParent,
+            visible,
+            computedRole,
+            scopeHint
         );
     }
 
@@ -242,7 +295,7 @@ public class SnapshotBuilder {
         }
         String script = """
             (selector) => {
-            """ + ACCESSIBLE_NAME_JS + """
+            """ + ACCESSIBLE_NAME_JS + COLLECTOR_FIELDS_JS + """
                 const el = document.querySelector(selector);
                 if (!el) return null;
                 const labelMap = buildLabelMap();
@@ -261,13 +314,17 @@ public class SnapshotBuilder {
                     current = current.parentElement;
                 }
 
+                const tagName = el.tagName.toLowerCase();
                 return {
                     selector: selector,
-                    tag: el.tagName.toLowerCase(),
+                    tag: tagName,
                     attributes: attributes,
                     text_content: __VISIBLE_TEXT__,
                     accessible_name: computeAccessibleName(el, labelMap),
-                    path: path
+                    path: path,
+                    visible: isVisible(el),
+                    computed_role: computedRole(el, tagName),
+                    scope_hint: scopeHint(el)
                 };
             }
             """.replace("__VISIBLE_TEXT__", VISIBLE_TEXT_EXPR);
@@ -335,7 +392,7 @@ public class SnapshotBuilder {
             @SuppressWarnings("unchecked")
             Map<String, Object> raw = (Map<String, Object>) handle.evaluate("""
                 (el) => {
-                """ + ACCESSIBLE_NAME_JS + """
+                """ + ACCESSIBLE_NAME_JS + COLLECTOR_FIELDS_JS + """
                     const labelMap = buildLabelMap();
                     const attributes = {};
                     const attrs = Array.from(el.attributes || []);
@@ -351,13 +408,17 @@ public class SnapshotBuilder {
                         current = current.parentElement;
                     }
 
+                    const tagName = el.tagName.toLowerCase();
                     return {
                         selector: null,
-                        tag: el.tagName.toLowerCase(),
+                        tag: tagName,
                         attributes: attributes,
                         text_content: __VISIBLE_TEXT__,
                         accessible_name: computeAccessibleName(el, labelMap),
-                        path: path
+                        path: path,
+                        visible: isVisible(el),
+                        computed_role: computedRole(el, tagName),
+                        scope_hint: scopeHint(el)
                     };
                 }
                 """.replace("__VISIBLE_TEXT__", VISIBLE_TEXT_EXPR));

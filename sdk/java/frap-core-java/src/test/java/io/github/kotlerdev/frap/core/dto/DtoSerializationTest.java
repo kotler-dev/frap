@@ -91,6 +91,32 @@ class DtoSerializationTest {
     }
 
     @Test
+    void testDOMElementInfoCollectorFieldsRoundTrip() throws JsonProcessingException {
+        DOMElementInfo element = new DOMElementInfo(
+            "[data-testid='btn']",
+            "button",
+            Map.of("data-testid", "btn"),
+            "Click me",
+            "Click me",
+            List.of("nav:-", "button:button"),
+            0,
+            true,
+            "button",
+            "nav#main"
+        );
+
+        String json = objectMapper.writeValueAsString(element);
+        assertThat(json).contains("\"visible\":true");
+        assertThat(json).contains("\"computed_role\":\"button\"");
+        assertThat(json).contains("\"scope_hint\":\"nav#main\"");
+
+        DOMElementInfo parsed = objectMapper.readValue(json, DOMElementInfo.class);
+        assertThat(parsed.visible()).isTrue();
+        assertThat(parsed.computedRole()).isEqualTo("button");
+        assertThat(parsed.scopeHint()).isEqualTo("nav#main");
+    }
+
+    @Test
     void testDOMSnapshotSerialization() throws JsonProcessingException {
         DOMElementInfo element = new DOMElementInfo(
             "[data-testid='btn']",

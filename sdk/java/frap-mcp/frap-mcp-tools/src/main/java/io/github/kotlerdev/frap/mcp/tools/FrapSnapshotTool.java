@@ -99,7 +99,7 @@ public class FrapSnapshotTool {
             ]
           }
           • INLINE next: pass that object to frap_build_element_map as domSnapshot.
-          • FILE next: save it to e.g. /tmp/frap/snapshot-main.json and pass that path as
+          • FILE next: save it to e.g. <frap.runtime.dir>/work/snapshot-main.json and pass that path as
             domSnapshotPath.
 
         PIPELINE

@@ -199,9 +199,8 @@ class GeneratedLocatorResolutionE2eTest {
         // NOTE: the *shape* of the relative locator (getByRole(container).filter(setHasText).getByRole(child))
         // is rigorously asserted at the integration layer (contract_locator_quality.rs ::
         // list_clusters_emit_relative_not_nth), which runs the engine over a production-shaped snapshot.
-        // Here (Frap.discover → playwright-java SnapshotBuilder) the wrapper collector does not yet emit the
-        // a11y/scope enrichment that frap-mcp-tools/snapshot.js does, so this path may still fall back to a
-        // positional cluster method — tracked as a SnapshotBuilder follow-up. The unique value of THIS e2e is
+        // Relative locator shape is also asserted in contract_locator_quality.rs; live discover uses the same
+        // collector fields as frap-mcp snapshot.js (computed_role, scope_hint, visible). The unique value of THIS e2e is
         // the live-browser proof below: the relative locator shape actually resolves each card by name.
         List<Path> paths = Frap.generatePageObject(
             page,

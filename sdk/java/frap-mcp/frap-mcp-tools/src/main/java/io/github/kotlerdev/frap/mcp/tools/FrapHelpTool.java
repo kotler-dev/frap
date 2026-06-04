@@ -39,7 +39,7 @@ public class FrapHelpTool {
           • INLINE mode (HTTP): tools take and return real OBJECTS (the data travels inside
             the messages).
           • FILE mode (local stdio): tools take and return FILE PATHS (strings like
-            /tmp/frap/xxx.json); frap reads and writes the files for you so big data stays
+            <frap.runtime.dir>/work/xxx.json); frap reads and writes the files for you so big data stays
             OUT of your context.
 
         THE 3 STEPS
@@ -125,26 +125,26 @@ public class FrapHelpTool {
 
         WORKED EXAMPLE (FILE mode)
           1. frap_snapshot_script() → returns JS text. Run it in your browser tool; it
-             returns { html, elements }. Save to /tmp/frap/snapshot-main.json.
+             returns { html, elements }. Save to <frap.runtime.dir>/work/snapshot-main.json.
           2. frap_build_element_map with:
              {
-               "domSnapshotPath": "/tmp/frap/snapshot-main.json"
+               "domSnapshotPath": "<frap.runtime.dir>/work/snapshot-main.json"
              }
              → result:
              {
-               "element_map_path": "/tmp/frap/element-map-3f2a.json",
+               "element_map_path": "<frap.runtime.dir>/work/element-map-3f2a.json",
                "summary": {...}
              }
           3. frap_generate_page_object with:
              {
-               "elementMapPath": "/tmp/frap/element-map-3f2a.json",
+               "elementMapPath": "<frap.runtime.dir>/work/element-map-3f2a.json",
                "language": "java_playwright",
                "className": "MainPage",
                "packageName": "com.example.pages"
              }
              → result:
              {
-               "file_paths": ["/tmp/frap/com/example/pages/MainPage.java"],
+               "file_paths": ["<frap.runtime.dir>/work/com/example/pages/MainPage.java"],
                "file_count": 1
              }""";
 

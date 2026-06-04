@@ -56,11 +56,21 @@ Published to Maven Central (tag `java-v1.1.0`):
 - [x] `io.github.kotler-dev:frap-mcp-http:1.1.0`
 - [x] `io.github.kotler-dev:frap-mcp-http-local:1.1.0`
 
-### 5b. Next release (1.1.1)
+### 5c. Release Scope for 1.1.1 (shipped)
+
+Published to Maven Central (tag `java-v1.1.1`):
+
+- [x] `io.github.kotler-dev:frap-core-java:1.1.1`
+- [x] `io.github.kotler-dev:frap-playwright:1.1.1`
+- [x] `io.github.kotler-dev:frap-mcp-tools:1.1.1`
+- [x] `io.github.kotler-dev:frap-mcp-stdio:1.1.1`
+- [x] `io.github.kotler-dev:frap-mcp-http:1.1.1`
+- [x] `io.github.kotler-dev:frap-mcp-http-local:1.1.1`
+
+### 5b. Next release (1.2.0)
 
 - Development branch: **`develop/java-v1.1.1`**
-- Workspace version: **1.1.1-SNAPSHOT**
-- Release branch (when ready): `release/java-v1.1.1` → tag `java-v1.1.1`
+- Workspace version: **1.2.0-SNAPSHOT** (after 1.1.1 publish)
 
 ### 5a. Release Scope for 1.0.1 (superseded — do not publish staging)
 
