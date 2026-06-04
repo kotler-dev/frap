@@ -44,9 +44,31 @@ Use **1.1.0** from Maven Central — not SNAPSHOT from this branch:
 </dependency>
 ```
 
+## Hosts that block `/tmp` (noexec / security policy)
+
+**1.1.1-SNAPSHOT** on `develop/java-v1.1.1` extracts the native binary under
+`<jar-dir>/.frap/bin/` (not `/tmp`). Override:
+
+```bash
+java -Dfrap.runtime.dir="$PWD/.frap" -jar frap-mcp-http-local/target/frap-mcp-http-local.jar
+```
+
+Until **1.1.1** is on Maven Central, consumers on **1.1.0** must use a workaround:
+
+```bash
+# Extract binary next to the jar (Linux x86_64 glibc example)
+jar xf frap-mcp-http-local-1.1.0.jar BOOT-INF/lib/frap-core-java-1.1.0.jar
+unzip -p BOOT-INF/lib/frap-core-java-1.1.0.jar META-INF/native/frap-core-rpc-linux-x86_64 > ./frap-core-rpc
+chmod +x ./frap-core-rpc
+export FRAP_CORE_BIN="$PWD/frap-core-rpc"
+java -jar frap-mcp-http-local-1.1.0.jar --frap.io.work-dir="$PWD/frap-work"
+```
+
+MCP startup logs resolved paths (`frap runtime: dir=...`) — check `logs/frap-mcp.log` or console (http-local).
+
 ## Release line (maintainers)
 
-Next Maven release target: **1.1.1** → branch `release/java-v1.1.1`, tag `java-v1.1.1`.  
+Next Maven release target: **1.1.1** → branch `release/java-v1.1.1`, tag `java-v1.1.1` (not created yet; ship when feature work on `develop/java-v1.1.1` is ready).  
 See [`MAVEN_RELEASE_CHECKLIST.md`](./MAVEN_RELEASE_CHECKLIST.md).
 
 Frozen backup: `develop/java-v1.0.1` (pre–1.1.0 line).

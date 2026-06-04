@@ -7,9 +7,12 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 
 import io.github.kotlerdev.frap.core.client.FrapCoreClient;
 import io.github.kotlerdev.frap.core.client.FrapRpcClient;
+import io.github.kotlerdev.frap.core.runtime.FrapRuntimePaths;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -26,6 +29,8 @@ import org.springframework.context.annotation.Lazy;
 @Configuration
 public class FrapCoreConfig {
 
+    private static final Logger log = LoggerFactory.getLogger(FrapCoreConfig.class);
+
     /**
      * Creates the long-lived frap core client backed by the bundled native binary.
      *
@@ -35,6 +40,12 @@ public class FrapCoreConfig {
     @Bean(destroyMethod = "close")
     @Lazy
     public FrapCoreClient frapCoreClient() throws IOException {
+        log.info(
+            "frap runtime: dir={}, nativeBinDir={}, workDir={}",
+            FrapRuntimePaths.resolveRuntimeDir(),
+            FrapRuntimePaths.resolveNativeBinDir(),
+            FrapRuntimePaths.resolveWorkDir(System.getProperty(FrapRuntimePaths.WORK_DIR_PROPERTY))
+        );
         return FrapRpcClient.create();
     }
 
