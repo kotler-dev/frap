@@ -89,7 +89,7 @@ Target Maven Central (tag `java-v1.1.1`):
 
 ### 5b. Next release (1.2.0)
 
-- Development branch: **`develop/java-v1.1.1`**
+- Development branch: **`develop/java-v1.2.0`**
 - Workspace version: **1.2.0-SNAPSHOT** (after 1.1.1 publish)
 
 ### 5a. Release Scope for 1.0.1 (superseded — do not publish staging)
