@@ -70,7 +70,7 @@ Published to Maven Central (tag `java-v1.1.0`):
 | 6 | `docs/quality/ru/releases/v<ver>-digest.md` — RU mirror | [ ] |
 | 7 | `CHANGELOG.md` + `docs/quality/{en,ru}/releases/README.md` | [ ] |
 
-Agent rule: [`.cursor/rules/release-quality-digest.mdc`](../../.cursor/rules/release-quality-digest.mdc) (workspace).
+Agent rule: `frap-workspace/.cursor/rules/release-quality-digest.mdc` (Cursor workspace, not in public git).
 
 **v1.1.1:** EN [`docs/quality/en/releases/v1.1.1-digest.md`](../docs/quality/en/releases/v1.1.1-digest.md), baseline `java-v1.1.0`.
 
@@ -80,12 +80,12 @@ Agent rule: [`.cursor/rules/release-quality-digest.mdc`](../../.cursor/rules/rel
 
 Target Maven Central (tag `java-v1.1.1`):
 
-- [ ] `io.github.kotler-dev:frap-core-java:1.1.1`
-- [ ] `io.github.kotler-dev:frap-playwright:1.1.1`
-- [ ] `io.github.kotler-dev:frap-mcp-tools:1.1.1`
-- [ ] `io.github.kotler-dev:frap-mcp-stdio:1.1.1`
-- [ ] `io.github.kotler-dev:frap-mcp-http:1.1.1`
-- [ ] `io.github.kotler-dev:frap-mcp-http-local:1.1.1`
+- [x] `io.github.kotler-dev:frap-core-java:1.1.1` (workflow 2026-06-04)
+- [x] `io.github.kotler-dev:frap-playwright:1.1.1`
+- [x] `io.github.kotler-dev:frap-mcp-tools:1.1.1`
+- [x] `io.github.kotler-dev:frap-mcp-stdio:1.1.1`
+- [x] `io.github.kotler-dev:frap-mcp-http:1.1.1`
+- [x] `io.github.kotler-dev:frap-mcp-http-local:1.1.1`
 
 ### 5b. Next release (1.2.0)
 
