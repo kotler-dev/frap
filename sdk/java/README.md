@@ -268,8 +268,10 @@ debugging-port connection — to obtain `{ html, elements: [...] }`.
 | Property / env | Applies to | Default | Meaning |
 |----------------|-----------|---------|---------|
 | `frap.io.mode` | frap-mcp runners | `inline` (`matchIfMissing`) | `inline` → object tools; `file` → path+digest tools. Set per runner. |
-| `frap.io.work-dir` | frap-mcp (file mode) | `${java.io.tmpdir}/frap` | Base dir for written artifacts. Not auto-cleaned. Returned paths are absolute. |
-| `FRAP_CORE_BIN` (env) | frap-core-java | bundled binary | Override the path to the native `frap-core-rpc` binary (e.g. Windows / custom build). |
+| `frap.runtime.dir` / `FRAP_RUNTIME_DIR` | frap-core-java, frap-mcp | `<jar-dir>/.frap` | Runtime base: extracted native binary (`bin/`), default work dir (`work/`), logs (`logs/`). Avoids `/tmp` when policy blocks exec there. JVM: `-Dfrap.runtime.dir=/path`; Spring: `--frap.runtime.dir=/path`. |
+| `frap.io.work-dir` / `FRAP_IO_WORK_DIR` | frap-mcp (file mode) | `${frap.runtime.dir}/work` | Base dir for written artifacts. Not auto-cleaned. Returned paths are absolute. |
+| `FRAP_CORE_BIN` (env) | frap-core-java | bundled binary | Override the path to the native `frap-core-rpc` binary (skip JAR extract). |
+| `logging.file.name` | frap-mcp runners | `${frap.runtime.dir}/logs/frap-mcp.log` | Log file path (stdio keeps console OFF). |
 | `spring.ai.mcp.server.*` | frap-mcp runners | see `application.properties` | MCP server name/version/transport; stdio reserves stdout for JSON-RPC. |
 
 ---

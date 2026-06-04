@@ -98,12 +98,21 @@ instead — see `adapters/mcp/README.md` for the inline tool shapes.)
 4. frap_generate_page_object(elementMapPath, ...) -> { filePaths, fileCount, workDir }
 ```
 
-## `frap.io.work-dir`
+## Runtime directories (`frap.runtime.dir`, `frap.io.work-dir`)
 
-In file-mode, artefacts are written under `frap.io.work-dir`. It defaults to the
-OS temp directory (`${java.io.tmpdir}/frap`) when unset; override in
-`application.properties` or via `-Dfrap.io.work-dir=...`. The directory is not
-cleaned automatically.
+The bundled `frap-core-rpc` binary is extracted under `<frap.runtime.dir>/bin/`
+(default `<jar-directory>/.frap/bin/`, **not** `/tmp`). Many corporate hosts block
+executing binaries from `/tmp`; set an explicit base if needed:
+
+```bash
+java -Dfrap.runtime.dir=/home/work/dev/mcps/.frap -jar frap-mcp-http-local.jar
+# or: FRAP_RUNTIME_DIR=/home/work/dev/mcps/.frap java -jar ...
+```
+
+In file-mode, artefacts are written under `frap.io.work-dir` (default
+`<frap.runtime.dir>/work`). Logs default to `<frap.runtime.dir>/logs/frap-mcp.log`.
+Override via `application.properties`, `-Dfrap.*`, or Spring Boot `--frap.runtime.dir=...`.
+Directories are not cleaned automatically.
 
 ## Connect to an MCP client (Claude Code)
 
@@ -150,8 +159,8 @@ Optional extras:
     "frap-stdio": {
       "command": "java",
       "args": [
-        "-jar", "/ABS/PATH/.../frap-mcp-stdio.jar",
-        "--frap.io.work-dir=/tmp/frap"
+        "-Dfrap.runtime.dir=/ABS/PATH/.frap",
+        "-jar", "/ABS/PATH/.../frap-mcp-stdio.jar"
       ],
       "env": { "FRAP_CORE_BIN": "/ABS/PATH/crates/target/release/frap-core-rpc" }
     }
@@ -159,7 +168,8 @@ Optional extras:
 }
 ```
 
-- `--frap.io.work-dir=...` — optional (Spring Boot accepts `--prop=value`); default `${java.io.tmpdir}/frap`.
+- `-Dfrap.runtime.dir=...` / `--frap.runtime.dir=...` — optional base dir (binary, work, logs); default `<jar-dir>/.frap`.
+- `--frap.io.work-dir=...` — optional artefacts dir only; default `<frap.runtime.dir>/work`.
 - `env.FRAP_CORE_BIN` — **only needed** when your platform's binary is not bundled (the jar currently ships only `macos-aarch64`, so Linux/Windows need it — or add the binaries to `META-INF/native/`), or to point at a freshly built dev binary.
 - This runner is **file mode**: tools take/return absolute paths + digest.
 
@@ -215,8 +225,8 @@ JSON:
   signatures as the stdio runner).
 - **Requires a shared filesystem** between client and server. The agent must be
   able to read/write the paths the server returns — run both on the same host and
-  point them at the same `frap.io.work-dir` (default `${java.io.tmpdir}/frap` on
-  both, so nothing extra is needed when they share one temp dir).
+  point them at the same `frap.io.work-dir` (default `<jar-dir>/.frap/work` when
+  both run from the same directory, or set `-Dfrap.runtime.dir=...` explicitly).
 - Override the port with `--server.port=NNNN` if 8765 is taken; override the
   shared working directory with `--frap.io.work-dir=/abs/path` (Spring Boot
   accepts `--prop=value`):

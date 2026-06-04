@@ -7,6 +7,7 @@ import io.github.kotlerdev.frap.core.dto.ClusterType;
 import io.github.kotlerdev.frap.core.dto.ElementMap;
 import io.github.kotlerdev.frap.core.dto.ElementNode;
 import io.github.kotlerdev.frap.core.dto.LocatorRecommendation;
+import io.github.kotlerdev.frap.core.runtime.FrapRuntimePaths;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -28,7 +29,8 @@ import org.springframework.util.StringUtils;
  * Filesystem-backed artifact store for the local (stdio) transport.
  *
  * <p>Resolves a configurable base work directory ({@code frap.io.work-dir}, default
- * {@code ${java.io.tmpdir}/frap}), reads/writes frap artifacts under unique names and
+ * {@code <frap.runtime.dir>/work}, default {@code <app>/.frap/work}), reads/writes frap
+ * artifacts under unique names and
  * returns absolute paths. No auto-cleanup is performed — the local single-user model
  * leaves artifact lifetime to the operator.</p>
  */
@@ -46,7 +48,7 @@ public class ArtifactStore {
 
     /**
      * @param objectMapper the frap artifact mapper (see {@code FrapCoreConfig})
-     * @param workDirProperty value of {@code frap.io.work-dir}; blank → {@code ${java.io.tmpdir}/frap}
+     * @param workDirProperty value of {@code frap.io.work-dir}; blank → {@code <runtime>/work}
      */
     public ArtifactStore(
         @Qualifier("frapArtifactObjectMapper") final ObjectMapper objectMapper,
@@ -57,10 +59,7 @@ public class ArtifactStore {
     }
 
     private static Path resolveWorkDir(final String workDirProperty) {
-        if (StringUtils.hasText(workDirProperty)) {
-            return Path.of(workDirProperty).toAbsolutePath().normalize();
-        }
-        return Path.of(System.getProperty("java.io.tmpdir"), "frap").toAbsolutePath().normalize();
+        return FrapRuntimePaths.resolveWorkDir(workDirProperty);
     }
 
     /**
