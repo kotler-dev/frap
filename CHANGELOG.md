@@ -37,14 +37,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Java SDK 1.1.1-SNAPSHOT
-
-- Development branch: **`develop/java-v1.1.1`**
-- Maven workspace: `1.1.1-SNAPSHOT` (not on Central until next release)
-
 ### Planned
 
 - MVP-C: benchmark overhead < 10% vs baseline
+
+## [Java SDK 1.1.1] - 2026-06-04
+
+### Added
+
+- **`frap.runtime.dir`**: bundled `frap-core-rpc` extracts to `<jar-dir>/.frap/bin/` (not `/tmp`); default work dir `work/`, logs `logs/`
+- **SnapshotBuilder parity** with MCP `snapshot.js`: `computed_role`, `scope_hint`, `visible` on live `Frap.discover`
+- **`DOMElementInfo`** optional collector fields (backward compatible JSON)
+
+### Changed
+
+- MCP file-mode tool examples use `<frap.runtime.dir>/work/...` instead of `/tmp/frap`
+
+### Documentation
+
+- [java-sdk-1.1.1-matrix.md](../project/release/java/java-sdk-1.1.1-matrix.md)
+- **Release Quality Digest:** `docs/quality/en/releases/v1.1.1-digest.md`, `docs/quality/ru/releases/v1.1.1-digest.md`
+- Validation: **C012** (CI dom-benchmark), **C013** (optional live explore)
+- Tag: `java-v1.1.1` → `publish-maven.yml` (digest gate in CI)
 
 ## [Java SDK 1.1.0] - 2026-06-03
 

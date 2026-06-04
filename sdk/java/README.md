@@ -9,7 +9,7 @@ independent Maven projects**:
 | **Core SDK** | `io.github.kotler-dev:frap-sdk-parent` | 17 | The Java client for the frap engine + adapters |
 | **MCP server** | `io.github.kotler-dev:frap-mcp-parent` | 21 | Spring AI MCP **sidecar** (stdio + http + http-local) |
 
-**Released:** Maven Central **1.1.0** · **Development:** workspace **1.1.1-SNAPSHOT** on branch **`develop/java-v1.1.1`** — see [`DEVELOPMENT.md`](./DEVELOPMENT.md).
+**Released:** Maven Central **1.1.1** · **Development:** workspace **1.1.1-SNAPSHOT** on branch **`develop/java-v1.1.1`** — see [`DEVELOPMENT.md`](./DEVELOPMENT.md).
 
 > They are separate reactors (different parent POMs, different Java levels). The
 > MCP project depends on `frap-core-java` as a normal Maven artifact. **MCP is optional:**
@@ -125,7 +125,7 @@ public interface FrapCoreClient extends AutoCloseable {
 <dependency>
     <groupId>io.github.kotler-dev</groupId>
     <artifactId>frap-core-java</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
 </dependency>
 ```
 
@@ -376,7 +376,7 @@ on supported platforms.
 
 ## Versions
 
-- **Released (Maven Central):** `frap-core-java`, `frap-playwright`, `frap-mcp-*` @ **1.1.0**
+- **Released (Maven Central):** `frap-core-java`, `frap-playwright`, `frap-mcp-*` @ **1.1.1**
 - **Development (git):** **1.1.1-SNAPSHOT** on branch **`develop/java-v1.1.1`**
 
 **Core SDK (1.1.x line)**

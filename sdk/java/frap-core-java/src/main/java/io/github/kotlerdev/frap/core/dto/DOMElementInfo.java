@@ -19,8 +19,24 @@ public record DOMElementInfo(
     @JsonProperty("text_content") String textContent,
     @JsonProperty("accessible_name") String accessibleName,
     @JsonProperty("path") List<String> path,
-    @JsonProperty("position_in_parent") Integer positionInParent
+    @JsonProperty("position_in_parent") Integer positionInParent,
+    @JsonProperty("visible") Boolean visible,
+    @JsonProperty("computed_role") String computedRole,
+    @JsonProperty("scope_hint") String scopeHint
 ) {
+    /** Backward-compatible constructor without collector enrichment fields. */
+    public DOMElementInfo(
+        String selector,
+        String tag,
+        Map<String, String> attributes,
+        String textContent,
+        String accessibleName,
+        List<String> path,
+        Integer positionInParent
+    ) {
+        this(selector, tag, attributes, textContent, accessibleName, path, positionInParent, null, null, null);
+    }
+
     public DOMElementInfo {
         if (selector == null || selector.isBlank()) {
             throw new IllegalArgumentException("selector is required");

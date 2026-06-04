@@ -48,10 +48,15 @@ cd frap/sdk/java && mvn -P java-unit verify
 - 6 MCP tools; verify: `./scripts/run-frap-mcp-verify.sh` (JDK 21)
 - Cross-client E2E: `@Tag("mcp-e2e")` in `SnapshotScriptCrossClientE2eTest`
 
-## Development (1.1.1-SNAPSHOT)
+## 1.1.1 (runtime + SnapshotBuilder parity)
+
+- `frap.runtime.dir` / `<jar-dir>/.frap/bin/` (not `/tmp`)
+- `SnapshotBuilder`: `computed_role`, `scope_hint`, `visible` (parity with MCP `snapshot.js`)
+- Matrix: `project/release/java/java-sdk-1.1.1-matrix.md`
+
+## Development (1.1.1-SNAPSHOT → 1.2.0-SNAPSHOT after release)
 
 - Integration branch: **`develop/java-v1.1.1`** — see [`DEVELOPMENT.md`](./DEVELOPMENT.md)
-- Follow-up: Java `SnapshotBuilder` a11y/scope parity with TS `snapshot.js` (matrix 1.1.0)
 
 ## On hold
 
