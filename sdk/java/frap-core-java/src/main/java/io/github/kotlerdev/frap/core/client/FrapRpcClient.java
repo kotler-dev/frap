@@ -14,6 +14,7 @@ import io.github.kotlerdev.frap.core.dto.HealRequest;
 import io.github.kotlerdev.frap.core.dto.HealResult;
 import io.github.kotlerdev.frap.core.dto.MapOptions;
 import io.github.kotlerdev.frap.core.rca.RcaReport;
+import io.github.kotlerdev.frap.core.runtime.FrapRuntimePaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,7 +129,12 @@ public class FrapRpcClient implements FrapCoreClient {
     }
 
     /**
-     * Extracts the bundled binary from JAR to a temporary directory.
+     * Extracts the bundled binary from the JAR into {@code <frap.runtime.dir>/bin/}.
+     *
+     * <p>Defaults to {@code <application-base>/.frap/bin/} (next to the running JAR or
+     * {@code user.dir}), not {@code java.io.tmpdir}, so hosts that block executing from
+     * {@code /tmp} can still run MCP. Override with {@code -Dfrap.runtime.dir} or
+     * {@code FRAP_RUNTIME_DIR}.</p>
      */
     private static Path extractBundledBinary(String binaryName) throws IOException {
         String resourcePath = "/META-INF/native/" + binaryName;
@@ -142,19 +148,25 @@ public class FrapRpcClient implements FrapCoreClient {
                 );
             }
 
-            // Create temp directory
-            Path tempDir = Files.createTempDirectory("frap-rpc-");
-            tempDir.toFile().deleteOnExit();
+            final Path binDir = FrapRuntimePaths.ensureDirectory(FrapRuntimePaths.resolveNativeBinDir());
+            final String localName = binaryName.endsWith(".exe") ? "frap-core-rpc.exe" : "frap-core-rpc";
+            final Path binaryPath = binDir.resolve(localName);
 
-            // Preserve the .exe suffix on Windows so the extracted file is executable.
-            String tempName = binaryName.endsWith(".exe") ? "frap-core-rpc.exe" : "frap-core-rpc";
-            Path binaryPath = tempDir.resolve(tempName);
+            if (Files.isRegularFile(binaryPath) && Files.isExecutable(binaryPath)) {
+                logger.info("Using bundled binary at: {}", binaryPath);
+                return binaryPath;
+            }
+
             Files.copy(is, binaryPath, StandardCopyOption.REPLACE_EXISTING);
-
-            // Make executable. setExecutable is a no-op (returns false) on Windows where
-            // the exec-bit concept does not apply; the .exe suffix carries executability.
             binaryPath.toFile().setExecutable(true);
-            binaryPath.toFile().deleteOnExit();
+
+            if (!Files.isExecutable(binaryPath)) {
+                throw new IOException(
+                    "Extracted binary is not executable: " + binaryPath +
+                    ". Set -Dfrap.runtime.dir=/writable/path or FRAP_RUNTIME_DIR to a directory" +
+                    " that allows execute permission."
+                );
+            }
 
             logger.info("Extracted bundled binary to: {}", binaryPath);
             return binaryPath;
